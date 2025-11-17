@@ -1,5 +1,5 @@
 // URL of your backend
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://dutabarane-backend.onrender.com";
 
 // Login function
 async function login() {
