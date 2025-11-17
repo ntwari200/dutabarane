@@ -1,22 +1,15 @@
-// URL of your backend
-const BACKEND_URL = "https://dutabarane-backend.onrender.com";
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-// Login function
-async function login() {
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
-    const messageElement = document.getElementById("message");
 
-    // Basic validation
-    if (!username || !password) {
-        messageElement.style.color = "red";
-        messageElement.innerText = "Please enter both username and password.";
-        return;
-    }
+    const statusBox = document.getElementById("status");
+    statusBox.innerText = "Connecting to backend...";
+    statusBox.style.color = "yellow";
 
     try {
-        // Send login request to backend
-        const response = await fetch(`${BACKEND_URL}/login`, {
+        const response = await fetch("https://dutabarane-backend.onrender.com/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password })
@@ -24,26 +17,18 @@ async function login() {
 
         const data = await response.json();
 
-        if (data.success) {
-            // Login successful
-            messageElement.style.color = "green";
-            messageElement.innerText = data.message;
+        if (response.ok) {
+            statusBox.innerText = "Login successful!";
+            statusBox.style.color = "lightgreen";
+            alert("WELCOME ADMIN");
+
         } else {
-            // Login failed
-            messageElement.style.color = "red";
-            messageElement.innerText = data.message;
+            statusBox.innerText = data.error || "Invalid username or password";
+            statusBox.style.color = "red";
         }
     } catch (error) {
-        // Backend connection error
-        messageElement.style.color = "red";
-        messageElement.innerText = "Error connecting to backend.";
-        console.error("Login error:", error);
-    }
-}
-
-// Optional: Press Enter to submit login
-document.getElementById("password").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
-        login();
+        statusBox.innerText = "Backend unreachable!";
+        statusBox.style.color = "red";
+        console.error("Error:", error);
     }
 });
