@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+
+body {
+    margin: 0;
+    height: 100vh;
+    font-family: "Poppins", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #000000, #2b0000, #4b0000, #000000);
+    background-size: 400% 400%;
+    animation: gradientMove 10s infinite alternate;
+}
+
+@keyframes gradientMove {
+    0% { background-position: left; }
+    100% { background-position: right; }
+}
+
+.container {
+    width: 350px;
+    padding: 20px;
+}
+
+.form-box {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+}
+
+.title {
+    text-align: center;
+    color: #ff3333;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+
+.input-box {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    border-bottom: 2px solid #444;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+
+.input-box label {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #777;
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+.input-box input:focus + label,
+.input-box input:valid + label {
+    top: -5px;
+    font-size: 13px;
+    color: #ff3333;
+}
+
+.underline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: #ff3333;
+    transition: 0.3s;
+}
+
+.input-box input:focus ~ .underline {
+    width: 100%;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 10px;
+    background: #ff0000;
+    border: none;
+    font-size: 16px;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-btn:hover {
+    background: #cc0000;
+    box-shadow: 0 0 15px #ff0000;
+}
+
+#message {
+    text-align: center;
+    margin-top: 15px;
+    color: #ff3333;
+}
