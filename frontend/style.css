@@ -1,12 +1,6 @@
-/* Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
+* { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
 
-/* Background image for dashboard */
+/* Background */
 body {
     background: url('https://upload.wikimedia.org/wikipedia/commons/3/3a/Tornado_from_sunset.jpg') no-repeat center center fixed;
     background-size: cover;
@@ -14,61 +8,84 @@ body {
     min-height: 100vh;
 }
 
-/* Navigation */
+/* Navbar */
 .navbar {
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0,0,0,0.8);
     padding: 15px 20px;
     position: fixed;
     width: 100%;
-    top: 0;
-    left: 0;
+    top:0; left:0;
     z-index: 100;
 }
 
-.navbar ul {
-    list-style: none;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.navbar ul li {
-    margin-left: 20px;
-}
-
+.navbar ul { list-style:none; display:flex; justify-content:flex-end; }
+.navbar ul li { margin-left:20px; }
 .navbar ul li a {
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-    transition: 0.3s;
+    color:red; text-decoration:none; font-weight:bold;
+    transition:0.3s;
+}
+.navbar ul li a:hover { color:white; }
+
+/* Container */
+.container, .dashboard-container {
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    min-height: 100vh;
+    padding-top: 80px;
+    text-align:center;
 }
 
-.navbar ul li a:hover {
-    color: #ffcc00;
-}
-
-/* Dashboard content */
-.dashboard-container {
-    text-align: center;
-    margin-top: 120px;
-}
-
-.cards {
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-}
-
-.card {
-    background: rgba(0, 0, 0, 0.5);
-    margin: 10px;
-    padding: 40px 60px;
+/* Login form */
+.form-box {
+    background: rgba(0,0,0,0.7);
+    padding: 40px;
     border-radius: 15px;
-    transition: 0.3s;
-    cursor: pointer;
-    font-size: 20px;
+    width: 350px;
+    animation: fadeIn 1.2s ease-in-out;
 }
 
-.card:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.1);
+.input-box {
+    position: relative;
+    margin: 30px 0;
 }
+.input-box input {
+    width:100%; padding:10px; background:none; border:none; border-bottom:2px solid red; color:white;
+}
+.input-box label {
+    position:absolute; top:0; left:0; padding:10px; pointer-events:none;
+    transition:0.5s;
+    color:red;
+}
+.input-box input:focus ~ label,
+.input-box input:valid ~ label { top:-20px; font-size:12px; color:white; }
+
+.login-btn {
+    width:100%; padding:10px; background:red; border:none; border-radius:10px; color:white;
+    font-size:16px; cursor:pointer; transition:0.3s;
+}
+.login-btn:hover { background:black; color:red; }
+
+/* Cards */
+.cards { display:flex; justify-content:center; margin-top:40px; }
+.card {
+    background: rgba(0,0,0,0.6);
+    margin:10px;
+    padding:40px 60px;
+    border-radius:15px;
+    font-size:20px;
+    cursor:pointer;
+    transition:0.3s;
+}
+.card:hover { background:red; transform: scale(1.1); }
+
+/* Animated text */
+.animated-text {
+    animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 5px red, 0 0 10px black; }
+    to { text-shadow: 0 0 20px red, 0 0 40px black; }
+}
+
+/* Fade in */
+@keyframes fadeIn { 0% {opacity:0;} 100%{opacity:1;} }
