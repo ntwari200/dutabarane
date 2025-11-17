@@ -1,109 +1,74 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
-
-body {
+/* Reset */
+* {
     margin: 0;
-    height: 100vh;
-    font-family: "Poppins", sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #000000, #2b0000, #4b0000, #000000);
-    background-size: 400% 400%;
-    animation: gradientMove 10s infinite alternate;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
-@keyframes gradientMove {
-    0% { background-position: left; }
-    100% { background-position: right; }
-}
-
-.container {
-    width: 350px;
-    padding: 20px;
-}
-
-.form-box {
-    background: rgba(0, 0, 0, 0.6);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
-    backdrop-filter: blur(5px);
-}
-
-.title {
-    text-align: center;
-    color: #ff3333;
-    margin-bottom: 20px;
-    letter-spacing: 2px;
-}
-
-.input-box {
-    position: relative;
-    margin-bottom: 25px;
-}
-
-.input-box input {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    background: transparent;
-    border-bottom: 2px solid #444;
+/* Background image for dashboard */
+body {
+    background: url('https://upload.wikimedia.org/wikipedia/commons/3/3a/Tornado_from_sunset.jpg') no-repeat center center fixed;
+    background-size: cover;
     color: white;
-    font-size: 16px;
-    outline: none;
+    min-height: 100vh;
 }
 
-.input-box label {
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    transform: translateY(-50%);
-    color: #777;
-    pointer-events: none;
-    transition: 0.3s;
-}
-
-.input-box input:focus + label,
-.input-box input:valid + label {
-    top: -5px;
-    font-size: 13px;
-    color: #ff3333;
-}
-
-.underline {
-    position: absolute;
-    bottom: 0;
+/* Navigation */
+.navbar {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 15px 20px;
+    position: fixed;
+    width: 100%;
+    top: 0;
     left: 0;
-    width: 0%;
-    height: 2px;
-    background: #ff3333;
-    transition: 0.3s;
+    z-index: 100;
 }
 
-.input-box input:focus ~ .underline {
-    width: 100%;
+.navbar ul {
+    list-style: none;
+    display: flex;
+    justify-content: flex-end;
 }
 
-.login-btn {
-    width: 100%;
-    padding: 10px;
-    background: #ff0000;
-    border: none;
-    font-size: 16px;
+.navbar ul li {
+    margin-left: 20px;
+}
+
+.navbar ul li a {
+    text-decoration: none;
     color: white;
     font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
     transition: 0.3s;
 }
 
-.login-btn:hover {
-    background: #cc0000;
-    box-shadow: 0 0 15px #ff0000;
+.navbar ul li a:hover {
+    color: #ffcc00;
 }
 
-#message {
+/* Dashboard content */
+.dashboard-container {
     text-align: center;
-    margin-top: 15px;
-    color: #ff3333;
+    margin-top: 120px;
+}
+
+.cards {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.card {
+    background: rgba(0, 0, 0, 0.5);
+    margin: 10px;
+    padding: 40px 60px;
+    border-radius: 15px;
+    transition: 0.3s;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.card:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
 }
