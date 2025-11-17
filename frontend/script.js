@@ -1,19 +1,17 @@
-document.getElementById("loginForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value.trim();
     const message = document.getElementById("message");
 
-    message.textContent = "Checking...";
-    message.style.color = "blue";
+    message.textContent = "Connecting...";
+    message.style.color = "yellow";
 
     try {
         const response = await fetch("https://dutabarane-backend.onrender.com/login", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password })
         });
 
@@ -21,18 +19,20 @@ document.getElementById("loginForm").addEventListener("submit", async function (
 
         if (data.success) {
             message.textContent = "Login successful!";
-            message.style.color = "green";
+            message.style.color = "lightgreen";
 
-            // Redirect (change to your dashboard)
+            // Store login permanently
+            localStorage.setItem("loggedIn", "true");
+            localStorage.setItem("username", username);
+
             window.location.href = "dashboard.html";
         } else {
-            message.textContent = data.message;
+            message.textContent = data.message || "Invalid credentials!";
             message.style.color = "red";
         }
-
-    } catch (error) {
-        message.textContent = "Error: Cannot connect to server.";
+    } catch (err) {
+        message.textContent = "Cannot connect to server!";
         message.style.color = "red";
-        console.error(error);
+        console.error(err);
     }
 });
