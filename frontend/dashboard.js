@@ -1,4 +1,3 @@
-// Check login
 const username = localStorage.getItem("username");
 const isLoggedIn = localStorage.getItem("loggedIn");
 
@@ -8,7 +7,6 @@ if (!isLoggedIn) {
 
 document.getElementById("usernameDisplay").textContent = username || "Admin";
 
-// Logout function
 function logout() {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("username");
