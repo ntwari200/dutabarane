@@ -6,6 +6,12 @@ body {
     background-size: cover;
     color: white;
     min-height: 100vh;
+    margin: 0; /* Ensures no default margin around the body */
+    font-family: Arial, sans-serif; /* Optional: Choose a clean font for readability */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center; /* Optional: To center text */
 }
 
 /* Navbar */
