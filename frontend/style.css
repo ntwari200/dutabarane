@@ -6,19 +6,24 @@
     font-family: Arial, sans-serif;
 }
 
-/* Cinematic Tornado Background */
+/* Viewport full screen */
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+/* Cinematic Tornado GIF Background */
 body {
-    min-height: 100vh;
+    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     position: relative;
-    color: white;
-    overflow: hidden; /* Prevent scrollbars from GIF blur effect */
+    overflow-x: hidden;
 }
 
-/* Background GIF container */
+/* Background GIF with blur & overlay */
 body::before {
     content: "";
     position: fixed;
@@ -28,7 +33,6 @@ body::before {
     z-index: -3;
 }
 
-/* Soft gradient overlay for cinematic effect */
 body::after {
     content: "";
     position: fixed;
@@ -52,6 +56,7 @@ body::after {
     list-style: none;
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
 }
 
 .navbar ul li {
@@ -69,32 +74,34 @@ body::after {
     color: white;
 }
 
-/* Container */
+/* Main container */
 .container, .dashboard-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding-top: 80px;
+    padding-top: 100px;
     text-align: center;
     z-index: 1;
+    width: 95%;
 }
 
-/* Login form */
+/* Login Form */
 .form-box {
     background: rgba(0,0,0,0.5);
     backdrop-filter: blur(8px);
-    padding: 40px;
+    padding: 30px 25px;
     border-radius: 20px;
-    width: 350px;
+    width: 90%;
+    max-width: 400px;
     animation: fadeIn 1.2s ease-in-out;
     box-shadow: 0 0 30px rgba(0,0,0,0.6);
 }
 
 .input-box {
     position: relative;
-    margin: 30px 0;
+    margin: 20px 0;
 }
 
 .input-box input {
@@ -104,6 +111,7 @@ body::after {
     border: none;
     border-bottom: 2px solid red;
     color: white;
+    font-size: 1rem;
 }
 
 .input-box label {
@@ -114,23 +122,24 @@ body::after {
     pointer-events: none;
     transition: 0.5s;
     color: red;
+    font-size: 1rem;
 }
 
 .input-box input:focus ~ label,
 .input-box input:valid ~ label {
     top: -20px;
-    font-size: 12px;
+    font-size: 0.9rem;
     color: white;
 }
 
 .login-btn {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background: red;
     border: none;
     border-radius: 10px;
     color: white;
-    font-size: 16px;
+    font-size: 1rem;
     cursor: pointer;
     transition: 0.3s;
 }
@@ -144,30 +153,33 @@ body::after {
 .cards {
     display: flex;
     justify-content: center;
-    margin-top: 40px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+    gap: 20px;
 }
 
 .card {
     background: rgba(0,0,0,0.5);
     backdrop-filter: blur(5px);
-    margin: 10px;
-    padding: 40px 60px;
+    padding: 25px 40px;
     border-radius: 15px;
-    font-size: 20px;
+    font-size: 1.2rem;
     cursor: pointer;
     transition: 0.3s;
     box-shadow: 0 0 20px rgba(255,0,0,0.3);
+    width: 250px;
 }
 
 .card:hover {
     background: red;
-    transform: scale(1.1);
+    transform: scale(1.05);
     box-shadow: 0 0 40px rgba(255,0,0,0.6);
 }
 
-/* Animated text */
+/* Animated Text */
 .animated-text {
     animation: glow 1.5s ease-in-out infinite alternate;
+    font-size: 1.5rem;
 }
 
 @keyframes glow {
@@ -175,10 +187,30 @@ body::after {
     to { text-shadow: 0 0 20px red, 0 0 40px black; }
 }
 
-/* Fade in */
+/* Fade in animation */
 @keyframes fadeIn {
     0% { opacity: 0; } 
     100% { opacity: 1; }
+}
+
+/* Responsive typography */
+@media (max-width: 1024px) {
+    .animated-text { font-size: 1.3rem; }
+    .card { font-size: 1.1rem; padding: 20px 30px; }
+}
+
+@media (max-width: 768px) {
+    .navbar ul { justify-content: center; }
+    .animated-text { font-size: 1.1rem; }
+    .card { width: 90%; font-size: 1rem; padding: 20px; }
+    .form-box { padding: 25px 20px; }
+}
+
+@media (max-width: 480px) {
+    .navbar ul { flex-direction: column; gap: 10px; }
+    .animated-text { font-size: 1rem; }
+    .form-box { padding: 20px 15px; width: 95%; }
+    .login-btn { font-size: 0.95rem; padding: 10px; }
 }
 
 /* Smooth rendering fixes */
