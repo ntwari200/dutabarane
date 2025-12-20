@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Internal System</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -33,67 +33,24 @@
             <div class="input-box">
                 <input type="text" id="username" required>
                 <label>Username</label>
-                <span class="underline"></span>
             </div>
 
             <div class="input-box">
                 <input type="password" id="password" required>
                 <label>Password</label>
-                <span class="underline"></span>
             </div>
 
             <button class="login-btn" type="submit">Login</button>
         </form>
 
-        <p id="message"></p>
+        <!-- Warning message -->
+        <div class="warning-message" id="warning">
+            <img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" alt="Warning Icon" class="warning-icon">
+            <span>Warning: Only authorized users like Justin are allowed to login!</span>
+        </div>
     </div>
 </div>
 
-<!-- Optional: Add more sections here to see scroll animations -->
-<section class="fade-up">
-    <h2 class="animated-text">Welcome to the Internal System</h2>
-    <p>Only authorized users like Justin can access this system.</p>
-</section>
-
 <script src="script.js"></script>
-<script>
-    // Hamburger menu toggle
-    const hamburger = document.querySelector(".hamburger");
-    const navLinks = document.querySelector(".nav-links");
-
-    hamburger.addEventListener("click", () => {
-        navLinks.classList.toggle("active");
-        hamburger.classList.toggle("toggle");
-    });
-
-    // Navbar scroll effect
-    const navbar = document.querySelector(".navbar");
-    window.addEventListener("scroll", () => {
-        if (window.scrollY > 50) {
-            navbar.classList.add("scrolled");
-        } else {
-            navbar.classList.remove("scrolled");
-        }
-    });
-
-    // Scroll fade-up animations
-    const faders = document.querySelectorAll(".fade-up");
-    const appearOptions = {
-        threshold: 0.2,
-        rootMargin: "0px 0px -50px 0px"
-    };
-
-    const appearOnScroll = new IntersectionObserver(function(entries, observer) {
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            entry.target.classList.add("visible");
-            observer.unobserve(entry.target);
-        });
-    }, appearOptions);
-
-    faders.forEach(fader => {
-        appearOnScroll.observe(fader);
-    });
-</script>
 </body>
 </html>
