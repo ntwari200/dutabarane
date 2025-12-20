@@ -89,7 +89,6 @@ body::after {
     font-size: 1rem;
 }
 
-/* Animated underline */
 .navbar ul li a::after {
     content: "";
     position: absolute;
@@ -110,7 +109,6 @@ body::after {
     text-shadow: 0 0 10px #ff4c4c, 0 0 20px black;
 }
 
-/* Hamburger menu for mobile */
 .hamburger {
     display: none;
     flex-direction: column;
@@ -126,32 +124,33 @@ body::after {
     transition: all 0.4s;
 }
 
-/* Main container */
+/* Main container centered perfectly */
 .container, .dashboard-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding-top: 100px;
     text-align: center;
     z-index: 1;
-    width: 95%;
+    width: 100%;
+    padding: 0 15px;
 }
 
 /* Login Form */
 .form-box {
     background: rgba(0,0,0,0.5);
     backdrop-filter: blur(8px);
-    padding: 30px 25px;
+    padding: 35px 30px;
     border-radius: 20px;
-    width: 90%;
+    width: 100%;
     max-width: 400px;
     animation: fadeIn 1.2s ease-in-out;
     box-shadow: 0 0 30px rgba(0,0,0,0.6);
+    transition: transform 0.4s ease;
 }
 
-/* Input Boxes: Floating labels & glow animation */
+/* Input Boxes with floating labels & glow animation */
 .input-box {
     position: relative;
     margin: 20px 0;
@@ -172,6 +171,7 @@ body::after {
     outline: none;
     border-color: #ff4c4c;
     box-shadow: 0 0 8px #ff4c4c;
+    transform: scale(1.02);
 }
 
 .input-box label {
@@ -192,7 +192,7 @@ body::after {
     text-shadow: 0 0 5px #ff4c4c;
 }
 
-/* Login Button with hover glow */
+/* Login Button */
 .login-btn {
     width: 100%;
     padding: 12px;
@@ -209,6 +209,33 @@ body::after {
     background: black;
     color: red;
     box-shadow: 0 0 15px #ff4c4c, 0 0 30px black;
+}
+
+/* Warning message below form */
+.warning-message {
+    display: none;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(255,0,0,0.1);
+    padding: 10px 15px;
+    border-radius: 10px;
+    color: #ff4c4c;
+    font-weight: bold;
+    text-align: center;
+    animation: glowWarning 1.5s ease-in-out infinite alternate;
+}
+
+.warning-icon {
+    width: 24px;
+    height: 24px;
+}
+
+@keyframes glowWarning {
+    from { text-shadow: 0 0 3px #ff4c4c; }
+    to { text-shadow: 0 0 12px #ff0000; }
 }
 
 /* Cards */
@@ -251,8 +278,8 @@ body::after {
 }
 
 @keyframes fadeIn {
-    0% { opacity: 0; } 
-    100% { opacity: 1; }
+    0% { opacity: 0; transform: translateY(20px); } 
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsive typography & layout */
