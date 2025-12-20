@@ -1,4 +1,4 @@
-/* Reset & Base */
+/* Reset & base */
 * {
     margin: 0;
     padding: 0;
@@ -89,6 +89,7 @@ body::after {
     font-size: 1rem;
 }
 
+/* Animated underline */
 .navbar ul li a::after {
     content: "";
     position: absolute;
@@ -210,20 +211,6 @@ body::after {
     box-shadow: 0 0 15px #ff4c4c, 0 0 30px black;
 }
 
-/* Warning message */
-.warning-message {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 10px;
-    gap: 10px;
-}
-
-.warning-message img.warning-icon {
-    width: 25px;
-    height: 25px;
-}
-
 /* Cards */
 .cards {
     display: flex;
@@ -266,39 +253,6 @@ body::after {
 @keyframes fadeIn {
     0% { opacity: 0; } 
     100% { opacity: 1; }
-}
-
-/* Shake animation for form */
-@keyframes shake {
-    0% { transform: translateX(0); }
-    20% { transform: translateX(-10px); }
-    40% { transform: translateX(10px); }
-    60% { transform: translateX(-10px); }
-    80% { transform: translateX(10px); }
-    100% { transform: translateX(0); }
-}
-
-.shake {
-    animation: shake 0.5s ease-in-out;
-}
-
-/* Pulse animation for warning message */
-@keyframes pulse {
-    0% { transform: scale(1); text-shadow: 0 0 5px #ff0000; }
-    50% { transform: scale(1.05); text-shadow: 0 0 15px #ff4c4c, 0 0 25px black; }
-    100% { transform: scale(1); text-shadow: 0 0 5px #ff0000; }
-}
-
-.pulse {
-    animation: pulse 1.5s ease-in-out forwards;
-}
-
-/* Spinner GIF */
-.spinner {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    background: url('https://i.gifer.com/ZZ5H.gif') center center / cover no-repeat;
 }
 
 /* Responsive typography & layout */
