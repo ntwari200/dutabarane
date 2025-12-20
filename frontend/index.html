@@ -7,9 +7,27 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="logo">StormSite</div>
+    <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</nav>
+
+<!-- Login Container -->
+<div class="container fade-up">
     <div class="form-box">
-        <h2 class="title"><u>take this caution :INTERNAL SYSTEM LOGIN for only by justin</u></h2>
+        <h2 class="title"><u>Take this caution: INTERNAL SYSTEM LOGIN only by Justin</u></h2>
 
         <form id="loginForm">
             <div class="input-box">
@@ -31,6 +49,51 @@
     </div>
 </div>
 
+<!-- Optional: Add more sections here to see scroll animations -->
+<section class="fade-up">
+    <h2 class="animated-text">Welcome to the Internal System</h2>
+    <p>Only authorized users like Justin can access this system.</p>
+</section>
+
 <script src="script.js"></script>
+<script>
+    // Hamburger menu toggle
+    const hamburger = document.querySelector(".hamburger");
+    const navLinks = document.querySelector(".nav-links");
+
+    hamburger.addEventListener("click", () => {
+        navLinks.classList.toggle("active");
+        hamburger.classList.toggle("toggle");
+    });
+
+    // Navbar scroll effect
+    const navbar = document.querySelector(".navbar");
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 50) {
+            navbar.classList.add("scrolled");
+        } else {
+            navbar.classList.remove("scrolled");
+        }
+    });
+
+    // Scroll fade-up animations
+    const faders = document.querySelectorAll(".fade-up");
+    const appearOptions = {
+        threshold: 0.2,
+        rootMargin: "0px 0px -50px 0px"
+    };
+
+    const appearOnScroll = new IntersectionObserver(function(entries, observer) {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+        });
+    }, appearOptions);
+
+    faders.forEach(fader => {
+        appearOnScroll.observe(fader);
+    });
+</script>
 </body>
 </html>
