@@ -7,47 +7,27 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<!-- Navbar -->
-<nav class="navbar">
-    <div class="logo">DUTABARANE site</div>
-    <ul class="nav-links">
-        <li><a href="#home">Home</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#services">Services</a></li>
-        <li><a href="#contact">Contact</a></li>
-    </ul>
-    <div class="hamburger">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-</nav>
-
-<!-- Login Container -->
-<div class="container fade-up">
+<div class="container">
     <div class="form-box">
-        <h2 class="title"><u>Take this caution: INTERNAL SYSTEM LOGIN only by Justin</u></h2>
+        <h2 class="title"><u>take this caution :INTERNAL SYSTEM LOGIN for only by justin</u></h2>
 
         <form id="loginForm">
             <div class="input-box">
                 <input type="text" id="username" required>
                 <label>Username</label>
+                <span class="underline"></span>
             </div>
 
             <div class="input-box">
                 <input type="password" id="password" required>
                 <label>Password</label>
+                <span class="underline"></span>
             </div>
 
             <button class="login-btn" type="submit">Login</button>
         </form>
 
-        <!-- Warning message -->
-        <div class="warning-message" id="warning">
-            <img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" alt="Warning Icon" class="warning-icon">
-            <span>Warning: Only authorized users like Justin are allowed to login!</span>
-        </div>
+        <p id="message"></p>
     </div>
 </div>
 
