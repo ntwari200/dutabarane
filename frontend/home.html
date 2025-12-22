@@ -1,24 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Internal System</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <nav class="navbar">
-        <ul>
-            <li><a href="home.html">Home</a></li>
-            <li><a href="aboutus.html">About Us</a></li>
-            <li><a href="contactus.html">Contact Us</a></li>
-            <li><a href="dashboard.html">Dashboard</a></li>
-        </ul>
-    </nav>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System Dashboard</title>
 
-    <div class="dashboard-container">
-        <h1>Home Page</h1>
-        <p>Welcome to your internal system!</p>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* -----------------------------
+    GENERAL STYLES
+----------------------------- */
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #1a1a1a, #0d0d0d);
+    color: white;
+    min-height: 100vh;
+}
+
+/* -----------------------------
+    CONTAINER
+----------------------------- */
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+/* -----------------------------
+    TITLE
+----------------------------- */
+h1 {
+    text-align: center;
+    color: #ff3333;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+    animation: titleFade 2s ease-in-out;
+}
+
+@keyframes titleFade {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* -----------------------------
+    CARD STYLES
+----------------------------- */
+.card {
+    background-color: #1f1f1f;
+    border: 2px solid #ff3333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 15px rgba(255,0,0,0.4);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+/* -----------------------------
+    FORM STYLES
+----------------------------- */
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+input[type="text"], input[type="tel"] {
+    flex: 1;
+    padding: 0.8rem;
+    border: 2px solid #ff3333;
+    border-radius: 8px;
+    background: #0d0d0d;
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+input[type="text"]:focus, input[type="tel"]:focus {
+    border-color: #ff6666;
+}
+
+button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #ff3333;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #ff6666;
+}
+
+/* -----------------------------
+    TABLE STYLES
+----------------------------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    padding: 0.8rem;
+    border: 1px solid #ff3333;
+    text-align: left;
+}
+
+table th {
+    background-color: #ff3333;
+    color: black;
+}
+
+table tr:nth-child(even) {
+    background-color: #2a2a2a;
+}
+
+</style>
+</head>
+
+<body>
+<div class="container">
+    <h1>Admin Dashboard</h1>
+
+    <!-- -----------------------------
+        ADD MEMBER CARD
+    ----------------------------- -->
+    <div class="card">
+        <h2>Add Member</h2>
+        <form id="addMemberForm">
+            <input type="text" id="memberName" placeholder="Member Name" required>
+            <input type="tel" id="memberPhone" placeholder="Phone Number" required>
+            <button type="submit">Add Member</button>
+        </form>
+        <p id="memberMsg"></p>
     </div>
+
+    <!-- -----------------------------
+        MEMBERS LIST CARD
+    ----------------------------- -->
+    <div class="card">
+        <h2>Members List</h2>
+        <table id="membersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Members will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- -----------------------------
+        CREATE FILE CARD
+    ----------------------------- -->
+    <div class="card">
+        <h2>Create New File</h2>
+        <form id="createFileForm">
+            <input type="text" id="fileName" placeholder="File Name" required>
+            <button type="submit">Create File</button>
+        </form>
+        <p id="fileMsg"></p>
+    </div>
+</div>
+
+<script>
+// -----------------------------
+// BASE URL (replace with your Render backend if hosted)
+// -----------------------------
+const BASE_URL = "/"; // localhost:5000 if local
+
+// -----------------------------
+// FETCH MEMBERS LIST
+// -----------------------------
+async function loadMembers() {
+    const res = await fetch(`${BASE_URL}api/members`);
+    const data = await res.json();
+    const tbody = document.querySelector("#membersTable tbody");
+    tbody.innerHTML = "";
+    data.forEach(member => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${member.id}</td><td>${member.name}</td><td>${member.phone}</td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+// -----------------------------
+// ADD MEMBER FORM
+// -----------------------------
+document.getElementById("addMemberForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("memberName").value;
+    const phone = document.getElementById("memberPhone").value;
+
+    const res = await fetch(`${BASE_URL}api/members`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone })
+    });
+    const data = await res.json();
+    document.getElementById("memberMsg").innerText = data.message || data.error;
+    document.getElementById("addMemberForm").reset();
+    loadMembers();
+});
+
+// -----------------------------
+// CREATE FILE FORM
+// -----------------------------
+document.getElementById("createFileForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fileName = document.getElementById("fileName").value;
+
+    const res = await fetch(`${BASE_URL}api/files`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file_name: fileName })
+    });
+    const data = await res.json();
+    document.getElementById("fileMsg").innerText = data.message || data.error;
+    document.getElementById("createFileForm").reset();
+});
+
+// -----------------------------
+// INITIAL LOAD
+// -----------------------------
+loadMembers();
+</script>
 </body>
 </html>
+
