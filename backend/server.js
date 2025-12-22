@@ -6,118 +6,137 @@ import { usersDB, systemDB } from "./database.js";
 dotenv.config();
 const app = express();
 
-// -----------------------------
-// Middleware
-// -----------------------------
+/* =======================
+   MIDDLEWARE
+======================= */
 app.use(express.json());
-
-// Serve frontend files
 app.use(express.static(path.join(path.resolve(), "../frontend")));
 
-// Default route to serve index.html
+/* =======================
+   ROUTES
+======================= */
 app.get("/", (req, res) => {
   res.sendFile(path.join(path.resolve(), "../frontend/index.html"));
 });
 
-// -----------------------------
-// LOGIN ROUTE
-// -----------------------------
+/* =======================
+   LOGIN
+======================= */
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  // Check users.db
   usersDB.get(
-    "SELECT * FROM users WHERE username = ? AND password = ?",
+    "SELECT * FROM users WHERE username=? AND password=?",
     [username, password],
     (err, row) => {
-      if (err) {
-        return res.status(500).json({ success: false, message: "DB error" });
-      }
-      if (row) {
-        res.json({ success: true, message: "Login successful!" });
-      } else {
-        res.json({ success: false, message: "Invalid credentials" });
-      }
+      if (err) return res.status(500).json({ success:false });
+      if (row) return res.json({ success:true });
+      res.json({ success:false });
     }
   );
 });
 
-// -----------------------------
-// SYSTEM MANAGEMENT APIS
-// -----------------------------
-
-// 1️⃣ Add member
-app.post("/api/members", async (req, res) => {
+/* =======================
+   MEMBERS
+======================= */
+app.post("/api/members", (req, res) => {
   const { name, phone } = req.body;
-  if (!name || !phone)
-    return res.status(400).json({ error: "Name and phone required" });
 
-  try {
-    systemDB.run(
-      "INSERT INTO members (name, phone) VALUES (?, ?)",
-      [name, phone],
-      function (err) {
-        if (err) return res.status(500).json({ error: "DB error" });
-        res.json({ message: "Member added", member_id: this.lastID });
-      }
-    );
-  } catch (err) {
-    res.status(500).json({ error: "Database error" });
-  }
+  systemDB.run(
+    "INSERT INTO members (name, phone) VALUES (?, ?)",
+    [name, phone],
+    function (err) {
+      if (err) return res.status(500).json(err);
+      res.json({ id: this.lastID });
+    }
+  );
 });
 
-// 2️⃣ Get members
-app.get("/api/members", async (req, res) => {
-  try {
-    systemDB.all("SELECT * FROM members", [], (err, rows) => {
-      if (err) return res.status(500).json({ error: "DB error" });
-      res.json(rows);
-    });
-  } catch (err) {
-    res.status(500).json({ error: "Database error" });
-  }
+app.get("/api/members", (req, res) => {
+  systemDB.all("SELECT * FROM members", [], (err, rows) => {
+    if (err) return res.status(500).json(err);
+    res.json(rows);
+  });
 });
 
-// 3️⃣ Create new file (auto-copy members)
-app.post("/api/files", async (req, res) => {
-  const { file_name } = req.body;
-  if (!file_name) return res.status(400).json({ error: "File name required" });
+/* =======================
+   FILES
+======================= */
 
-  try {
-    // 1. Create file
-    systemDB.run(
-      "INSERT INTO files (file_name) VALUES (?)",
-      [file_name],
-      function (err) {
-        if (err) return res.status(500).json({ error: "DB error" });
-        const fileId = this.lastID;
-
-        // 2. Get all members
-        systemDB.all("SELECT id FROM members", [], (err, members) => {
-          if (err) return res.status(500).json({ error: "DB error" });
-
-          // 3. Insert into file_rows
-          const stmt = systemDB.prepare(
-            "INSERT INTO file_rows (file_id, member_id, data) VALUES (?, ?, '')"
-          );
-          members.forEach((m) => {
-            stmt.run(fileId, m.id);
-          });
-          stmt.finalize();
-
-          res.json({ message: "File created with default members", file_id: fileId });
-        });
-      }
-    );
-  } catch (err) {
-    res.status(500).json({ error: "Database error" });
-  }
+// GET files
+app.get("/api/files", (req, res) => {
+  systemDB.all("SELECT * FROM files", [], (err, rows) => {
+    if (err) return res.status(500).json(err);
+    res.json(rows);
+  });
 });
 
-// -----------------------------
-// START SERVER
-// -----------------------------
+// CREATE file
+app.post("/api/files", (req, res) => {
+  const { name } = req.body;
+
+  systemDB.run(
+    "INSERT INTO files (name) VALUES (?)",
+    [name],
+    function (err) {
+      if (err) return res.status(500).json(err);
+      const fileId = this.lastID;
+
+      systemDB.all("SELECT id FROM members", [], (err, members) => {
+        const stmt = systemDB.prepare(
+          "INSERT INTO file_rows (file_id, member_id, amount) VALUES (?, ?, '')"
+        );
+
+        members.forEach(m => stmt.run(fileId, m.id));
+        stmt.finalize();
+
+        res.json({ success:true });
+      });
+    }
+  );
+});
+
+// OPEN file
+app.get("/api/files/:id", (req, res) => {
+  systemDB.all(
+    "SELECT member_id, amount FROM file_rows WHERE file_id=?",
+    [req.params.id],
+    (err, rows) => {
+      const data = {};
+      rows.forEach(r => data[r.member_id] = r.amount);
+      res.json(data);
+    }
+  );
+});
+
+// SAVE file
+app.put("/api/files/:id", (req, res) => {
+  const fileId = req.params.id;
+  const data = req.body;
+
+  const stmt = systemDB.prepare(
+    "UPDATE file_rows SET amount=? WHERE file_id=? AND member_id=?"
+  );
+
+  Object.keys(data).forEach(memberId => {
+    stmt.run(data[memberId], fileId, memberId);
+  });
+
+  stmt.finalize();
+  res.json({ success:true });
+});
+
+// DELETE file
+app.delete("/api/files/:id", (req, res) => {
+  systemDB.run("DELETE FROM file_rows WHERE file_id=?", [req.params.id]);
+  systemDB.run("DELETE FROM files WHERE id=?", [req.params.id]);
+  res.json({ success:true });
+});
+
+/* =======================
+   SERVER
+======================= */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log("Server running on port", PORT);
 });
