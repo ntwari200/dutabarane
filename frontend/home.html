@@ -74,6 +74,22 @@ th{
 .search{
     margin-bottom:10px;
 }
+
+#fileList{
+    list-style:none;
+    padding:0;
+}
+#fileList li{
+    padding:10px;
+    margin:5px 0;
+    border:1px solid #ff2b2b;
+    border-radius:5px;
+    cursor:pointer;
+}
+#fileList li:hover{
+    background:#ff2b2b;
+    color:black;
+}
 </style>
 </head>
 
@@ -83,7 +99,7 @@ th{
 
 <h1>ADMIN CONTROL PANEL</h1>
 
-<!-- MEMBER MANAGEMENT -->
+<!-- MEMBERS -->
 <div class="card">
 <h2>System Management (Members)</h2>
 
@@ -105,7 +121,7 @@ th{
 </div>
 </div>
 
-<!-- FILE MANAGEMENT -->
+<!-- FILES -->
 <div class="card">
 <h2>Files</h2>
 
@@ -143,72 +159,89 @@ const BASE="/api/";
 let currentFileId=null;
 let members=[];
 
-/* MEMBERS */
+/* ================= MEMBERS ================= */
 async function loadMembers(){
-    const r=await fetch(BASE+"members");
-    members=await r.json();
+    const r = await fetch(BASE+"members");
+    members = await r.json();
     renderMembers(members);
 }
 function renderMembers(data){
-    document.getElementById("members").innerHTML=
+    document.getElementById("members").innerHTML =
     data.map(m=>`<tr><td>${m.name}</td><td>${m.phone}</td></tr>`).join("");
 }
 function searchMembers(v){
     renderMembers(members.filter(m=>m.name.toLowerCase().includes(v.toLowerCase())));
 }
-document.getElementById("memberForm").onsubmit=async e=>{
+memberForm.onsubmit = async e=>{
     e.preventDefault();
-    await fetch(BASE+"members",{method:"POST",headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({name:mName.value,phone:mPhone.value})});
-    e.target.reset();loadMembers();
-}
+    await fetch(BASE+"members",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:mName.value,phone:mPhone.value})
+    });
+    e.target.reset();
+    loadMembers();
+};
 
-/* FILES */
+/* ================= FILES ================= */
 async function loadFiles(){
-    const r=await fetch(BASE+"files");
-    const files=await r.json();
-    document.getElementById("fileList").innerHTML=
-    files.map(f=>`<li onclick="openFile(${f.id},'${f.name}')">${f.name}</li>`).join("");
+    const r = await fetch(BASE+"files");
+    const files = await r.json();
+    fileList.innerHTML = files.map(f =>
+        `<li onclick="openFile(${f.id}, '${f.name.replace(/'/g,"")}')">${f.name}</li>`
+    ).join("");
 }
 function searchFiles(v){
-    [...document.querySelectorAll("#fileList li")].forEach(li=>{
-        li.style.display=li.innerText.toLowerCase().includes(v.toLowerCase())?"":"none";
+    [...fileList.children].forEach(li=>{
+        li.style.display = li.innerText.toLowerCase().includes(v.toLowerCase()) ? "" : "none";
     });
 }
-document.getElementById("fileForm").onsubmit=async e=>{
+fileForm.onsubmit = async e=>{
     e.preventDefault();
-    await fetch(BASE+"files",{method:"POST",headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({name:fileName.value})});
-    e.target.reset();loadFiles();
-}
+    const res = await fetch(BASE+"files",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:fileName.value})
+    });
+    if(!res.ok) alert("File creation failed");
+    e.target.reset();
+    loadFiles();
+};
 
-/* FILE VIEW */
+/* ================= FILE VIEW ================= */
 async function openFile(id,name){
-    currentFileId=id;
-    document.getElementById("fileViewer").style.display="block";
-    document.getElementById("currentFile").innerText=name;
+    currentFileId = id;
+    fileViewer.style.display = "block";
+    currentFile.innerText = name;
 
-    const r=await fetch(BASE+"files/"+id);
-    const data=await r.json();
+    const r = await fetch(BASE+"files/"+id);
+    const data = await r.json();
 
-    document.getElementById("fileTable").innerHTML=
-    members.map(m=>`
-    <tr>
-        <td>${m.name}</td>
-        <td><input value="${data[m.id]||''}"></td>
-    </tr>`).join("");
+    fileTable.innerHTML = members.map(m=>`
+        <tr>
+            <td>${m.name}</td>
+            <td><input value="${data[m.id]||''}"></td>
+        </tr>
+    `).join("");
 }
 
 async function saveFile(){
-    const rows=[...document.querySelectorAll("#fileTable tr")];
-    const payload={};
-    rows.forEach((r,i)=>payload[members[i].id]=r.querySelector("input").value);
-    await fetch(BASE+"files/"+currentFileId,{method:"PUT",headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    alert("File saved");
+    const payload = {};
+    [...fileTable.querySelectorAll("tr")].forEach((tr,i)=>{
+        payload[members[i].id] = tr.querySelector("input").value;
+    });
+    await fetch(BASE+"files/"+currentFileId,{
+        method:"PUT",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+    });
+    alert("File saved successfully");
 }
+
 async function deleteFile(){
+    if(!confirm("Delete this file?")) return;
     await fetch(BASE+"files/"+currentFileId,{method:"DELETE"});
-    document.getElementById("fileViewer").style.display="none";
+    fileViewer.style.display="none";
     loadFiles();
 }
 
