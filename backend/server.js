@@ -29,9 +29,12 @@ app.post("/login", (req, res) => {
     "SELECT * FROM users WHERE username=? AND password=?",
     [username, password],
     (err, row) => {
-      if (err) return res.status(500).json({ success:false });
-      if (row) return res.json({ success:true });
-      res.json({ success:false });
+      if (err) {
+        console.error("LOGIN ERROR:", err);
+        return res.status(500).json({ success: false });
+      }
+      if (row) return res.json({ success: true });
+      res.json({ success: false });
     }
   );
 });
@@ -42,19 +45,29 @@ app.post("/login", (req, res) => {
 app.post("/api/members", (req, res) => {
   const { name, phone } = req.body;
 
+  if (!name || !phone) {
+    return res.status(400).json({ error: "Name and phone required" });
+  }
+
   systemDB.run(
     "INSERT INTO members (name, phone) VALUES (?, ?)",
     [name, phone],
     function (err) {
-      if (err) return res.status(500).json(err);
-      res.json({ id: this.lastID });
+      if (err) {
+        console.error("ADD MEMBER ERROR:", err);
+        return res.status(500).json(err);
+      }
+      res.json({ success: true, id: this.lastID });
     }
   );
 });
 
 app.get("/api/members", (req, res) => {
   systemDB.all("SELECT * FROM members", [], (err, rows) => {
-    if (err) return res.status(500).json(err);
+    if (err) {
+      console.error("GET MEMBERS ERROR:", err);
+      return res.status(500).json(err);
+    }
     res.json(rows);
   });
 });
@@ -65,24 +78,42 @@ app.get("/api/members", (req, res) => {
 
 // GET files
 app.get("/api/files", (req, res) => {
-  systemDB.all("SELECT * FROM files", [], (err, rows) => {
-    if (err) return res.status(500).json(err);
+  systemDB.all("SELECT * FROM files ORDER BY id DESC", [], (err, rows) => {
+    if (err) {
+      console.error("GET FILES ERROR:", err);
+      return res.status(500).json(err);
+    }
     res.json(rows);
   });
 });
 
-// CREATE file
+// CREATE file (FIXED)
 app.post("/api/files", (req, res) => {
   const { name } = req.body;
+
+  console.log("CREATE FILE REQUEST:", req.body);
+
+  if (!name || name.trim() === "") {
+    return res.status(400).json({ error: "File name required" });
+  }
 
   systemDB.run(
     "INSERT INTO files (name) VALUES (?)",
     [name],
     function (err) {
-      if (err) return res.status(500).json(err);
+      if (err) {
+        console.error("CREATE FILE ERROR:", err);
+        return res.status(500).json(err);
+      }
+
       const fileId = this.lastID;
 
       systemDB.all("SELECT id FROM members", [], (err, members) => {
+        if (err) {
+          console.error("FETCH MEMBERS ERROR:", err);
+          return res.status(500).json(err);
+        }
+
         const stmt = systemDB.prepare(
           "INSERT INTO file_rows (file_id, member_id, amount) VALUES (?, ?, '')"
         );
@@ -90,7 +121,8 @@ app.post("/api/files", (req, res) => {
         members.forEach(m => stmt.run(fileId, m.id));
         stmt.finalize();
 
-        res.json({ success:true });
+        console.log("FILE CREATED:", fileId);
+        res.json({ success: true, fileId });
       });
     }
   );
@@ -102,8 +134,13 @@ app.get("/api/files/:id", (req, res) => {
     "SELECT member_id, amount FROM file_rows WHERE file_id=?",
     [req.params.id],
     (err, rows) => {
+      if (err) {
+        console.error("OPEN FILE ERROR:", err);
+        return res.status(500).json(err);
+      }
+
       const data = {};
-      rows.forEach(r => data[r.member_id] = r.amount);
+      rows.forEach(r => (data[r.member_id] = r.amount));
       res.json(data);
     }
   );
@@ -122,15 +159,20 @@ app.put("/api/files/:id", (req, res) => {
     stmt.run(data[memberId], fileId, memberId);
   });
 
-  stmt.finalize();
-  res.json({ success:true });
+  stmt.finalize(err => {
+    if (err) {
+      console.error("SAVE FILE ERROR:", err);
+      return res.status(500).json(err);
+    }
+    res.json({ success: true });
+  });
 });
 
 // DELETE file
 app.delete("/api/files/:id", (req, res) => {
   systemDB.run("DELETE FROM file_rows WHERE file_id=?", [req.params.id]);
   systemDB.run("DELETE FROM files WHERE id=?", [req.params.id]);
-  res.json({ success:true });
+  res.json({ success: true });
 });
 
 /* =======================
