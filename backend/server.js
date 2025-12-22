@@ -10,13 +10,16 @@ const app = express();
    MIDDLEWARE
 ======================= */
 app.use(express.json());
-app.use(express.static(path.join(path.resolve(), "../frontend")));
+
+// Serve frontend
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, "../frontend")));
 
 /* =======================
-   ROUTES
+   ROOT
 ======================= */
 app.get("/", (req, res) => {
-  res.sendFile(path.join(path.resolve(), "../frontend/index.html"));
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
 /* =======================
@@ -30,7 +33,7 @@ app.post("/login", (req, res) => {
     [username, password],
     (err, row) => {
       if (err) {
-        console.error("LOGIN ERROR:", err);
+        console.error(err);
         return res.status(500).json({ success: false });
       }
       if (row) return res.json({ success: true });
@@ -44,20 +47,18 @@ app.post("/login", (req, res) => {
 ======================= */
 app.post("/api/members", (req, res) => {
   const { name, phone } = req.body;
-
-  if (!name || !phone) {
-    return res.status(400).json({ error: "Name and phone required" });
-  }
+  if (!name || !phone)
+    return res.status(400).json({ error: "Missing data" });
 
   systemDB.run(
     "INSERT INTO members (name, phone) VALUES (?, ?)",
     [name, phone],
     function (err) {
       if (err) {
-        console.error("ADD MEMBER ERROR:", err);
-        return res.status(500).json(err);
+        console.error(err);
+        return res.status(500).json({ error: "Insert failed" });
       }
-      res.json({ success: true, id: this.lastID });
+      res.json({ id: this.lastID });
     }
   );
 });
@@ -65,8 +66,8 @@ app.post("/api/members", (req, res) => {
 app.get("/api/members", (req, res) => {
   systemDB.all("SELECT * FROM members", [], (err, rows) => {
     if (err) {
-      console.error("GET MEMBERS ERROR:", err);
-      return res.status(500).json(err);
+      console.error(err);
+      return res.status(500).json({ error: "Fetch failed" });
     }
     res.json(rows);
   });
@@ -76,42 +77,42 @@ app.get("/api/members", (req, res) => {
    FILES
 ======================= */
 
-// GET files
+// LIST files
 app.get("/api/files", (req, res) => {
-  systemDB.all("SELECT * FROM files ORDER BY id DESC", [], (err, rows) => {
-    if (err) {
-      console.error("GET FILES ERROR:", err);
-      return res.status(500).json(err);
+  systemDB.all(
+    "SELECT id, file_name AS name FROM files",
+    [],
+    (err, rows) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Fetch failed" });
+      }
+      res.json(rows);
     }
-    res.json(rows);
-  });
+  );
 });
 
-// CREATE file (FIXED)
+// CREATE file
 app.post("/api/files", (req, res) => {
   const { name } = req.body;
-
-  console.log("CREATE FILE REQUEST:", req.body);
-
-  if (!name || name.trim() === "") {
+  if (!name)
     return res.status(400).json({ error: "File name required" });
-  }
 
   systemDB.run(
-    "INSERT INTO files (name) VALUES (?)",
+    "INSERT INTO files (file_name) VALUES (?)",
     [name],
     function (err) {
       if (err) {
-        console.error("CREATE FILE ERROR:", err);
-        return res.status(500).json(err);
+        console.error("FILE INSERT ERROR:", err);
+        return res.status(500).json({ error: "File creation failed" });
       }
 
       const fileId = this.lastID;
 
       systemDB.all("SELECT id FROM members", [], (err, members) => {
         if (err) {
-          console.error("FETCH MEMBERS ERROR:", err);
-          return res.status(500).json(err);
+          console.error("MEMBER FETCH ERROR:", err);
+          return res.status(500).json({ error: "Member fetch failed" });
         }
 
         const stmt = systemDB.prepare(
@@ -121,8 +122,7 @@ app.post("/api/files", (req, res) => {
         members.forEach(m => stmt.run(fileId, m.id));
         stmt.finalize();
 
-        console.log("FILE CREATED:", fileId);
-        res.json({ success: true, fileId });
+        res.json({ success: true });
       });
     }
   );
@@ -135,8 +135,8 @@ app.get("/api/files/:id", (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (err) {
-        console.error("OPEN FILE ERROR:", err);
-        return res.status(500).json(err);
+        console.error(err);
+        return res.status(500).json({ error: "Open failed" });
       }
 
       const data = {};
@@ -161,8 +161,8 @@ app.put("/api/files/:id", (req, res) => {
 
   stmt.finalize(err => {
     if (err) {
-      console.error("SAVE FILE ERROR:", err);
-      return res.status(500).json(err);
+      console.error(err);
+      return res.status(500).json({ error: "Save failed" });
     }
     res.json({ success: true });
   });
@@ -170,9 +170,16 @@ app.put("/api/files/:id", (req, res) => {
 
 // DELETE file
 app.delete("/api/files/:id", (req, res) => {
-  systemDB.run("DELETE FROM file_rows WHERE file_id=?", [req.params.id]);
-  systemDB.run("DELETE FROM files WHERE id=?", [req.params.id]);
-  res.json({ success: true });
+  const id = req.params.id;
+
+  systemDB.run("DELETE FROM file_rows WHERE file_id=?", [id]);
+  systemDB.run("DELETE FROM files WHERE id=?", [id], err => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Delete failed" });
+    }
+    res.json({ success: true });
+  });
 });
 
 /* =======================
@@ -180,5 +187,5 @@ app.delete("/api/files/:id", (req, res) => {
 ======================= */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log("Server running on port", PORT);
+  console.log("✅ Server running on port", PORT);
 });
