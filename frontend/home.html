@@ -45,6 +45,10 @@ input,button{
     color:white;
     border-radius:6px;
 }
+input.changed{border-color:red;}
+input.low{background:yellow;color:black;}
+input.high{background:green;color:black;}
+input.invalid{background:red;color:black;}
 button{
     background:#ff2b2b;
     font-weight:bold;
@@ -70,9 +74,7 @@ th{
     position:sticky;
     top:0;
 }
-.search{
-    margin-bottom:10px;
-}
+.search{margin-bottom:10px;}
 #fileList{
     list-style:none;
     padding:0;
@@ -84,18 +86,8 @@ th{
     border-radius:5px;
     cursor:pointer;
 }
-#fileList li:hover{
-    background:#ff2b2b;
-    color:black;
-}
-.toggle-btn{
-    cursor:pointer;
-    color:red;
-    font-weight:bold;
-    margin-left:10px;
-}
-
-/* Popup viewer */
+#fileList li:hover{background:#ff2b2b;color:black;}
+.toggle-btn{cursor:pointer;color:red;font-weight:bold;margin-left:10px;}
 .popup{
     position:fixed;
     top:50px;
@@ -111,6 +103,7 @@ th{
     display:none;
     cursor:default;
     transition: all 0.3s ease;
+    min-width:300px;
 }
 .popup-header{
     display:flex;
@@ -123,15 +116,33 @@ th{
     cursor:pointer;
     font-weight:bold;
     color:red;
+    margin-left:5px;
 }
 .popup-body{
-    max-height:300px;
+    max-height:60vh;
     overflow:auto;
     transition: all 0.3s ease;
 }
-.popup.minimized{
-    height:40px;
+.popup.minimized{height:40px;overflow:hidden;}
+.popup.maximized{
+    top:0;left:0;transform:none;
+    width:100%;height:100%;border-radius:0;padding:20px;
+}
+.delete-btn{
+    background:black;color:red;font-weight:bold;padding:5px 10px;border-radius:5px;cursor:pointer;
+}
+.delete-btn:hover{background:red;color:black;}
+#membersTableContainer.minimized{
+    max-height:0;
     overflow:hidden;
+    transition:0.3s;
+}
+.total-amount{
+    margin-top:10px;
+    font-weight:bold;
+    font-size:1.1rem;
+    text-align:right;
+    color:#ff2b2b;
 }
 @media(max-width:768px){
     .container{flex-direction:column;}
@@ -140,17 +151,17 @@ th{
 }
 </style>
 </head>
-
 <body>
 
 <div class="container">
-
 <h1 style="flex-basis:100%">ADMIN CONTROL PANEL</h1>
 
 <!-- LEFT SECTION: MEMBERS -->
 <div class="left-section">
     <div class="card">
-        <h2>System Management (Members) <span class="toggle-btn" onclick="toggleMembers(this)">&#9660;</span></h2>
+        <h2>System Management (Members)
+            <span class="toggle-btn" onclick="toggleMembers(this)">&#9660;</span>
+        </h2>
         <div id="memberContent">
             <input class="search" placeholder="Search member..." onkeyup="searchMembers(this.value)">
             <form id="memberForm">
@@ -160,10 +171,10 @@ th{
             </form>
         </div>
     </div>
-    <div class="card">
+    <div class="card" id="membersTableContainer">
         <div class="table-box">
             <table>
-                <thead><tr><th>Name</th><th>Phone</th></tr></thead>
+                <thead><tr><th>Name</th><th>Phone</th><th>Delete</th></tr></thead>
                 <tbody id="members"></tbody>
             </table>
         </div>
@@ -189,6 +200,7 @@ th{
         <h2 id="currentFile"></h2>
         <div>
             <span onclick="togglePopup()">&#9650;</span>
+            <span onclick="toggleMaximize()">&#9744;</span>
             <span onclick="closePopup()">X</span>
         </div>
     </div>
@@ -199,6 +211,7 @@ th{
                 <tbody id="fileTable"></tbody>
             </table>
         </div>
+        <div class="total-amount">Total: <span id="totalAmount">0</span></div>
         <button onclick="saveFile()">Save File</button>
         <button onclick="deleteFile()" style="background:black;color:red">Delete File</button>
     </div>
@@ -217,32 +230,59 @@ async function loadMembers(){
     members = await r.json();
     renderMembers(members);
 }
-function renderMembers(data){
+function renderMembers(data, highlight=""){
+    const regex = new RegExp(`(${highlight})`, "ig");
     document.getElementById("members").innerHTML =
-    data.map(m=>`<tr><td>${m.name}</td><td>${m.phone}</td></tr>`).join("");
+    data.map(m=>`<tr>
+        <td>${highlight ? m.name.replace(regex,'<span class="highlight">$1</span>') : m.name}</td>
+        <td>${highlight ? m.phone.replace(regex,'<span class="highlight">$1</span>') : m.phone}</td>
+        <td><button class="delete-btn" onclick="deleteMember(${m.id})">Delete</button></td>
+    </tr>`).join("");
 }
-function searchMembers(v){
-    renderMembers(members.filter(m=>m.name.toLowerCase().includes(v.toLowerCase())));
-}
+function searchMembers(v){ renderMembers(members,v); }
 memberForm.onsubmit = async e=>{
     e.preventDefault();
-    await fetch(BASE+"members",{
+    const res = await fetch(BASE+"members",{
         method:"POST",
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({name:mName.value,phone:mPhone.value})
     });
+    if(!res.ok){ alert("Failed to add member"); return; }
+    const newMember = await res.json();
+    members.push(newMember);
+    renderMembers(members);
+    if(currentFileId){
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${newMember.name}</td><td><input value="" oninput="updateInputColor(this);updateTotal();"></td>`;
+        fileTable.appendChild(row);
+    }
     e.target.reset();
-    loadMembers();
 };
-/* Toggle members section */
 function toggleMembers(el){
-    const content=document.getElementById("memberContent");
-    if(content.style.display==="none"){
-        content.style.display="block";
-        el.innerHTML="&#9660;";
-    }else{
-        content.style.display="none";
-        el.innerHTML="&#9654;";
+    const container=document.getElementById("membersTableContainer");
+    container.classList.toggle("minimized");
+    el.innerHTML = container.classList.contains("minimized") ? "&#9654;" : "&#9660;";
+}
+async function deleteMember(id){
+    if(!confirm("Delete this member?")) return;
+    await fetch(BASE+"members/"+id,{method:"DELETE"});
+    const rFiles = await fetch(BASE+"files");
+    const files = await rFiles.json();
+    for(const f of files){
+        const fileDataResp = await fetch(BASE+"files/"+f.id);
+        const fileData = await fileDataResp.json();
+        if(fileData[id] !== undefined){
+            delete fileData[id];
+            await fetch(BASE+"files/"+f.id,{
+                method:"PUT",
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify(fileData)
+            });
+        }
+    }
+    loadMembers();
+    if(currentFileId){
+        openFile(currentFileId, document.getElementById("currentFile").innerText);
     }
 }
 
@@ -250,13 +290,14 @@ function toggleMembers(el){
 async function loadFiles(){
     const r = await fetch(BASE+"files");
     const files = await r.json();
-    fileList.innerHTML = files.map(f =>
-        `<li onclick="openFile(${f.id}, '${f.name.replace(/'/g,"")}')">${f.name}</li>`
-    ).join("");
+    fileList.innerHTML = files.map(f => `<li onclick="openFile(${f.id}, '${f.name.replace(/'/g,"")}')">${f.name}</li>`).join("");
+    searchFiles(document.querySelector("#fileForm ~ .search").value);
 }
 function searchFiles(v){
+    const regex = new RegExp(`(${v})`,"ig");
     [...fileList.children].forEach(li=>{
         li.style.display = li.innerText.toLowerCase().includes(v.toLowerCase()) ? "" : "none";
+        li.innerHTML = v ? li.innerText.replace(regex,'<span class="highlight">$1</span>') : li.innerText;
     });
 }
 fileForm.onsubmit = async e=>{
@@ -276,7 +317,7 @@ async function openFile(id,name){
     currentFileId = id;
     const popup = document.getElementById("fileViewer");
     popup.style.display="block";
-    popup.classList.remove("minimized");
+    popup.classList.remove("minimized","maximized");
     document.getElementById("currentFile").innerText = name;
 
     const r = await fetch(BASE+"files/"+id);
@@ -285,13 +326,40 @@ async function openFile(id,name){
     fileTable.innerHTML = members.map(m=>`
         <tr>
             <td>${m.name}</td>
-            <td><input value="${data[m.id]||''}"></td>
+            <td><input value="${data[m.id]||''}" oninput="updateInputColor(this);updateTotal();"></td>
         </tr>
     `).join("");
+
+    [...fileTable.querySelectorAll("input")].forEach(input => updateInputColor(input));
+    updateTotal();
 }
+
+function updateInputColor(input){
+    const val = parseFloat(input.value);
+    input.classList.remove("low","high","invalid","changed");
+    if(input.value.trim()===""){return;}
+    if(isNaN(val)){input.classList.add("invalid");}
+    else if(val<=50){input.classList.add("low");}
+    else if(val>50){input.classList.add("high");}
+    input.classList.add("changed");
+}
+
+function updateTotal(){
+    let total = 0;
+    [...fileTable.querySelectorAll("input")].forEach(input=>{
+        const val=parseFloat(input.value);
+        if(!isNaN(val)) total += val;
+    });
+    document.getElementById("totalAmount").innerText = total.toFixed(2);
+}
+
 function togglePopup(){
     const popup=document.getElementById("fileViewer");
     popup.classList.toggle("minimized");
+}
+function toggleMaximize(){
+    const popup=document.getElementById("fileViewer");
+    popup.classList.toggle("maximized");
 }
 function closePopup(){
     document.getElementById("fileViewer").style.display="none";
@@ -301,6 +369,7 @@ async function saveFile(){
     const payload = {};
     [...fileTable.querySelectorAll("tr")].forEach((tr,i)=>{
         payload[members[i].id] = tr.querySelector("input").value;
+        tr.querySelector("input").classList.remove("changed");
     });
     await fetch(BASE+"files/"+currentFileId,{
         method:"PUT",
@@ -308,6 +377,7 @@ async function saveFile(){
         body:JSON.stringify(payload)
     });
     alert("File saved successfully");
+    updateTotal();
 }
 async function deleteFile(){
     if(!confirm("Delete this file?")) return;
@@ -344,13 +414,8 @@ function startDrag(e){
 function drag(e){
     if(!isDragging) return;
     let x,y;
-    if(e.type==="mousemove"){
-        x = e.clientX - offsetX;
-        y = e.clientY - offsetY;
-    } else {
-        x = e.touches[0].clientX - offsetX;
-        y = e.touches[0].clientY - offsetY;
-    }
+    if(e.type==="mousemove"){x = e.clientX - offsetX; y = e.clientY - offsetY;}
+    else{x = e.touches[0].clientX - offsetX; y = e.touches[0].clientY - offsetY;}
     popup.style.left = x + "px";
     popup.style.top = y + "px";
     popup.style.transform = "none";
