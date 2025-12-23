@@ -58,7 +58,29 @@ app.post("/api/members", (req, res) => {
         console.error(err);
         return res.status(500).json({ error: "Insert failed" });
       }
-      res.json({ id: this.lastID });
+
+      const newMemberId = this.lastID;
+
+      // Add this new member to all existing files
+      systemDB.all("SELECT id FROM files", [], (err, files) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Fetch files failed" });
+        }
+
+        const stmt = systemDB.prepare(
+          "INSERT INTO file_rows (file_id, member_id, amount) VALUES (?, ?, '')"
+        );
+
+        files.forEach(file => stmt.run(file.id, newMemberId));
+        stmt.finalize(err => {
+          if (err) {
+            console.error(err);
+            return res.status(500).json({ error: "Insert file_rows failed" });
+          }
+          res.json({ id: newMemberId });
+        });
+      });
     }
   );
 });
@@ -80,7 +102,7 @@ app.get("/api/members", (req, res) => {
 // LIST files
 app.get("/api/files", (req, res) => {
   systemDB.all(
-    "SELECT id, name FROM files",
+    "SELECT id, file_name AS name FROM files",
     [],
     (err, rows) => {
       if (err) {
@@ -99,7 +121,7 @@ app.post("/api/files", (req, res) => {
     return res.status(400).json({ error: "File name required" });
 
   systemDB.run(
-    "INSERT INTO files (name) VALUES (?)",
+    "INSERT INTO files (file_name) VALUES (?)",
     [name],
     function (err) {
       if (err) {
@@ -109,6 +131,7 @@ app.post("/api/files", (req, res) => {
 
       const fileId = this.lastID;
 
+      // Add all existing members to the new file
       systemDB.all("SELECT id FROM members", [], (err, members) => {
         if (err) {
           console.error("MEMBER FETCH ERROR:", err);
