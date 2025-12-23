@@ -1,88 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home - Internal System</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+
+<style>
+*{box-sizing:border-box;font-family:Arial}
+body{
+    margin:0;
+    background:#0b0b0b;
+    color:white;
+}
+
+h1,h2{
+    color:#ff2b2b;
+    text-align:center;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:15px;
+}
+
+.card{
+    background:#141414;
+    border:2px solid #ff2b2b;
+    border-radius:10px;
+    padding:15px;
+    margin-bottom:20px;
+    box-shadow:0 0 15px rgba(255,0,0,.4);
+}
+
+input,button{
+    padding:10px;
+    margin:5px 0;
+    width:100%;
+    background:#000;
+    border:2px solid #ff2b2b;
+    color:white;
+    border-radius:6px;
+}
+
+button{
+    background:#ff2b2b;
+    font-weight:bold;
+    cursor:pointer;
+}
+button:hover{background:#ff5555}
+
+.table-box{
+    overflow-x:auto;
+    max-height:300px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:600px;
+}
+th,td{
+    border:1px solid #ff2b2b;
+    padding:8px;
+}
+th{
+    background:#ff2b2b;
+    color:black;
+    position:sticky;
+    top:0;
+}
+
+.search{
+    margin-bottom:10px;
+}
+
+#fileList{
+    list-style:none;
+    padding:0;
+}
+#fileList li{
+    padding:10px;
+    margin:5px 0;
+    border:1px solid #ff2b2b;
+    border-radius:5px;
+    cursor:pointer;
+}
+#fileList li:hover{
+    background:#ff2b2b;
+    color:black;
+}
+</style>
 </head>
+
 <body>
-  <nav class="navbar">
-    <ul>
-      <li><a href="home.html">Home</a></li>
-      <li><a href="aboutus.html">About Us</a></li>
-      <li><a href="contactus.html">Contact Us</a></li>
-      <li><a href="dashboard.html">Dashboard</a></li>
-    </ul>
-  </nav>
 
-  <div class="dashboard-container">
+<div class="container">
 
-    <!-- Left Panel: Members -->
-    <div class="panel left-panel">
-      <h2>Members</h2>
-      <button class="panel-btn" onclick="openMemberPopup()">Add Member</button>
-      <input type="text" id="searchMembers" placeholder="Search Members..." oninput="filterMembers()">
-      <div id="membersList" class="scrollable-panel"></div>
-    </div>
+<h1>ADMIN CONTROL PANEL</h1>
 
-    <!-- Center Panel: Dashboard -->
-    <div class="panel center-panel">
-      <h2 class="animated-text">Welcome, <span id="usernameDisplay">Admin</span>!</h2>
-      <p>This is your internal system home page.</p>
-    </div>
+<!-- MEMBERS -->
+<div class="card">
+<h2>System Management (Members)</h2>
 
-    <!-- Right Panel: Files -->
-    <div class="panel right-panel">
-      <h2>Files</h2>
-      <button class="panel-btn" onclick="openFilePopup()">Open File Table</button>
-      <input type="text" id="searchFiles" placeholder="Search Files..." oninput="filterFiles()">
-      <div id="filesList" class="scrollable-panel"></div>
-    </div>
+<input class="search" placeholder="Search member..." onkeyup="searchMembers(this.value)">
 
-  </div>
+<form id="memberForm">
+<input id="mName" placeholder="Member Name" required>
+<input id="mPhone" placeholder="Phone Number" required>
+<button>Add Member</button>
+</form>
 
-  <!-- File Pop-Up -->
-  <div id="filePopup" class="popup hidden">
-    <div class="popup-header">
-      <span>Files Table</span>
-      <div class="popup-controls">
-        <button onclick="minimizePopup('filePopup')">_</button>
-        <button onclick="maximizePopup('filePopup')">[]</button>
-        <button onclick="closePopup('filePopup')">X</button>
-      </div>
-    </div>
-    <div class="popup-body">
-      <input type="text" id="fileSearch" placeholder="Search files..." oninput="filterFileTable()">
-      <table id="fileTable">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
+<div class="table-box">
+<table>
+<thead>
+<tr><th>Name</th><th>Phone</th></tr>
+</thead>
+<tbody id="members"></tbody>
+</table>
+</div>
+</div>
 
-  <!-- Member Pop-Up -->
-  <div id="memberPopup" class="popup hidden">
-    <div class="popup-header">
-      <span>Add Member</span>
-      <div class="popup-controls">
-        <button onclick="closePopup('memberPopup')">X</button>
-      </div>
-    </div>
-    <div class="popup-body">
-      <input type="text" id="memberName" placeholder="Name">
-      <input type="text" id="memberPhone" placeholder="Phone">
-      <button onclick="addMember()">Add</button>
-    </div>
-  </div>
+<!-- FILES -->
+<div class="card">
+<h2>Files</h2>
 
-  <script src="home.js"></script>
+<input class="search" placeholder="Search file..." onkeyup="searchFiles(this.value)">
+
+<form id="fileForm">
+<input id="fileName" placeholder="File Name" required>
+<button>Create File</button>
+</form>
+
+<ul id="fileList"></ul>
+</div>
+
+<!-- FILE VIEW -->
+<div class="card" id="fileViewer" style="display:none">
+<h2 id="currentFile"></h2>
+
+<div class="table-box">
+<table>
+<thead>
+<tr><th>Member</th><th>Amount Deposited</th></tr>
+</thead>
+<tbody id="fileTable"></tbody>
+</table>
+</div>
+
+<button onclick="saveFile()">Save File</button>
+<button onclick="deleteFile()" style="background:black;color:red">Delete File</button>
+</div>
+
+</div>
+
+<script>
+const BASE="/api/";
+let currentFileId=null;
+let members=[];
+
+/* ================= MEMBERS ================= */
+async function loadMembers(){
+    const r = await fetch(BASE+"members");
+    members = await r.json();
+    renderMembers(members);
+}
+function renderMembers(data){
+    document.getElementById("members").innerHTML =
+    data.map(m=>`<tr><td>${m.name}</td><td>${m.phone}</td></tr>`).join("");
+}
+function searchMembers(v){
+    renderMembers(members.filter(m=>m.name.toLowerCase().includes(v.toLowerCase())));
+}
+memberForm.onsubmit = async e=>{
+    e.preventDefault();
+    await fetch(BASE+"members",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:mName.value,phone:mPhone.value})
+    });
+    e.target.reset();
+    loadMembers();
+};
+
+/* ================= FILES ================= */
+async function loadFiles(){
+    const r = await fetch(BASE+"files");
+    const files = await r.json();
+    fileList.innerHTML = files.map(f =>
+        `<li onclick="openFile(${f.id}, '${f.name.replace(/'/g,"")}')">${f.name}</li>`
+    ).join("");
+}
+function searchFiles(v){
+    [...fileList.children].forEach(li=>{
+        li.style.display = li.innerText.toLowerCase().includes(v.toLowerCase()) ? "" : "none";
+    });
+}
+fileForm.onsubmit = async e=>{
+    e.preventDefault();
+    const res = await fetch(BASE+"files",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:fileName.value})
+    });
+    if(!res.ok) alert("File creation failed");
+    e.target.reset();
+    loadFiles();
+};
+
+/* ================= FILE VIEW ================= */
+async function openFile(id,name){
+    currentFileId = id;
+    fileViewer.style.display = "block";
+    currentFile.innerText = name;
+
+    const r = await fetch(BASE+"files/"+id);
+    const data = await r.json();
+
+    fileTable.innerHTML = members.map(m=>`
+        <tr>
+            <td>${m.name}</td>
+            <td><input value="${data[m.id]||''}"></td>
+        </tr>
+    `).join("");
+}
+
+async function saveFile(){
+    const payload = {};
+    [...fileTable.querySelectorAll("tr")].forEach((tr,i)=>{
+        payload[members[i].id] = tr.querySelector("input").value;
+    });
+    await fetch(BASE+"files/"+currentFileId,{
+        method:"PUT",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+    });
+    alert("File saved successfully");
+}
+
+async function deleteFile(){
+    if(!confirm("Delete this file?")) return;
+    await fetch(BASE+"files/"+currentFileId,{method:"DELETE"});
+    fileViewer.style.display="none";
+    loadFiles();
+}
+
+loadMembers();
+loadFiles();
+</script>
+
 </body>
 </html>
 
