@@ -12,27 +12,34 @@ body{
     background:#0b0b0b;
     color:white;
 }
-
-h1,h2{
-    color:#ff2b2b;
-    text-align:center;
-}
-
+h1,h2{color:#ff2b2b;text-align:center;}
 .container{
     max-width:1200px;
     margin:auto;
     padding:15px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
 }
-
+.left-section{
+    flex:1 1 40%;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+.right-section{
+    flex:1 1 55%;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
 .card{
     background:#141414;
     border:2px solid #ff2b2b;
     border-radius:10px;
     padding:15px;
-    margin-bottom:20px;
     box-shadow:0 0 15px rgba(255,0,0,.4);
 }
-
 input,button{
     padding:10px;
     margin:5px 0;
@@ -42,23 +49,20 @@ input,button{
     color:white;
     border-radius:6px;
 }
-
 button{
     background:#ff2b2b;
     font-weight:bold;
     cursor:pointer;
 }
 button:hover{background:#ff5555}
-
 .table-box{
-    overflow-x:auto;
+    overflow:auto;
     max-height:300px;
 }
-
 table{
     width:100%;
     border-collapse:collapse;
-    min-width:600px;
+    min-width:400px;
 }
 th,td{
     border:1px solid #ff2b2b;
@@ -70,11 +74,9 @@ th{
     position:sticky;
     top:0;
 }
-
 .search{
     margin-bottom:10px;
 }
-
 #fileList{
     list-style:none;
     padding:0;
@@ -90,6 +92,12 @@ th{
     background:#ff2b2b;
     color:black;
 }
+
+/* Responsive */
+@media(max-width:768px){
+    .container{flex-direction:column;}
+    .left-section,.right-section{flex:1 1 100%;}
+}
 </style>
 </head>
 
@@ -97,59 +105,52 @@ th{
 
 <div class="container">
 
-<h1>ADMIN CONTROL PANEL</h1>
+<h1 style="flex-basis:100%">ADMIN CONTROL PANEL</h1>
 
-<!-- MEMBERS -->
-<div class="card">
-<h2>System Management (Members)</h2>
-
-<input class="search" placeholder="Search member..." onkeyup="searchMembers(this.value)">
-
-<form id="memberForm">
-<input id="mName" placeholder="Member Name" required>
-<input id="mPhone" placeholder="Phone Number" required>
-<button>Add Member</button>
-</form>
-
-<div class="table-box">
-<table>
-<thead>
-<tr><th>Name</th><th>Phone</th></tr>
-</thead>
-<tbody id="members"></tbody>
-</table>
-</div>
-</div>
-
-<!-- FILES -->
-<div class="card">
-<h2>Files</h2>
-
-<input class="search" placeholder="Search file..." onkeyup="searchFiles(this.value)">
-
-<form id="fileForm">
-<input id="fileName" placeholder="File Name" required>
-<button>Create File</button>
-</form>
-
-<ul id="fileList"></ul>
+<!-- LEFT SECTION: MEMBERS -->
+<div class="left-section">
+    <div class="card">
+        <h2>System Management (Members)</h2>
+        <input class="search" placeholder="Search member..." onkeyup="searchMembers(this.value)">
+        <form id="memberForm">
+            <input id="mName" placeholder="Member Name" required>
+            <input id="mPhone" placeholder="Phone Number" required>
+            <button>Add Member</button>
+        </form>
+    </div>
+    <div class="card">
+        <div class="table-box">
+            <table>
+                <thead><tr><th>Name</th><th>Phone</th></tr></thead>
+                <tbody id="members"></tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<!-- FILE VIEW -->
-<div class="card" id="fileViewer" style="display:none">
-<h2 id="currentFile"></h2>
+<!-- RIGHT SECTION: FILES -->
+<div class="right-section">
+    <div class="card">
+        <h2>Files</h2>
+        <input class="search" placeholder="Search file..." onkeyup="searchFiles(this.value)">
+        <form id="fileForm">
+            <input id="fileName" placeholder="File Name" required>
+            <button>Create File</button>
+        </form>
+        <ul id="fileList"></ul>
+    </div>
 
-<div class="table-box">
-<table>
-<thead>
-<tr><th>Member</th><th>Amount Deposited</th></tr>
-</thead>
-<tbody id="fileTable"></tbody>
-</table>
-</div>
-
-<button onclick="saveFile()">Save File</button>
-<button onclick="deleteFile()" style="background:black;color:red">Delete File</button>
+    <div class="card" id="fileViewer" style="display:none">
+        <h2 id="currentFile"></h2>
+        <div class="table-box">
+            <table>
+                <thead><tr><th>Member</th><th>Amount Deposited</th></tr></thead>
+                <tbody id="fileTable"></tbody>
+            </table>
+        </div>
+        <button onclick="saveFile()">Save File</button>
+        <button onclick="deleteFile()" style="background:black;color:red">Delete File</button>
+    </div>
 </div>
 
 </div>
@@ -251,5 +252,3 @@ loadFiles();
 
 </body>
 </html>
-
-
