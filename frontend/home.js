@@ -1,8 +1,8 @@
 // ----------------------
-// Admin Username Display
+// Username Display
 // ----------------------
-const username = localStorage.getItem("username");
-document.getElementById("usernameDisplay").textContent = username || "Admin";
+const username = localStorage.getItem("username") || "Admin";
+document.getElementById("usernameDisplay").textContent = username;
 
 // ----------------------
 // Pop-Up Functions
@@ -13,7 +13,6 @@ function openFilePopup() {
     popup.classList.add("show");
     popup.style.transform = "scale(0)";
     setTimeout(() => popup.style.transform = "scale(1)", 10);
-    loadFilesList();
     loadFilesTable();
 }
 
@@ -49,6 +48,38 @@ function maximizePopup(id) {
 }
 
 // ----------------------
+// Draggable Popups
+// ----------------------
+function makeDraggable(popupId) {
+    const popup = document.getElementById(popupId);
+    const header = popup.querySelector(".popup-header");
+    let offsetX = 0, offsetY = 0, isDragging = false;
+
+    header.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offsetX = e.clientX - popup.getBoundingClientRect().left;
+        offsetY = e.clientY - popup.getBoundingClientRect().top;
+        popup.style.transition = "none";
+    });
+
+    document.addEventListener("mouseup", () => { isDragging = false; popup.style.transition = ""; });
+    document.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+        let x = e.clientX - offsetX;
+        let y = e.clientY - offsetY;
+        const maxX = window.innerWidth - popup.offsetWidth;
+        const maxY = window.innerHeight - popup.offsetHeight;
+        if (x < 0) x = 0; if (y < 0) y = 0;
+        if (x > maxX) x = maxX; if (y > maxY) y = maxY;
+        popup.style.left = x + "px";
+        popup.style.top = y + "px";
+    });
+}
+
+makeDraggable("filePopup");
+makeDraggable("memberPopup");
+
+// ----------------------
 // Members Functions
 // ----------------------
 async function loadMembers() {
@@ -81,6 +112,15 @@ async function addMember() {
         closePopup("memberPopup");
         loadMembers();
     } catch(err) { console.error(err); }
+}
+
+// Filter members list
+function filterMembers() {
+    const filter = document.getElementById("searchMembers").value.toLowerCase();
+    const members = document.querySelectorAll("#membersList .member-row");
+    members.forEach(m => {
+        m.style.display = m.textContent.toLowerCase().includes(filter) ? "" : "none";
+    });
 }
 
 // ----------------------
@@ -144,43 +184,30 @@ function deleteFile(id) {
         });
 }
 
-// ----------------------
-// Draggable Popups
-// ----------------------
-function makeDraggable(popupId) {
-    const popup = document.getElementById(popupId);
-    const header = popup.querySelector(".popup-header");
-    let offsetX = 0, offsetY = 0, isDragging = false;
-
-    header.addEventListener("mousedown", (e) => {
-        isDragging = true;
-        offsetX = e.clientX - popup.getBoundingClientRect().left;
-        offsetY = e.clientY - popup.getBoundingClientRect().top;
-        popup.style.transition = "none";
-    });
-
-    document.addEventListener("mouseup", () => { isDragging = false; popup.style.transition = ""; });
-    document.addEventListener("mousemove", (e) => {
-        if (!isDragging) return;
-        let x = e.clientX - offsetX;
-        let y = e.clientY - offsetY;
-        const maxX = window.innerWidth - popup.offsetWidth;
-        const maxY = window.innerHeight - popup.offsetHeight;
-        if (x < 0) x = 0; if (y < 0) y = 0;
-        if (x > maxX) x = maxX; if (y > maxY) y = maxY;
-        popup.style.left = x + "px";
-        popup.style.top = y + "px";
+// Filter files list in right panel
+function filterFiles() {
+    const filter = document.getElementById("searchFiles").value.toLowerCase();
+    const files = document.querySelectorAll("#filesList .file-row");
+    files.forEach(f => {
+        f.style.display = f.textContent.toLowerCase().includes(filter) ? "" : "none";
     });
 }
 
-// Initialize draggable popups
-makeDraggable("filePopup");
-makeDraggable("memberPopup");
+// Filter files table in popup
+function filterFileTable() {
+    const filter = document.getElementById("fileSearch").value.toLowerCase();
+    const rows = document.querySelectorAll("#fileTable tbody tr");
+    rows.forEach(row => {
+        const text = row.cells[1].textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+}
 
 // ----------------------
 // Initial Load
 // ----------------------
 loadMembers();
 loadFilesList();
+
 
 
