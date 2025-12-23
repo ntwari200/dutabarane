@@ -88,13 +88,13 @@ th{
     background:#ff2b2b;
     color:black;
 }
-/* Hide/Show toggle button */
 .toggle-btn{
     cursor:pointer;
     color:red;
     font-weight:bold;
-    margin-bottom:5px;
+    margin-left:10px;
 }
+
 /* Popup viewer */
 .popup{
     position:fixed;
@@ -109,12 +109,15 @@ th{
     z-index:200;
     max-width:90%;
     display:none;
+    cursor:default;
+    transition: all 0.3s ease;
 }
 .popup-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
     margin-bottom:10px;
+    cursor:move;
 }
 .popup-header span{
     cursor:pointer;
@@ -124,6 +127,7 @@ th{
 .popup-body{
     max-height:300px;
     overflow:auto;
+    transition: all 0.3s ease;
 }
 .popup.minimized{
     height:40px;
@@ -181,7 +185,7 @@ th{
 
 <!-- FILE VIEW POPUP -->
 <div class="popup" id="fileViewer">
-    <div class="popup-header">
+    <div class="popup-header" id="popupHeader">
         <h2 id="currentFile"></h2>
         <div>
             <span onclick="togglePopup()">&#9650;</span>
@@ -310,6 +314,54 @@ async function deleteFile(){
     await fetch(BASE+"files/"+currentFileId,{method:"DELETE"});
     closePopup();
     loadFiles();
+}
+
+/* ================= DRAGGABLE POPUP ================= */
+const popup = document.getElementById("fileViewer");
+const header = document.getElementById("popupHeader");
+let offsetX=0, offsetY=0, isDragging=false;
+
+header.addEventListener("mousedown", startDrag);
+header.addEventListener("touchstart", startDrag, {passive:false});
+
+function startDrag(e){
+    isDragging = true;
+    const rect = popup.getBoundingClientRect();
+    if(e.type==="mousedown"){
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        document.addEventListener("mousemove", drag);
+        document.addEventListener("mouseup", stopDrag);
+    } else {
+        offsetX = e.touches[0].clientX - rect.left;
+        offsetY = e.touches[0].clientY - rect.top;
+        document.addEventListener("touchmove", drag);
+        document.addEventListener("touchend", stopDrag);
+    }
+    e.preventDefault();
+}
+
+function drag(e){
+    if(!isDragging) return;
+    let x,y;
+    if(e.type==="mousemove"){
+        x = e.clientX - offsetX;
+        y = e.clientY - offsetY;
+    } else {
+        x = e.touches[0].clientX - offsetX;
+        y = e.touches[0].clientY - offsetY;
+    }
+    popup.style.left = x + "px";
+    popup.style.top = y + "px";
+    popup.style.transform = "none";
+}
+
+function stopDrag(){
+    isDragging=false;
+    document.removeEventListener("mousemove", drag);
+    document.removeEventListener("mouseup", stopDrag);
+    document.removeEventListener("touchmove", drag);
+    document.removeEventListener("touchend", stopDrag);
 }
 
 loadMembers();
