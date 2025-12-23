@@ -1,83 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Internal System</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Internal System</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="navbar">
-        <ul>
-            <li><a href="home.html">Home</a></li>
-            <li><a href="aboutus.html">About Us</a></li>
-            <li><a href="contactus.html">Contact Us</a></li>
-            <li><a href="dashboard.html">Dashboard</a></li>
-        </ul>
-    </nav>
+  <nav class="navbar">
+    <ul>
+      <li><a href="home.html">Home</a></li>
+      <li><a href="aboutus.html">About Us</a></li>
+      <li><a href="contactus.html">Contact Us</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+  </nav>
 
-    <div class="dashboard-container">
-        <!-- Left Panel: Members -->
-        <div class="panel left-panel">
-            <h2>Members</h2>
-            <button class="panel-btn" onclick="openMemberPopup()">Add Member</button>
-            <div id="membersList"></div>
-        </div>
+  <div class="dashboard-container">
 
-        <!-- Center Panel -->
-        <div class="panel center-panel">
-            <h2 class="animated-text">Welcome, <span id="usernameDisplay">Admin</span>!</h2>
-            <p>This is your internal system home page.</p>
-        </div>
-
-        <!-- Right Panel: Files -->
-        <div class="panel right-panel">
-            <h2>Files</h2>
-            <button class="panel-btn" onclick="openFilePopup()">Open File Table</button>
-            <div id="filesList"></div>
-        </div>
+    <!-- Left Panel: Members -->
+    <div class="panel left-panel">
+      <h2>Members</h2>
+      <button class="panel-btn" onclick="openMemberPopup()">Add Member</button>
+      <input type="text" id="searchMembers" placeholder="Search Members..." oninput="filterMembers()">
+      <div id="membersList" class="scrollable-panel"></div>
     </div>
 
-    <!-- File Pop-Up -->
-    <div id="filePopup" class="popup hidden">
-        <div class="popup-header">
-            <span>Files Table</span>
-            <div class="popup-controls">
-                <button onclick="minimizePopup('filePopup')">_</button>
-                <button onclick="maximizePopup('filePopup')">[]</button>
-                <button onclick="closePopup('filePopup')">X</button>
-            </div>
-        </div>
-        <div class="popup-body">
-            <table id="fileTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+    <!-- Center Panel: Dashboard -->
+    <div class="panel center-panel">
+      <h2 class="animated-text">Welcome, <span id="usernameDisplay">Admin</span>!</h2>
+      <p>This is your internal system home page.</p>
     </div>
 
-    <!-- Member Pop-Up -->
-    <div id="memberPopup" class="popup hidden">
-        <div class="popup-header">
-            <span>Add Member</span>
-            <div class="popup-controls">
-                <button onclick="closePopup('memberPopup')">X</button>
-            </div>
-        </div>
-        <div class="popup-body">
-            <input type="text" id="memberName" placeholder="Name">
-            <input type="text" id="memberPhone" placeholder="Phone">
-            <button onclick="addMember()">Add</button>
-        </div>
+    <!-- Right Panel: Files -->
+    <div class="panel right-panel">
+      <h2>Files</h2>
+      <button class="panel-btn" onclick="openFilePopup()">Open File Table</button>
+      <input type="text" id="searchFiles" placeholder="Search Files..." oninput="filterFiles()">
+      <div id="filesList" class="scrollable-panel"></div>
     </div>
 
-    <script src="home.js"></script>
+  </div>
+
+  <!-- File Pop-Up -->
+  <div id="filePopup" class="popup hidden">
+    <div class="popup-header">
+      <span>Files Table</span>
+      <div class="popup-controls">
+        <button onclick="minimizePopup('filePopup')">_</button>
+        <button onclick="maximizePopup('filePopup')">[]</button>
+        <button onclick="closePopup('filePopup')">X</button>
+      </div>
+    </div>
+    <div class="popup-body">
+      <input type="text" id="fileSearch" placeholder="Search files..." oninput="filterFileTable()">
+      <table id="fileTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Member Pop-Up -->
+  <div id="memberPopup" class="popup hidden">
+    <div class="popup-header">
+      <span>Add Member</span>
+      <div class="popup-controls">
+        <button onclick="closePopup('memberPopup')">X</button>
+      </div>
+    </div>
+    <div class="popup-body">
+      <input type="text" id="memberName" placeholder="Name">
+      <input type="text" id="memberPhone" placeholder="Phone">
+      <button onclick="addMember()">Add</button>
+    </div>
+  </div>
+
+  <script src="home.js"></script>
 </body>
 </html>
+
 
