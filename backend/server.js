@@ -80,7 +80,7 @@ app.get("/api/members", (req, res) => {
 // LIST files
 app.get("/api/files", (req, res) => {
   systemDB.all(
-    "SELECT id, file_name AS name FROM files",
+    "SELECT id, name FROM files",
     [],
     (err, rows) => {
       if (err) {
@@ -99,7 +99,7 @@ app.post("/api/files", (req, res) => {
     return res.status(400).json({ error: "File name required" });
 
   systemDB.run(
-    "INSERT INTO files (file_name) VALUES (?)",
+    "INSERT INTO files (name) VALUES (?)",
     [name],
     function (err) {
       if (err) {
