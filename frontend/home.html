@@ -4,126 +4,111 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard</title>
-<link rel="stylesheet" href="style.css">
+
 <style>
-/* Background GIF with dark overlay */
-body {
-    margin: 0;
-    color: white;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    background: url('https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3dtNm9waDI4MTNnczhrZzRzZjAzY3h1eWpxdDVreGZnY3piMW1pNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Fd0rrjTJ3yLDi/giphy.gif') center center / cover no-repeat fixed;
-    overflow-x: hidden;
-    position: relative;
+*{box-sizing:border-box;font-family:Arial}
+body{
+    margin:0;
+    background:#0b0b0b;
+    color:white;
 }
-body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    z-index: -1;
+h1,h2{color:#ff2b2b;text-align:center;}
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:15px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
 }
-
-/* Container */
-.container {
-    max-width: 1200px;
-    width: 95%;
-    margin: 20px auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+.left-section{
+    flex:1 1 40%;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
 }
-
-/* Dashboard Cards */
-.card {
-    background: rgba(0,0,0,0.6);
-    border: 2px solid #ff2b2b;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 0 15px rgba(255,0,0,.4);
-    flex: 1 1 350px;
-    min-width: 300px;
+.right-section{
+    flex:1 1 55%;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
 }
-
-/* Card Titles */
-h1,h2 {
-    color: #ff2b2b;
-    text-align: center;
+.card{
+    background:#141414;
+    border:2px solid #ff2b2b;
+    border-radius:10px;
+    padding:15px;
+    box-shadow:0 0 15px rgba(255,0,0,.4);
 }
-
-/* Forms */
-input, button {
-    padding: 10px;
-    margin: 5px 0;
-    width: 100%;
-    background: #000;
-    border: 2px solid #ff2b2b;
-    color: white;
-    border-radius: 6px;
+input,button{
+    padding:10px;
+    margin:5px 0;
+    width:100%;
+    background:#000;
+    border:2px solid #ff2b2b;
+    color:white;
+    border-radius:6px;
 }
-button {
-    background: #ff2b2b;
-    font-weight: bold;
-    cursor: pointer;
+button{
+    background:#ff2b2b;
+    font-weight:bold;
+    cursor:pointer;
 }
-button:hover { background: #ff5555; }
-
-/* Table Box */
-.table-box {
-    overflow-x: auto;
-    max-height: 300px;
+button:hover{background:#ff5555}
+.table-box{
+    overflow:auto;
+    max-height:300px;
 }
-
-/* Table Styles */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 600px;
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:400px;
 }
-th, td {
-    border: 1px solid #ff2b2b;
-    padding: 8px;
+th,td{
+    border:1px solid #ff2b2b;
+    padding:8px;
 }
-th {
-    background: #ff2b2b;
-    color: black;
-    position: sticky;
-    top: 0;
+th{
+    background:#ff2b2b;
+    color:black;
+    position:sticky;
+    top:0;
 }
-
-/* File List */
-#fileList {
-    list-style: none;
-    padding: 0;
+.search{
+    margin-bottom:10px;
 }
-#fileList li {
-    padding: 10px;
-    margin: 5px 0;
-    border: 1px solid #ff2b2b;
-    border-radius: 5px;
-    cursor: pointer;
+#fileList{
+    list-style:none;
+    padding:0;
 }
-#fileList li:hover {
-    background: #ff2b2b;
-    color: black;
+#fileList li{
+    padding:10px;
+    margin:5px 0;
+    border:1px solid #ff2b2b;
+    border-radius:5px;
+    cursor:pointer;
+}
+#fileList li:hover{
+    background:#ff2b2b;
+    color:black;
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
-    .container { flex-direction: column; align-items: center; }
+@media(max-width:768px){
+    .container{flex-direction:column;}
+    .left-section,.right-section{flex:1 1 100%;}
 }
 </style>
 </head>
 
 <body>
 
-<h1>ADMIN CONTROL PANEL</h1>
-
 <div class="container">
-    <!-- LEFT: Members -->
+
+<h1 style="flex-basis:100%">ADMIN CONTROL PANEL</h1>
+
+<!-- LEFT SECTION: MEMBERS -->
+<div class="left-section">
     <div class="card">
         <h2>System Management (Members)</h2>
         <input class="search" placeholder="Search member..." onkeyup="searchMembers(this.value)">
@@ -132,17 +117,19 @@ th {
             <input id="mPhone" placeholder="Phone Number" required>
             <button>Add Member</button>
         </form>
+    </div>
+    <div class="card">
         <div class="table-box">
             <table>
-                <thead>
-                    <tr><th>Name</th><th>Phone</th></tr>
-                </thead>
+                <thead><tr><th>Name</th><th>Phone</th></tr></thead>
                 <tbody id="members"></tbody>
             </table>
         </div>
     </div>
+</div>
 
-    <!-- RIGHT: Files -->
+<!-- RIGHT SECTION: FILES -->
+<div class="right-section">
     <div class="card">
         <h2>Files</h2>
         <input class="search" placeholder="Search file..." onkeyup="searchFiles(this.value)">
@@ -153,24 +140,114 @@ th {
         <ul id="fileList"></ul>
     </div>
 
-    <!-- BOTTOM: File Viewer -->
-    <div class="card" id="fileViewer" style="display:none; width:100%;">
+    <div class="card" id="fileViewer" style="display:none">
         <h2 id="currentFile"></h2>
         <div class="table-box">
             <table>
-                <thead>
-                    <tr><th>Member</th><th>Amount Deposited</th></tr>
-                </thead>
+                <thead><tr><th>Member</th><th>Amount Deposited</th></tr></thead>
                 <tbody id="fileTable"></tbody>
             </table>
         </div>
         <button onclick="saveFile()">Save File</button>
-        <button onclick="deleteFile()" style="background:black;color:red;">Delete File</button>
+        <button onclick="deleteFile()" style="background:black;color:red">Delete File</button>
     </div>
 </div>
 
+</div>
+
 <script>
-// Keep your existing JS code here
+const BASE="/api/";
+let currentFileId=null;
+let members=[];
+
+/* ================= MEMBERS ================= */
+async function loadMembers(){
+    const r = await fetch(BASE+"members");
+    members = await r.json();
+    renderMembers(members);
+}
+function renderMembers(data){
+    document.getElementById("members").innerHTML =
+    data.map(m=>`<tr><td>${m.name}</td><td>${m.phone}</td></tr>`).join("");
+}
+function searchMembers(v){
+    renderMembers(members.filter(m=>m.name.toLowerCase().includes(v.toLowerCase())));
+}
+memberForm.onsubmit = async e=>{
+    e.preventDefault();
+    await fetch(BASE+"members",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:mName.value,phone:mPhone.value})
+    });
+    e.target.reset();
+    loadMembers();
+};
+
+/* ================= FILES ================= */
+async function loadFiles(){
+    const r = await fetch(BASE+"files");
+    const files = await r.json();
+    fileList.innerHTML = files.map(f =>
+        `<li onclick="openFile(${f.id}, '${f.name.replace(/'/g,"")}')">${f.name}</li>`
+    ).join("");
+}
+function searchFiles(v){
+    [...fileList.children].forEach(li=>{
+        li.style.display = li.innerText.toLowerCase().includes(v.toLowerCase()) ? "" : "none";
+    });
+}
+fileForm.onsubmit = async e=>{
+    e.preventDefault();
+    const res = await fetch(BASE+"files",{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:fileName.value})
+    });
+    if(!res.ok) alert("File creation failed");
+    e.target.reset();
+    loadFiles();
+};
+
+/* ================= FILE VIEW ================= */
+async function openFile(id,name){
+    currentFileId = id;
+    fileViewer.style.display = "block";
+    currentFile.innerText = name;
+
+    const r = await fetch(BASE+"files/"+id);
+    const data = await r.json();
+
+    fileTable.innerHTML = members.map(m=>`
+        <tr>
+            <td>${m.name}</td>
+            <td><input value="${data[m.id]||''}"></td>
+        </tr>
+    `).join("");
+}
+
+async function saveFile(){
+    const payload = {};
+    [...fileTable.querySelectorAll("tr")].forEach((tr,i)=>{
+        payload[members[i].id] = tr.querySelector("input").value;
+    });
+    await fetch(BASE+"files/"+currentFileId,{
+        method:"PUT",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+    });
+    alert("File saved successfully");
+}
+
+async function deleteFile(){
+    if(!confirm("Delete this file?")) return;
+    await fetch(BASE+"files/"+currentFileId,{method:"DELETE"});
+    fileViewer.style.display="none";
+    loadFiles();
+}
+
+loadMembers();
+loadFiles();
 </script>
 
 </body>
