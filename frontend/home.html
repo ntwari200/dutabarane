@@ -6,12 +6,8 @@
 <title>Admin Dashboard</title>
 
 <style>
-*{box-sizing:border-box;font-family:Arial}
-body{
-    margin:0;
-    background:#0b0b0b;
-    color:white;
-}
+*{box-sizing:border-box;font-family:Arial;}
+body{margin:0;background:#0b0b0b;color:white;}
 h1,h2{color:#ff2b2b;text-align:center;}
 .container{
     max-width:1200px;
@@ -54,7 +50,7 @@ button{
     font-weight:bold;
     cursor:pointer;
 }
-button:hover{background:#ff5555}
+button:hover{background:#ff5555;}
 .table-box{
     overflow:auto;
     max-height:300px;
@@ -92,11 +88,51 @@ th{
     background:#ff2b2b;
     color:black;
 }
-
-/* Responsive */
+/* Hide/Show toggle button */
+.toggle-btn{
+    cursor:pointer;
+    color:red;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+/* Popup viewer */
+.popup{
+    position:fixed;
+    top:50px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#141414;
+    border:2px solid #ff2b2b;
+    border-radius:10px;
+    padding:15px;
+    box-shadow:0 0 25px rgba(255,0,0,.6);
+    z-index:200;
+    max-width:90%;
+    display:none;
+}
+.popup-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+}
+.popup-header span{
+    cursor:pointer;
+    font-weight:bold;
+    color:red;
+}
+.popup-body{
+    max-height:300px;
+    overflow:auto;
+}
+.popup.minimized{
+    height:40px;
+    overflow:hidden;
+}
 @media(max-width:768px){
     .container{flex-direction:column;}
     .left-section,.right-section{flex:1 1 100%;}
+    .popup{width:95% !important; left:50% !important; transform:translateX(-50%) !important;}
 }
 </style>
 </head>
@@ -110,13 +146,15 @@ th{
 <!-- LEFT SECTION: MEMBERS -->
 <div class="left-section">
     <div class="card">
-        <h2>System Management (Members)</h2>
-        <input class="search" placeholder="Search member..." onkeyup="searchMembers(this.value)">
-        <form id="memberForm">
-            <input id="mName" placeholder="Member Name" required>
-            <input id="mPhone" placeholder="Phone Number" required>
-            <button>Add Member</button>
-        </form>
+        <h2>System Management (Members) <span class="toggle-btn" onclick="toggleMembers(this)">&#9660;</span></h2>
+        <div id="memberContent">
+            <input class="search" placeholder="Search member..." onkeyup="searchMembers(this.value)">
+            <form id="memberForm">
+                <input id="mName" placeholder="Member Name" required>
+                <input id="mPhone" placeholder="Phone Number" required>
+                <button>Add Member</button>
+            </form>
+        </div>
     </div>
     <div class="card">
         <div class="table-box">
@@ -139,9 +177,18 @@ th{
         </form>
         <ul id="fileList"></ul>
     </div>
+</div>
 
-    <div class="card" id="fileViewer" style="display:none">
+<!-- FILE VIEW POPUP -->
+<div class="popup" id="fileViewer">
+    <div class="popup-header">
         <h2 id="currentFile"></h2>
+        <div>
+            <span onclick="togglePopup()">&#9650;</span>
+            <span onclick="closePopup()">X</span>
+        </div>
+    </div>
+    <div class="popup-body">
         <div class="table-box">
             <table>
                 <thead><tr><th>Member</th><th>Amount Deposited</th></tr></thead>
@@ -183,6 +230,17 @@ memberForm.onsubmit = async e=>{
     e.target.reset();
     loadMembers();
 };
+/* Toggle members section */
+function toggleMembers(el){
+    const content=document.getElementById("memberContent");
+    if(content.style.display==="none"){
+        content.style.display="block";
+        el.innerHTML="&#9660;";
+    }else{
+        content.style.display="none";
+        el.innerHTML="&#9654;";
+    }
+}
 
 /* ================= FILES ================= */
 async function loadFiles(){
@@ -209,11 +267,13 @@ fileForm.onsubmit = async e=>{
     loadFiles();
 };
 
-/* ================= FILE VIEW ================= */
+/* ================= FILE VIEW POPUP ================= */
 async function openFile(id,name){
     currentFileId = id;
-    fileViewer.style.display = "block";
-    currentFile.innerText = name;
+    const popup = document.getElementById("fileViewer");
+    popup.style.display="block";
+    popup.classList.remove("minimized");
+    document.getElementById("currentFile").innerText = name;
 
     const r = await fetch(BASE+"files/"+id);
     const data = await r.json();
@@ -224,6 +284,13 @@ async function openFile(id,name){
             <td><input value="${data[m.id]||''}"></td>
         </tr>
     `).join("");
+}
+function togglePopup(){
+    const popup=document.getElementById("fileViewer");
+    popup.classList.toggle("minimized");
+}
+function closePopup(){
+    document.getElementById("fileViewer").style.display="none";
 }
 
 async function saveFile(){
@@ -238,11 +305,10 @@ async function saveFile(){
     });
     alert("File saved successfully");
 }
-
 async function deleteFile(){
     if(!confirm("Delete this file?")) return;
     await fetch(BASE+"files/"+currentFileId,{method:"DELETE"});
-    fileViewer.style.display="none";
+    closePopup();
     loadFiles();
 }
 
