@@ -5,7 +5,7 @@ const username = localStorage.getItem("username");
 document.getElementById("usernameDisplay").textContent = username || "Admin";
 
 // ----------------------
-// Pop-Up Functions (Animated)
+// Pop-Up Functions
 // ----------------------
 function openFilePopup() {
     const popup = document.getElementById("filePopup");
@@ -49,7 +49,7 @@ function maximizePopup(id) {
 }
 
 // ----------------------
-// Load Members List
+// Members Functions
 // ----------------------
 async function loadMembers() {
     const membersDiv = document.getElementById("membersList");
@@ -66,9 +66,6 @@ async function loadMembers() {
     } catch(err) { console.error(err); }
 }
 
-// ----------------------
-// Add Member
-// ----------------------
 async function addMember() {
     const name = document.getElementById("memberName").value.trim();
     const phone = document.getElementById("memberPhone").value.trim();
@@ -87,7 +84,7 @@ async function addMember() {
 }
 
 // ----------------------
-// Load Files List (Right Panel)
+// Files Functions
 // ----------------------
 async function loadFilesList() {
     const filesDiv = document.getElementById("filesList");
@@ -104,9 +101,6 @@ async function loadFilesList() {
     } catch(err) { console.error(err); }
 }
 
-// ----------------------
-// Load Files Table (Pop-Up)
-// ----------------------
 async function loadFilesTable() {
     const tbody = document.querySelector("#fileTable tbody");
     tbody.innerHTML = "";
@@ -128,9 +122,6 @@ async function loadFilesTable() {
     } catch(err) { console.error(err); }
 }
 
-// ----------------------
-// Edit File
-// ----------------------
 function editFile(id, currentName) {
     const newName = prompt("Edit file name:", currentName);
     if (!newName) return;
@@ -144,9 +135,6 @@ function editFile(id, currentName) {
     });
 }
 
-// ----------------------
-// Delete File
-// ----------------------
 function deleteFile(id) {
     if (!confirm("Are you sure you want to delete this file?")) return;
     fetch(`/api/files/${id}`, { method: "DELETE" })
@@ -194,4 +182,5 @@ makeDraggable("memberPopup");
 // ----------------------
 loadMembers();
 loadFilesList();
+
 
