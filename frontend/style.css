@@ -4,6 +4,8 @@
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Viewport full screen */
@@ -12,7 +14,7 @@ html, body {
     height: 100%;
 }
 
-/* Cinematic Tornado GIF Background */
+/* Background GIF with blur & overlay */
 body {
     color: white;
     display: flex;
@@ -23,7 +25,6 @@ body {
     overflow-x: hidden;
 }
 
-/* Background GIF with blur & overlay */
 body::before {
     content: "";
     position: fixed;
@@ -74,109 +75,157 @@ body::after {
     color: white;
 }
 
-/* Main container */
-.container, .dashboard-container {
+/* Dashboard container */
+.dashboard-container {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding-top: 100px;
-    text-align: center;
-    z-index: 1;
+    justify-content: space-between;
+    align-items: flex-start;
     width: 95%;
+    padding-top: 100px;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-/* Login Form */
-.form-box {
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(8px);
-    padding: 30px 25px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 400px;
-    animation: fadeIn 1.2s ease-in-out;
-    box-shadow: 0 0 30px rgba(0,0,0,0.6);
-}
-
-.input-box {
-    position: relative;
-    margin: 20px 0;
-}
-
-.input-box input {
-    width: 100%;
-    padding: 10px;
-    background: none;
-    border: none;
-    border-bottom: 2px solid red;
+/* Panels */
+.panel {
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+    border-radius: 15px;
+    padding: 15px;
+    flex: 1;
+    min-width: 220px;
     color: white;
-    font-size: 1rem;
+    box-shadow: 0 0 20px rgba(255,0,0,0.3);
+    transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.input-box label {
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding: 10px;
-    pointer-events: none;
-    transition: 0.5s;
-    color: red;
-    font-size: 1rem;
+.panel:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 35px rgba(255,0,0,0.6);
 }
 
-.input-box input:focus ~ label,
-.input-box input:valid ~ label {
-    top: -20px;
-    font-size: 0.9rem;
-    color: white;
+.left-panel, .right-panel {
+    max-width: 300px;
 }
 
-.login-btn {
-    width: 100%;
-    padding: 12px;
+.panel h2 {
+    margin-bottom: 10px;
+}
+
+/* Panel buttons */
+.panel-btn {
+    padding: 6px 12px;
+    margin-bottom: 10px;
     background: red;
     border: none;
-    border-radius: 10px;
     color: white;
-    font-size: 1rem;
+    border-radius: 5px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s ease;
 }
 
-.login-btn:hover {
+.panel-btn:hover {
     background: black;
     color: red;
+    box-shadow: 0 0 10px red;
 }
 
-/* Cards */
-.cards {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 30px;
-    gap: 20px;
-}
-
-.card {
+/* Members & Files rows */
+.member-row, .file-row {
     background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(5px);
-    padding: 25px 40px;
-    border-radius: 15px;
-    font-size: 1.2rem;
+    padding: 8px;
+    margin: 4px 0;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.member-row:hover, .file-row:hover {
+    background: red;
+    color: black;
+    box-shadow: 0 0 15px red;
+    transform: scale(1.05);
+}
+
+/* Popups */
+.popup {
+    position: fixed;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    width: 80%;
+    max-width: 600px;
+    background: rgba(0,0,0,0.9);
+    border: 2px solid red;
+    border-radius: 10px;
+    z-index: 200;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    overflow: hidden;
+}
+
+.popup.show {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+}
+
+.popup.minimized {
+    transform: translateX(-50%) scaleY(0.1);
+    opacity: 0.8;
+    height: 40px;
+}
+
+/* Popup header */
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    background: linear-gradient(135deg, red, black);
+    font-weight: bold;
+    cursor: move;
+}
+
+.popup-controls button {
+    margin-left: 5px;
+    background: black;
+    color: red;
+    border: none;
+    font-weight: bold;
     cursor: pointer;
     transition: 0.3s;
-    box-shadow: 0 0 20px rgba(255,0,0,0.3);
-    width: 250px;
 }
 
-.card:hover {
+.popup-controls button:hover {
     background: red;
-    transform: scale(1.05);
-    box-shadow: 0 0 40px rgba(255,0,0,0.6);
+    color: black;
 }
 
-/* Animated Text */
+/* Popup body */
+.popup-body {
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Tables inside popups */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+}
+
+table th, table td {
+    border: 1px solid red;
+    padding: 6px;
+    text-align: left;
+}
+
+table th {
+    background: rgba(255,0,0,0.3);
+}
+
+/* Animated text */
 .animated-text {
     animation: glow 1.5s ease-in-out infinite alternate;
     font-size: 1.5rem;
@@ -187,34 +236,19 @@ body::after {
     to { text-shadow: 0 0 20px red, 0 0 40px black; }
 }
 
-/* Fade in animation */
-@keyframes fadeIn {
-    0% { opacity: 0; } 
-    100% { opacity: 1; }
-}
-
-/* Responsive typography */
+/* Responsive */
 @media (max-width: 1024px) {
     .animated-text { font-size: 1.3rem; }
-    .card { font-size: 1.1rem; padding: 20px 30px; }
+    table th, table td { font-size: 0.9rem; }
 }
 
 @media (max-width: 768px) {
-    .navbar ul { justify-content: center; }
-    .animated-text { font-size: 1.1rem; }
-    .card { width: 90%; font-size: 1rem; padding: 20px; }
-    .form-box { padding: 25px 20px; }
+    .dashboard-container { flex-direction: column; align-items: center; }
+    .popup { width: 90%; }
+    .panel { width: 90%; max-width: 100%; }
 }
 
 @media (max-width: 480px) {
-    .navbar ul { flex-direction: column; gap: 10px; }
+    .navbar ul { flex-direction: column; gap: 10px; justify-content: center; }
     .animated-text { font-size: 1rem; }
-    .form-box { padding: 20px 15px; width: 95%; }
-    .login-btn { font-size: 0.95rem; padding: 10px; }
-}
-
-/* Smooth rendering fixes */
-* {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
