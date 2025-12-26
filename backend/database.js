@@ -1,28 +1,20 @@
-// database.js (PostgreSQL version - Render safe)
+// database.js
 import pkg from "pg";
 import dotenv from "dotenv";
 
 dotenv.config();
+
 const { Pool } = pkg;
 
-/* =============================
-   POSTGRES CONNECTION
-============================= */
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production"
-    ? { rejectUnauthorized: false }
-    : false
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
 });
 
-/* =============================
-   INIT DATABASE
-============================= */
 export async function initDB() {
   const client = await pool.connect();
-
   try {
-    /* ---------- USERS ---------- */
+    // Users
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -31,7 +23,7 @@ export async function initDB() {
       )
     `);
 
-    /* ---------- MEMBERS ---------- */
+    // Members
     await client.query(`
       CREATE TABLE IF NOT EXISTS members (
         id SERIAL PRIMARY KEY,
@@ -40,7 +32,7 @@ export async function initDB() {
       )
     `);
 
-    /* ---------- FILES ---------- */
+    // Files
     await client.query(`
       CREATE TABLE IF NOT EXISTS files (
         id SERIAL PRIMARY KEY,
@@ -48,7 +40,7 @@ export async function initDB() {
       )
     `);
 
-    /* ---------- FILE ROWS ---------- */
+    // File Rows
     await client.query(`
       CREATE TABLE IF NOT EXISTS file_rows (
         id SERIAL PRIMARY KEY,
@@ -62,19 +54,17 @@ export async function initDB() {
       )
     `);
 
-    /* ---------- CREATE ADMIN ---------- */
+    // Create admin
     const adminUser = process.env.ADMIN_USERNAME;
     const adminPass = process.env.ADMIN_PASSWORD;
-
     if (adminUser && adminPass) {
       const exists = await client.query(
         "SELECT id FROM users WHERE username = $1",
         [adminUser]
       );
-
       if (exists.rowCount === 0) {
         await client.query(
-          "INSERT INTO users (username, password) VALUES ($1, $2)",
+          "INSERT INTO users (username, password) VALUES ($1,$2)",
           [adminUser, adminPass]
         );
         console.log("✅ Admin user created");
