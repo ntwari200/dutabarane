@@ -1,5 +1,4 @@
-// server.js (PostgreSQL + UUID + Render safe)
-
+// server.js
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
@@ -9,7 +8,7 @@ dotenv.config();
 const app = express();
 
 /* =======================
-   INIT DATABASE
+   INIT DB
 ======================= */
 await initDB();
 
@@ -33,7 +32,6 @@ app.get("/", (req, res) => {
 ======================= */
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-
   try {
     const r = await pool.query(
       "SELECT id FROM users WHERE username=$1 AND password=$2",
@@ -64,15 +62,12 @@ app.post("/api/members", async (req, res) => {
       "INSERT INTO members (name, phone) VALUES ($1,$2) RETURNING id",
       [name, phone]
     );
-
     const memberId = m.rows[0].id;
 
     const files = await client.query("SELECT id FROM files");
-
     for (const f of files.rows) {
       await client.query(
-        `INSERT INTO file_rows (file_id, member_id, amount, loan)
-         VALUES ($1,$2,0,0)`,
+        "INSERT INTO file_rows (file_id, member_id) VALUES ($1,$2)",
         [f.id, memberId]
       );
     }
@@ -91,9 +86,7 @@ app.post("/api/members", async (req, res) => {
 // LIST MEMBERS
 app.get("/api/members", async (req, res) => {
   try {
-    const r = await pool.query(
-      "SELECT * FROM members ORDER BY created_at"
-    );
+    const r = await pool.query("SELECT * FROM members ORDER BY id");
     res.json(r.rows);
   } catch (err) {
     console.error(err);
@@ -120,7 +113,7 @@ app.delete("/api/members/:id", async (req, res) => {
 app.get("/api/files", async (req, res) => {
   try {
     const r = await pool.query(
-      "SELECT id, name FROM files ORDER BY created_at"
+      "SELECT id, file_name AS name FROM files ORDER BY id"
     );
     res.json(r.rows);
   } catch (err) {
@@ -132,25 +125,22 @@ app.get("/api/files", async (req, res) => {
 // CREATE FILE
 app.post("/api/files", async (req, res) => {
   const { name } = req.body;
-  if (!name)
-    return res.status(400).json({ error: "File name required" });
+  if (!name) return res.status(400).json({ error: "Name required" });
 
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
 
     const f = await client.query(
-      "INSERT INTO files (name) VALUES ($1) RETURNING id",
+      "INSERT INTO files (file_name) VALUES ($1) RETURNING id",
       [name]
     );
-
     const fileId = f.rows[0].id;
-    const members = await client.query("SELECT id FROM members");
 
+    const members = await client.query("SELECT id FROM members");
     for (const m of members.rows) {
       await client.query(
-        `INSERT INTO file_rows (file_id, member_id, amount, loan)
-         VALUES ($1,$2,0,0)`,
+        "INSERT INTO file_rows (file_id, member_id) VALUES ($1,$2)",
         [fileId, m.id]
       );
     }
@@ -170,20 +160,11 @@ app.post("/api/files", async (req, res) => {
 app.get("/api/files/:id", async (req, res) => {
   try {
     const r = await pool.query(
-      `SELECT member_id, amount, loan
-       FROM file_rows
-       WHERE file_id=$1`,
+      "SELECT member_id, amount FROM file_rows WHERE file_id=$1",
       [req.params.id]
     );
-
     const data = {};
-    r.rows.forEach(row => {
-      data[row.member_id] = {
-        amount: row.amount,
-        loan: row.loan
-      };
-    });
-
+    r.rows.forEach(x => (data[x.member_id] = x.amount));
     res.json(data);
   } catch (err) {
     console.error(err);
@@ -199,17 +180,12 @@ app.put("/api/files/:id", async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-
     for (const memberId in data) {
-      const { amount, loan } = data[memberId];
       await client.query(
-        `UPDATE file_rows
-         SET amount=$1, loan=$2
-         WHERE file_id=$3 AND member_id=$4`,
-        [amount || 0, loan || 0, fileId, memberId]
+        "UPDATE file_rows SET amount=$1 WHERE file_id=$2 AND member_id=$3",
+        [data[memberId], fileId, memberId]
       );
     }
-
     await client.query("COMMIT");
     res.json({ success: true });
   } catch (err) {
@@ -239,3 +215,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("✅ Server running on port", PORT);
 });
+
