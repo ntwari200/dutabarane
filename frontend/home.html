@@ -7,107 +7,102 @@
 
 <style>
 *{box-sizing:border-box;font-family:Arial}
-body{
-    margin:0;
-    background:#0b0b0b;
-    color:white;
-}
+body{margin:0;background:#0b0b0b;color:white}
 
-/* ================= LAYOUT ================= */
-h1,h2{color:#ff2b2b;text-align:center;}
+/* ===== TITLES ===== */
+h1,h2{color:#ff2b2b;text-align:center}
+
+/* ===== LAYOUT ===== */
 .container{
-    max-width:1200px;
-    margin:auto;
-    padding:15px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:20px;
+  max-width:1300px;
+  margin:auto;
+  padding:15px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
 }
-.left-section{flex:1 1 40%;display:flex;flex-direction:column;gap:20px;}
-.right-section{flex:1 1 55%;display:flex;flex-direction:column;gap:20px;}
+.left{flex:1 1 40%}
+.right{flex:1 1 55%}
 
-/* ================= CARDS ================= */
+/* ===== CARDS ===== */
 .card{
-    background:#141414;
-    border:2px solid #ff2b2b;
-    border-radius:10px;
-    padding:15px;
-    box-shadow:0 0 15px rgba(255,0,0,.4);
+  background:#141414;
+  border:2px solid #ff2b2b;
+  border-radius:12px;
+  padding:15px;
+  box-shadow:0 0 15px rgba(255,0,0,.4);
 }
 
-/* ================= INPUTS ================= */
+/* ===== INPUTS ===== */
 input,button{
-    padding:10px;
-    margin:5px 0;
-    width:100%;
-    background:#000;
-    border:2px solid #ff2b2b;
-    color:white;
-    border-radius:6px;
+  width:100%;
+  padding:10px;
+  margin:5px 0;
+  border-radius:6px;
+  border:2px solid #ff2b2b;
+  background:black;
+  color:white;
 }
 button{background:#ff2b2b;font-weight:bold;cursor:pointer}
 button:hover{background:#ff5555}
 
-/* ================= TABLE ================= */
-.table-box{overflow:auto;max-height:300px;}
-table{width:100%;border-collapse:collapse;min-width:400px;}
-th,td{border:1px solid #ff2b2b;padding:8px;}
-th{background:#ff2b2b;color:black;position:sticky;top:0;}
+/* ===== TABLE ===== */
+.table-box{overflow:auto;max-height:320px}
+table{width:100%;border-collapse:collapse;min-width:500px}
+th,td{border:1px solid #ff2b2b;padding:8px}
+th{background:#ff2b2b;color:black;position:sticky;top:0}
 
-.search{margin-bottom:10px;}
-#fileList{list-style:none;padding:0}
+/* ===== COLORS ===== */
+.amount{color:#00ff88;font-weight:bold}
+.loan{color:#ffaa00;font-weight:bold}
+
+/* ===== FILE LIST ===== */
 #fileList li{
-    padding:10px;margin:5px 0;
-    border:1px solid #ff2b2b;
-    border-radius:5px;
-    cursor:pointer;
+  list-style:none;
+  padding:10px;
+  border:1px solid #ff2b2b;
+  border-radius:6px;
+  margin:5px 0;
+  cursor:pointer;
 }
 #fileList li:hover{background:#ff2b2b;color:black}
 
-/* ================= POPUP ================= */
+/* ===== POPUP ===== */
 .popup{
-    position:fixed;
-    top:80px;
-    left:80px;
-    width:500px;
-    max-width:95%;
-    background:#111;
-    border:2px solid #ff2b2b;
-    border-radius:10px;
-    display:none;
-    z-index:1000;
-    box-shadow:0 0 25px rgba(255,0,0,.6);
+  position:fixed;
+  top:70px;left:70px;
+  width:520px;
+  max-width:95%;
+  background:#111;
+  border:2px solid #ff2b2b;
+  border-radius:12px;
+  display:none;
+  z-index:1000;
+  animation:pop .3s ease;
 }
+@keyframes pop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+
 .popup.max{
-    top:5%;
-    left:5%;
-    width:90%;
-    height:90%;
+  top:5%;left:5%;
+  width:90%;height:90%;
 }
 .popup-header{
-    background:#ff2b2b;
-    color:black;
-    padding:8px;
-    display:flex;
-    justify-content:space-between;
-    cursor:move;
+  background:#ff2b2b;
+  color:black;
+  padding:8px;
+  display:flex;
+  justify-content:space-between;
+  cursor:move;
 }
-.popup-header span{cursor:pointer;font-weight:bold;padding:0 6px}
-.popup-body{padding:10px;max-height:400px;overflow:auto}
-
-/* ================= UNDO ================= */
-.undo-box{
-    background:#000;
-    border:1px solid #ff2b2b;
-    padding:8px;
-    margin-top:5px;
-    text-align:center;
+.popup-body{
+  padding:10px;
+  overflow:auto;
+  max-height:70vh;
 }
 
-/* ================= MOBILE ================= */
+/* ===== MOBILE ===== */
 @media(max-width:768px){
-    .container{flex-direction:column}
-    .left-section,.right-section{flex:1 1 100%}
+  .container{flex-direction:column}
 }
 </style>
 </head>
@@ -115,22 +110,17 @@ th{background:#ff2b2b;color:black;position:sticky;top:0;}
 <body>
 
 <div class="container">
-<h1 style="flex-basis:100%">ADMIN CONTROL PANEL</h1>
+<h1 style="flex-basis:100%">ADMIN PANEL</h1>
 
-<!-- ================= MEMBERS ================= -->
-<div class="left-section">
-<div class="card">
+<!-- MEMBERS -->
+<div class="left card">
 <h2>Members</h2>
-<input class="search" placeholder="Search..." onkeyup="searchMembers(this.value)">
 <form id="memberForm">
 <input id="mName" placeholder="Name" required>
 <input id="mPhone" placeholder="Phone" required>
 <button>Add Member</button>
 </form>
-<div id="undoArea"></div>
-</div>
 
-<div class="card">
 <div class="table-box">
 <table>
 <thead><tr><th>Name</th><th>Phone</th><th>❌</th></tr></thead>
@@ -138,13 +128,10 @@ th{background:#ff2b2b;color:black;position:sticky;top:0;}
 </table>
 </div>
 </div>
-</div>
 
-<!-- ================= FILES ================= -->
-<div class="right-section">
-<div class="card">
+<!-- FILES -->
+<div class="right card">
 <h2>Files</h2>
-<input class="search" placeholder="Search file..." onkeyup="searchFiles(this.value)">
 <form id="fileForm">
 <input id="fileName" placeholder="File name" required>
 <button>Create File</button>
@@ -152,171 +139,121 @@ th{background:#ff2b2b;color:black;position:sticky;top:0;}
 <ul id="fileList"></ul>
 </div>
 </div>
+
+<!-- FILE VIEWER -->
+<div class="popup" id="popup">
+<div class="popup-header" id="drag">
+<b id="fileTitle"></b>
+<div>
+<span onclick="popup.classList.toggle('max')">⬜</span>
+<span onclick="popup.style.display='none'">❌</span>
+</div>
 </div>
 
-<!-- ================= FILE POPUP ================= -->
-<div class="popup" id="filePopup">
-<div class="popup-header" id="popupHeader">
-<b id="currentFile"></b>
-<div>
-<span onclick="minPopup()">➖</span>
-<span onclick="maxPopup()">⬜</span>
-<span onclick="closePopup()">❌</span>
-</div>
-</div>
 <div class="popup-body">
+<input placeholder="Search member..." onkeyup="filterFile(this.value)">
 <table>
-<thead><tr><th>Member</th><th>Amount</th></tr></thead>
+<thead><tr><th>Member</th><th>Amount</th><th>Loan</th></tr></thead>
 <tbody id="fileTable"></tbody>
 </table>
-<button onclick="saveFile()">Save</button>
-<button onclick="deleteFile()" style="background:black;color:red">Delete File</button>
+<button onclick="saveFile()">💾 Save</button>
 </div>
 </div>
 
 <script>
-const BASE="/api/";
-let members=[];
-let files=[];
-let currentFileId=null;
-let lastDeleted=null;
+const API="/api/";
+let members=[],files=[],currentFile=null;
 
-/* ================= MEMBERS ================= */
+/* ===== MEMBERS ===== */
 async function loadMembers(){
-    const r=await fetch(BASE+"members");
-    members=await r.json();
-    renderMembers(members);
+  const r=await fetch(API+"members");
+  members=await r.json();
+  membersBox.innerHTML=members.map(m=>`
+    <tr>
+      <td>${m.name}</td>
+      <td>${m.phone}</td>
+      <td><button onclick="delMember('${m.id}')">X</button></td>
+    </tr>`).join("");
 }
-function renderMembers(data){
-    membersBody=document.getElementById("members");
-    membersBody.innerHTML=data.map(m=>`
-        <tr>
-            <td>${m.name}</td>
-            <td>${m.phone}</td>
-            <td><button onclick="deleteMember(${m.id})">X</button></td>
-        </tr>`).join("");
-}
-function searchMembers(v){
-    renderMembers(members.filter(m=>m.name.toLowerCase().includes(v.toLowerCase())));
-}
-async function deleteMember(id){
-    lastDeleted = members.find(m=>m.id===id);
-    await fetch(BASE+"members/"+id,{method:"DELETE"});
-    members=members.filter(m=>m.id!==id);
-    renderMembers(members);
-    showUndo();
-}
-function showUndo(){
-    undoArea.innerHTML=`
-    <div class="undo-box">
-    Member deleted <button onclick="undoDelete()">UNDO</button>
-    </div>`;
-    setTimeout(()=>undoArea.innerHTML="",7000);
-}
-async function undoDelete(){
-    if(!lastDeleted) return;
-    await fetch(BASE+"members",{
-        method:"POST",
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(lastDeleted)
-    });
-    loadMembers();
-    undoArea.innerHTML="";
+async function delMember(id){
+  if(!confirm("Delete member?"))return;
+  await fetch(API+"members/"+id,{method:"DELETE"});
+  loadMembers(); loadFiles();
 }
 
-/* ================= FILES ================= */
+/* ===== FILES ===== */
 async function loadFiles(){
-    const r=await fetch(BASE+"files");
-    files=await r.json();
-    fileList.innerHTML=files.map(f=>`
-        <li onclick="openFile(${f.id},'${f.name.replace(/'/g,"")}')">${f.name}</li>
-    `).join("");
-}
-function searchFiles(v){
-    [...fileList.children].forEach(li=>{
-        li.style.display=li.innerText.toLowerCase().includes(v.toLowerCase())?"":"none";
-    });
+  const r=await fetch(API+"files");
+  files=await r.json();
+  fileList.innerHTML=files.map(f=>`
+    <li onclick="openFile('${f.id}','${f.name}')">${f.name}</li>`).join("");
 }
 
-/* ================= FILE POPUP ================= */
+/* ===== OPEN FILE ===== */
 async function openFile(id,name){
-    currentFileId=id;
-    currentFile.innerText=name;
-    filePopup.style.display="block";
+  currentFile=id;
+  fileTitle.innerText=name;
+  popup.style.display="block";
 
-    const r=await fetch(BASE+"files/"+id);
-    const data=await r.json();
+  const r=await fetch(API+"files/"+id);
+  const data=await r.json();
 
-    fileTable.innerHTML=members.map(m=>`
-        <tr>
-            <td>${m.name}</td>
-            <td><input value="${data[m.id]||''}"></td>
-        </tr>
-    `).join("");
+  fileTable.innerHTML=members.map(m=>`
+    <tr>
+      <td>${m.name}</td>
+      <td><input class="amount" value="${data[m.id]?.amount||0}"></td>
+      <td><input class="loan" value="${data[m.id]?.loan||0}"></td>
+    </tr>`).join("");
 }
-function closePopup(){filePopup.style.display="none";}
-function minPopup(){filePopup.style.display="none";}
-function maxPopup(){filePopup.classList.toggle("max");}
 
+/* ===== SAVE FILE ===== */
 async function saveFile(){
-    const payload={};
-    [...fileTable.querySelectorAll("tr")].forEach((tr,i)=>{
-        payload[members[i].id]=tr.querySelector("input").value;
-    });
-    await fetch(BASE+"files/"+currentFileId,{
-        method:"PUT",
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(payload)
-    });
-    alert("Saved");
-}
-async function deleteFile(){
-    if(!confirm("Delete file?"))return;
-    await fetch(BASE+"files/"+currentFileId,{method:"DELETE"});
-    closePopup();
-    loadFiles();
+  const payload={};
+  [...fileTable.rows].forEach((r,i)=>{
+    payload[members[i].id]={
+      amount:r.cells[1].querySelector("input").value,
+      loan:r.cells[2].querySelector("input").value
+    };
+  });
+
+  await fetch(API+"files/"+currentFile,{
+    method:"PUT",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+  alert("Saved successfully");
 }
 
-/* ================= DRAG ================= */
-let drag=false,dx,dy;
-popupHeader.onmousedown=e=>{
-    drag=true;
-    dx=e.clientX-filePopup.offsetLeft;
-    dy=e.clientY-filePopup.offsetTop;
-};
-document.onmousemove=e=>{
-    if(drag){
-        filePopup.style.left=(e.clientX-dx)+"px";
-        filePopup.style.top=(e.clientY-dy)+"px";
-    }
-};
+/* ===== FILTER ===== */
+function filterFile(v){
+  [...fileTable.rows].forEach(r=>{
+    r.style.display=r.cells[0].innerText.toLowerCase().includes(v.toLowerCase())?"":"none";
+  });
+}
+
+/* ===== DRAG ===== */
+let dx,dy,drag=false;
+drag.onmousedown=e=>{drag=true;dx=e.clientX-popup.offsetLeft;dy=e.clientY-popup.offsetTop};
+document.onmousemove=e=>drag&&(popup.style.left=e.clientX-dx+"px",popup.style.top=e.clientY-dy+"px");
 document.onmouseup=()=>drag=false;
 
-/* ================= INIT ================= */
-memberForm.onsubmit=async e=>{
-    e.preventDefault();
-    await fetch(BASE+"members",{
-        method:"POST",
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({name:mName.value,phone:mPhone.value})
-    });
-    e.target.reset();
-    loadMembers();
+/* ===== FORMS ===== */
+memberForm.onsubmit=e=>{
+  e.preventDefault();
+  fetch(API+"members",{method:"POST",headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({name:mName.value,phone:mPhone.value})})
+  .then(()=>{memberForm.reset();loadMembers();loadFiles()});
 };
-fileForm.onsubmit=async e=>{
-    e.preventDefault();
-    await fetch(BASE+"files",{
-        method:"POST",
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({name:fileName.value})
-    });
-    e.target.reset();
-    loadFiles();
+
+fileForm.onsubmit=e=>{
+  e.preventDefault();
+  fetch(API+"files",{method:"POST",headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({name:fileName.value})})
+  .then(()=>{fileForm.reset();loadFiles()});
 };
 
 loadMembers();
 loadFiles();
 </script>
-
 </body>
 </html>
