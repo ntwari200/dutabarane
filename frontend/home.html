@@ -4,53 +4,113 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard</title>
+
 <style>
 *{box-sizing:border-box;font-family:Arial}
-body{margin:0;background:#0b0b0b;color:white;}
-
-/* ================= LAYOUT ================= */
+body{
+    margin:0;
+    background:#0b0b0b;
+    color:white;
+}
+/* ========== Layout ========== */
 h1,h2{color:#ff2b2b;text-align:center;}
-.container{max-width:1200px;margin:auto;padding:15px;display:flex;flex-wrap:wrap;gap:20px;}
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:15px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+}
 .left-section{flex:1 1 40%;display:flex;flex-direction:column;gap:20px;}
 .right-section{flex:1 1 55%;display:flex;flex-direction:column;gap:20px;}
 
-/* ================= CARDS ================= */
-.card{background:#141414;border:2px solid #ff2b2b;border-radius:10px;padding:15px;box-shadow:0 0 15px rgba(255,0,0,.4);transition:0.3s;}
-.card.fade{animation:fadeIn 0.5s;}
-@keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
+/* ========== Cards ========== */
+.card{
+    background:#141414;
+    border:2px solid #ff2b2b;
+    border-radius:10px;
+    padding:15px;
+    box-shadow:0 0 15px rgba(255,0,0,.4);
+}
 
-/* ================= INPUTS ================= */
-input,button{padding:10px;margin:5px 0;width:100%;background:#000;border:2px solid #ff2b2b;color:white;border-radius:6px;}
-button{background:#ff2b2b;font-weight:bold;cursor:pointer;transition:0.2s;}
+/* ========== Inputs ========== */
+input,button{
+    padding:10px;
+    margin:5px 0;
+    width:100%;
+    background:#000;
+    border:2px solid #ff2b2b;
+    color:white;
+    border-radius:6px;
+}
+button{background:#ff2b2b;font-weight:bold;cursor:pointer}
 button:hover{background:#ff5555}
 
-/* ================= TABLE ================= */
+/* ========== Table ========== */
 .table-box{overflow:auto;max-height:300px;}
 table{width:100%;border-collapse:collapse;min-width:400px;}
 th,td{border:1px solid #ff2b2b;padding:8px;}
-th{background:#ff2b2b;color:black;position:sticky;top:0;}
+th{background:#ff2b2b;color:black;position:sticky;top:0}
+
 .search{margin-bottom:10px;}
-#fileList{list-style:none;padding:0;margin:0;}
-#fileList li{padding:10px;margin:5px 0;border:1px solid #ff2b2b;border-radius:5px;cursor:pointer;transition:0.2s;}
+#fileList{list-style:none;padding:0}
+#fileList li{
+    padding:10px;margin:5px 0;
+    border:1px solid #ff2b2b;
+    border-radius:5px;
+    cursor:pointer;
+}
 #fileList li:hover{background:#ff2b2b;color:black}
 
-/* ================= POPUP ================= */
-.popup{position:fixed;top:80px;left:80px;width:500px;max-width:95%;background:#111;border:2px solid #ff2b2b;border-radius:10px;display:none;z-index:1000;box-shadow:0 0 25px rgba(255,0,0,.6);transition:0.3s;}
-.popup.max{top:5%;left:5%;width:90%;height:90%;}
-.popup-header{background:#ff2b2b;color:black;padding:8px;display:flex;justify-content:space-between;cursor:move;}
+/* ========== Popup ========== */
+.popup{
+    position:fixed;
+    top:80px;
+    left:80px;
+    width:500px;
+    max-width:95%;
+    background:#111;
+    border:2px solid #ff2b2b;
+    border-radius:10px;
+    display:none;
+    z-index:1000;
+    box-shadow:0 0 25px rgba(255,0,0,.6);
+}
+.popup.max{
+    top:5%;
+    left:5%;
+    width:90%;
+    height:90%;
+}
+.popup-header{
+    background:#ff2b2b;
+    color:black;
+    padding:8px;
+    display:flex;
+    justify-content:space-between;
+    cursor:move;
+}
 .popup-header span{cursor:pointer;font-weight:bold;padding:0 6px}
-.popup-body{padding:10px;max-height:400px;overflow:auto;}
+.popup-body{padding:10px;max-height:400px;overflow:auto}
 
-/* ================= UNDO ================= */
-.undo-box{background:#000;border:1px solid #ff2b2b;padding:8px;margin-top:5px;text-align:center;animation:fadeIn 0.5s;}
+/* ========== Undo ========== */
+.undo-box{
+    background:#000;
+    border:1px solid #ff2b2b;
+    padding:8px;
+    margin-top:5px;
+    text-align:center;
+}
 
-/* ================= MOBILE ================= */
+/* ========== Mobile ========== */
 @media(max-width:768px){
     .container{flex-direction:column}
     .left-section,.right-section{flex:1 1 100%}
 }
 </style>
 </head>
+
 <body>
 
 <div class="container">
@@ -58,9 +118,9 @@ th{background:#ff2b2b;color:black;position:sticky;top:0;}
 
 <!-- ================= MEMBERS ================= -->
 <div class="left-section">
-<div class="card fade">
+<div class="card">
 <h2>Members</h2>
-<input class="search" placeholder="Search members..." onkeyup="searchMembers(this.value)">
+<input class="search" placeholder="Search..." onkeyup="searchMembers(this.value)">
 <form id="memberForm">
 <input id="mName" placeholder="Name" required>
 <input id="mPhone" placeholder="Phone" required>
@@ -69,7 +129,7 @@ th{background:#ff2b2b;color:black;position:sticky;top:0;}
 <div id="undoArea"></div>
 </div>
 
-<div class="card fade">
+<div class="card">
 <div class="table-box">
 <table>
 <thead><tr><th>Name</th><th>Phone</th><th>❌</th></tr></thead>
@@ -81,14 +141,15 @@ th{background:#ff2b2b;color:black;position:sticky;top:0;}
 
 <!-- ================= FILES ================= -->
 <div class="right-section">
-<div class="card fade">
+<div class="card">
 <h2>Files</h2>
-<input class="search" placeholder="Search files..." onkeyup="searchFiles(this.value)">
+<input class="search" placeholder="Search file..." onkeyup="searchFiles(this.value)">
 <form id="fileForm">
 <input id="fileName" placeholder="File name" required>
 <button>Create File</button>
 </form>
 <ul id="fileList"></ul>
+</div>
 </div>
 </div>
 
@@ -104,7 +165,7 @@ th{background:#ff2b2b;color:black;position:sticky;top:0;}
 </div>
 <div class="popup-body">
 <table>
-<thead><tr><th>Member</th><th>Loan / Amount</th></tr></thead>
+<thead><tr><th>Member</th><th>Amount</th><th>Loan</th></tr></thead>
 <tbody id="fileTable"></tbody>
 </table>
 <button onclick="saveFile()">Save</button>
@@ -114,8 +175,7 @@ th{background:#ff2b2b;color:black;position:sticky;top:0;}
 
 <script>
 const BASE="/api/";
-let members=[],files=[],currentFileId=null,lastDeleted=null;
-const undoArea=document.getElementById("undoArea");
+let members=[], files=[], currentFileId=null, lastDeleted=null;
 
 /* ================= MEMBERS ================= */
 async function loadMembers(){
@@ -124,31 +184,33 @@ async function loadMembers(){
     renderMembers(members);
 }
 function renderMembers(data){
-    const membersBody=document.getElementById("members");
+    membersBody=document.getElementById("members");
     membersBody.innerHTML=data.map(m=>`
-        <tr class="fade">
+        <tr>
             <td>${m.name}</td>
             <td>${m.phone}</td>
             <td><button onclick="deleteMember(${m.id})">X</button></td>
-        </tr>
-    `).join("");
+        </tr>`).join("");
 }
 function searchMembers(v){
     renderMembers(members.filter(m=>m.name.toLowerCase().includes(v.toLowerCase())));
 }
 async function deleteMember(id){
-    lastDeleted=members.find(m=>m.id===id);
+    lastDeleted = members.find(m=>m.id===id);
     await fetch(BASE+"members/"+id,{method:"DELETE"});
     members=members.filter(m=>m.id!==id);
     renderMembers(members);
     showUndo();
 }
 function showUndo(){
-    undoArea.innerHTML=`<div class="undo-box">Member deleted <button onclick="undoDelete()">UNDO</button></div>`;
+    undoArea.innerHTML=`
+    <div class="undo-box">
+    Member deleted <button onclick="undoDelete()">UNDO</button>
+    </div>`;
     setTimeout(()=>undoArea.innerHTML="",7000);
 }
 async function undoDelete(){
-    if(!lastDeleted)return;
+    if(!lastDeleted) return;
     await fetch(BASE+"members",{
         method:"POST",
         headers:{'Content-Type':'application/json'},
@@ -162,59 +224,62 @@ async function undoDelete(){
 async function loadFiles(){
     const r=await fetch(BASE+"files");
     files=await r.json();
-    const fileList=document.getElementById("fileList");
     fileList.innerHTML=files.map(f=>`
-        <li class="fade">
-            ${f.name} <button onclick="deleteFileItem(${f.id},event)" style="float:right;color:red">X</button>
-        </li>
+        <li onclick="openFile(${f.id},'${f.name.replace(/'/g,"")}')">${f.name}</li>
     `).join("");
 }
 function searchFiles(v){
-    const fileList=document.getElementById("fileList");
     [...fileList.children].forEach(li=>{
         li.style.display=li.innerText.toLowerCase().includes(v.toLowerCase())?"":"none";
     });
-}
-async function deleteFileItem(id,e){
-    e.stopPropagation();
-    if(!confirm("Delete file?")) return;
-    await fetch(BASE+"files/"+id,{method:"DELETE"});
-    loadFiles();
 }
 
 /* ================= FILE POPUP ================= */
 async function openFile(id,name){
     currentFileId=id;
-    document.getElementById("currentFile").innerText=name;
-    const filePopup=document.getElementById("filePopup");
+    currentFile.innerText=name;
     filePopup.style.display="block";
 
     const r=await fetch(BASE+"files/"+id);
     const data=await r.json();
 
-    document.getElementById("fileTable").innerHTML=members.map(m=>`
-        <tr class="fade">
+    fileTable.innerHTML=members.map(m=>`
+        <tr>
             <td>${m.name}</td>
-            <td><input value="${data[m.id]||''}"></td>
+            <td><input value="${data[m.id+'_amount']||''}"></td>
+            <td><input value="${data[m.id+'_loan']||''}"></td>
         </tr>
     `).join("");
 }
-function closePopup(){document.getElementById("filePopup").style.display="none";}
-function minPopup(){document.getElementById("filePopup").style.display="none";}
-function maxPopup(){document.getElementById("filePopup").classList.toggle("max");}
+function closePopup(){filePopup.style.display="none";}
+function minPopup(){filePopup.style.display="none";}
+function maxPopup(){filePopup.classList.toggle("max");}
 
 async function saveFile(){
     const payload={};
-    [...document.getElementById("fileTable").querySelectorAll("tr")].forEach((tr,i)=>{
-        payload[members[i].id]=tr.querySelector("input").value;
+    const rows=[...fileTable.querySelectorAll("tr")];
+    
+    rows.forEach((tr,i)=>{
+        payload[members[i].id+'_amount'] = tr.querySelectorAll("input")[0].value;
+        payload[members[i].id+'_loan'] = tr.querySelectorAll("input")[1].value;
     });
-    await fetch(BASE+"files/"+currentFileId,{
-        method:"PUT",
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(payload)
-    });
-    alert("Saved");
+
+    try {
+        const res = await fetch(BASE+"files/"+currentFileId,{
+            method:"PUT",
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(payload)
+        });
+        if(res.ok){
+            rows.forEach(tr=>{
+                tr.style.transition="background 0.3s";
+                tr.style.background="#00ff44";
+                setTimeout(()=>tr.style.background="",300);
+            });
+        } else { alert("Save failed"); }
+    } catch(err){ console.error(err); alert("Save failed"); }
 }
+
 async function deleteFile(){
     if(!confirm("Delete file?"))return;
     await fetch(BASE+"files/"+currentFileId,{method:"DELETE"});
@@ -224,8 +289,6 @@ async function deleteFile(){
 
 /* ================= DRAG ================= */
 let drag=false,dx,dy;
-const popupHeader=document.getElementById("popupHeader");
-const filePopup=document.getElementById("filePopup");
 popupHeader.onmousedown=e=>{
     drag=true;
     dx=e.clientX-filePopup.offsetLeft;
@@ -240,7 +303,7 @@ document.onmousemove=e=>{
 document.onmouseup=()=>drag=false;
 
 /* ================= INIT ================= */
-document.getElementById("memberForm").onsubmit=async e=>{
+memberForm.onsubmit=async e=>{
     e.preventDefault();
     await fetch(BASE+"members",{
         method:"POST",
@@ -250,7 +313,7 @@ document.getElementById("memberForm").onsubmit=async e=>{
     e.target.reset();
     loadMembers();
 };
-document.getElementById("fileForm").onsubmit=async e=>{
+fileForm.onsubmit=async e=>{
     e.preventDefault();
     await fetch(BASE+"files",{
         method:"POST",
@@ -264,6 +327,6 @@ document.getElementById("fileForm").onsubmit=async e=>{
 loadMembers();
 loadFiles();
 </script>
+
 </body>
 </html>
-
