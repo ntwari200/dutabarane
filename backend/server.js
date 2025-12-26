@@ -1,17 +1,21 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
-import { usersDB, systemDB } from "./database.js";
+import { pool, initDB } from "./database.js";
 
 dotenv.config();
 const app = express();
+
+/* =======================
+   INIT DATABASE
+======================= */
+await initDB();
 
 /* =======================
    MIDDLEWARE
 ======================= */
 app.use(express.json());
 
-// Serve frontend
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, "../frontend")));
 
@@ -25,74 +29,90 @@ app.get("/", (req, res) => {
 /* =======================
    LOGIN
 ======================= */
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  usersDB.get(
-    "SELECT * FROM users WHERE username=? AND password=?",
-    [username, password],
-    (err, row) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ success: false });
-      }
-      if (row) return res.json({ success: true });
-      res.json({ success: false });
-    }
-  );
+  try {
+    const result = await pool.query(
+      "SELECT id FROM users WHERE username=$1 AND password=$2",
+      [username, password]
+    );
+
+    res.json({ success: result.rowCount > 0 });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
 });
 
 /* =======================
    MEMBERS
 ======================= */
-app.post("/api/members", (req, res) => {
+
+// CREATE member
+app.post("/api/members", async (req, res) => {
   const { name, phone } = req.body;
   if (!name || !phone)
     return res.status(400).json({ error: "Missing data" });
 
-  systemDB.run(
-    "INSERT INTO members (name, phone) VALUES (?, ?)",
-    [name, phone],
-    function (err) {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Insert failed" });
-      }
+  const client = await pool.connect();
 
-      const newMemberId = this.lastID;
+  try {
+    await client.query("BEGIN");
 
-      // Add this new member to all existing files
-      systemDB.all("SELECT id FROM files", [], (err, files) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ error: "Fetch files failed" });
-        }
+    const memberRes = await client.query(
+      "INSERT INTO members (name, phone) VALUES ($1,$2) RETURNING id",
+      [name, phone]
+    );
 
-        const stmt = systemDB.prepare(
-          "INSERT INTO file_rows (file_id, member_id, amount) VALUES (?, ?, '')"
-        );
+    const memberId = memberRes.rows[0].id;
 
-        files.forEach(file => stmt.run(file.id, newMemberId));
-        stmt.finalize(err => {
-          if (err) {
-            console.error(err);
-            return res.status(500).json({ error: "Insert file_rows failed" });
-          }
-          res.json({ id: newMemberId });
-        });
-      });
+    // add member to all existing files
+    const files = await client.query("SELECT id FROM files");
+
+    for (const f of files.rows) {
+      await client.query(
+        "INSERT INTO file_rows (file_id, member_id, amount) VALUES ($1,$2,'')",
+        [f.id, memberId]
+      );
     }
-  );
+
+    await client.query("COMMIT");
+    res.json({ id: memberId });
+
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error(err);
+    res.status(500).json({ error: "Insert failed" });
+  } finally {
+    client.release();
+  }
 });
 
-app.get("/api/members", (req, res) => {
-  systemDB.all("SELECT * FROM members", [], (err, rows) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Fetch failed" });
-    }
-    res.json(rows);
-  });
+// LIST members
+app.get("/api/members", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM members ORDER BY id");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Fetch failed" });
+  }
+});
+
+// DELETE member (PERMANENT)
+app.delete("/api/members/:id", async (req, res) => {
+  try {
+    await pool.query(
+      "DELETE FROM members WHERE id=$1",
+      [req.params.id]
+    );
+    // file_rows auto-deleted via CASCADE
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Delete failed" });
+  }
 });
 
 /* =======================
@@ -100,109 +120,114 @@ app.get("/api/members", (req, res) => {
 ======================= */
 
 // LIST files
-app.get("/api/files", (req, res) => {
-  systemDB.all(
-    "SELECT id, file_name AS name FROM files",
-    [],
-    (err, rows) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Fetch failed" });
-      }
-      res.json(rows);
-    }
-  );
+app.get("/api/files", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT id, file_name AS name FROM files ORDER BY id"
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Fetch failed" });
+  }
 });
 
 // CREATE file
-app.post("/api/files", (req, res) => {
+app.post("/api/files", async (req, res) => {
   const { name } = req.body;
   if (!name)
     return res.status(400).json({ error: "File name required" });
 
-  systemDB.run(
-    "INSERT INTO files (file_name) VALUES (?)",
-    [name],
-    function (err) {
-      if (err) {
-        console.error("FILE INSERT ERROR:", err);
-        return res.status(500).json({ error: "File creation failed" });
-      }
+  const client = await pool.connect();
 
-      const fileId = this.lastID;
+  try {
+    await client.query("BEGIN");
 
-      // Add all existing members to the new file
-      systemDB.all("SELECT id FROM members", [], (err, members) => {
-        if (err) {
-          console.error("MEMBER FETCH ERROR:", err);
-          return res.status(500).json({ error: "Member fetch failed" });
-        }
+    const fileRes = await client.query(
+      "INSERT INTO files (file_name) VALUES ($1) RETURNING id",
+      [name]
+    );
 
-        const stmt = systemDB.prepare(
-          "INSERT INTO file_rows (file_id, member_id, amount) VALUES (?, ?, '')"
-        );
+    const fileId = fileRes.rows[0].id;
 
-        members.forEach(m => stmt.run(fileId, m.id));
-        stmt.finalize();
+    const members = await client.query("SELECT id FROM members");
 
-        res.json({ success: true });
-      });
+    for (const m of members.rows) {
+      await client.query(
+        "INSERT INTO file_rows (file_id, member_id, amount) VALUES ($1,$2,'')",
+        [fileId, m.id]
+      );
     }
-  );
+
+    await client.query("COMMIT");
+    res.json({ success: true });
+
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error(err);
+    res.status(500).json({ error: "File creation failed" });
+  } finally {
+    client.release();
+  }
 });
 
 // OPEN file
-app.get("/api/files/:id", (req, res) => {
-  systemDB.all(
-    "SELECT member_id, amount FROM file_rows WHERE file_id=?",
-    [req.params.id],
-    (err, rows) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Open failed" });
-      }
+app.get("/api/files/:id", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT member_id, amount FROM file_rows WHERE file_id=$1",
+      [req.params.id]
+    );
 
-      const data = {};
-      rows.forEach(r => (data[r.member_id] = r.amount));
-      res.json(data);
-    }
-  );
+    const data = {};
+    result.rows.forEach(r => data[r.member_id] = r.amount);
+    res.json(data);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Open failed" });
+  }
 });
 
 // SAVE file
-app.put("/api/files/:id", (req, res) => {
+app.put("/api/files/:id", async (req, res) => {
   const fileId = req.params.id;
   const data = req.body;
 
-  const stmt = systemDB.prepare(
-    "UPDATE file_rows SET amount=? WHERE file_id=? AND member_id=?"
-  );
+  const client = await pool.connect();
 
-  Object.keys(data).forEach(memberId => {
-    stmt.run(data[memberId], fileId, memberId);
-  });
+  try {
+    await client.query("BEGIN");
 
-  stmt.finalize(err => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Save failed" });
+    for (const memberId of Object.keys(data)) {
+      await client.query(
+        "UPDATE file_rows SET amount=$1 WHERE file_id=$2 AND member_id=$3",
+        [data[memberId], fileId, memberId]
+      );
     }
+
+    await client.query("COMMIT");
     res.json({ success: true });
-  });
+
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error(err);
+    res.status(500).json({ error: "Save failed" });
+  } finally {
+    client.release();
+  }
 });
 
-// DELETE file
-app.delete("/api/files/:id", (req, res) => {
-  const id = req.params.id;
-
-  systemDB.run("DELETE FROM file_rows WHERE file_id=?", [id]);
-  systemDB.run("DELETE FROM files WHERE id=?", [id], err => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Delete failed" });
-    }
+// DELETE file (PERMANENT)
+app.delete("/api/files/:id", async (req, res) => {
+  try {
+    await pool.query("DELETE FROM files WHERE id=$1", [req.params.id]);
+    // file_rows auto-deleted
     res.json({ success: true });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Delete failed" });
+  }
 });
 
 /* =======================
