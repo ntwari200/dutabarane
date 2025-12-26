@@ -1,5 +1,4 @@
-// database.js (PostgreSQL - production ready)
-
+// database.js
 import pkg from "pg";
 import dotenv from "dotenv";
 
@@ -24,15 +23,11 @@ export const pool = new Pool({
 
 export async function initDB() {
   const client = await pool.connect();
-
   try {
-    /* ---------- UUID EXTENSION ---------- */
-    await client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
-
     /* ---------- USERS ---------- */
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id SERIAL PRIMARY KEY,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL
       )
@@ -41,69 +36,61 @@ export async function initDB() {
     /* ---------- MEMBERS ---------- */
     await client.query(`
       CREATE TABLE IF NOT EXISTS members (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
-        phone TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        phone TEXT NOT NULL
       )
     `);
 
     /* ---------- FILES ---------- */
     await client.query(`
       CREATE TABLE IF NOT EXISTS files (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        name TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        id SERIAL PRIMARY KEY,
+        file_name TEXT NOT NULL
       )
     `);
 
     /* ---------- FILE ROWS ---------- */
     await client.query(`
       CREATE TABLE IF NOT EXISTS file_rows (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        file_id UUID NOT NULL,
-        member_id UUID NOT NULL,
-        amount NUMERIC DEFAULT 0,
-        loan NUMERIC DEFAULT 0,
-
+        id SERIAL PRIMARY KEY,
+        file_id INTEGER NOT NULL,
+        member_id INTEGER NOT NULL,
+        amount TEXT DEFAULT '',
         CONSTRAINT fk_file
           FOREIGN KEY (file_id)
           REFERENCES files(id)
           ON DELETE CASCADE,
-
         CONSTRAINT fk_member
           FOREIGN KEY (member_id)
           REFERENCES members(id)
           ON DELETE CASCADE,
-
         CONSTRAINT unique_file_member
           UNIQUE (file_id, member_id)
       )
     `);
 
-    /* ---------- CREATE ADMIN ---------- */
+    /* ---------- ADMIN ---------- */
     const adminUser = process.env.ADMIN_USERNAME;
     const adminPass = process.env.ADMIN_PASSWORD;
 
     if (adminUser && adminPass) {
       const exists = await client.query(
-        "SELECT id FROM users WHERE username = $1",
+        "SELECT id FROM users WHERE username=$1",
         [adminUser]
       );
-
       if (exists.rowCount === 0) {
         await client.query(
-          "INSERT INTO users (username, password) VALUES ($1, $2)",
+          "INSERT INTO users (username,password) VALUES ($1,$2)",
           [adminUser, adminPass]
         );
         console.log("✅ Admin user created");
       }
     }
 
-    console.log("✅ PostgreSQL database fully initialized");
-
+    console.log("✅ PostgreSQL initialized");
   } catch (err) {
-    console.error("❌ Database init error:", err);
+    console.error("❌ DB init error:", err);
   } finally {
     client.release();
   }
