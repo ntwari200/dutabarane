@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
@@ -7,7 +8,7 @@ dotenv.config();
 const app = express();
 
 /* =======================
-   INIT DATABASE
+   INITIALIZE DATABASE
 ======================= */
 await initDB();
 
@@ -16,12 +17,12 @@ await initDB();
 ======================= */
 app.use(express.json());
 
+/* =======================
+   STATIC FRONTEND
+======================= */
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-/* =======================
-   ROOT
-======================= */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
@@ -38,9 +39,14 @@ app.post("/login", async (req, res) => {
       [username, password]
     );
 
-    res.json({ success: result.rowCount > 0 });
+    if (result.rowCount > 0) {
+      return res.json({ success: true });
+    }
+
+    res.json({ success: false });
+
   } catch (err) {
-    console.error(err);
+    console.error("LOGIN ERROR:", err);
     res.status(500).json({ success: false });
   }
 });
@@ -61,18 +67,18 @@ app.post("/api/members", async (req, res) => {
     await client.query("BEGIN");
 
     const memberRes = await client.query(
-      "INSERT INTO members (name, phone) VALUES ($1,$2) RETURNING id",
+      "INSERT INTO members (name, phone) VALUES ($1, $2) RETURNING id",
       [name, phone]
     );
 
     const memberId = memberRes.rows[0].id;
 
-    // add member to all existing files
-    const files = await client.query("SELECT id FROM files");
+    // Add member to all existing files
+    const filesRes = await client.query("SELECT id FROM files");
 
-    for (const f of files.rows) {
+    for (const f of filesRes.rows) {
       await client.query(
-        "INSERT INTO file_rows (file_id, member_id, amount) VALUES ($1,$2,'')",
+        "INSERT INTO file_rows (file_id, member_id, amount) VALUES ($1, $2, '')",
         [f.id, memberId]
       );
     }
@@ -82,7 +88,7 @@ app.post("/api/members", async (req, res) => {
 
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error(err);
+    console.error("ADD MEMBER ERROR:", err);
     res.status(500).json({ error: "Insert failed" });
   } finally {
     client.release();
@@ -95,23 +101,8 @@ app.get("/api/members", async (req, res) => {
     const result = await pool.query("SELECT * FROM members ORDER BY id");
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error("FETCH MEMBERS ERROR:", err);
     res.status(500).json({ error: "Fetch failed" });
-  }
-});
-
-// DELETE member (PERMANENT)
-app.delete("/api/members/:id", async (req, res) => {
-  try {
-    await pool.query(
-      "DELETE FROM members WHERE id=$1",
-      [req.params.id]
-    );
-    // file_rows auto-deleted via CASCADE
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Delete failed" });
   }
 });
 
@@ -127,7 +118,7 @@ app.get("/api/files", async (req, res) => {
     );
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error("FETCH FILES ERROR:", err);
     res.status(500).json({ error: "Fetch failed" });
   }
 });
@@ -150,11 +141,12 @@ app.post("/api/files", async (req, res) => {
 
     const fileId = fileRes.rows[0].id;
 
-    const members = await client.query("SELECT id FROM members");
+    // Add all members to new file
+    const membersRes = await client.query("SELECT id FROM members");
 
-    for (const m of members.rows) {
+    for (const m of membersRes.rows) {
       await client.query(
-        "INSERT INTO file_rows (file_id, member_id, amount) VALUES ($1,$2,'')",
+        "INSERT INTO file_rows (file_id, member_id, amount) VALUES ($1, $2, '')",
         [fileId, m.id]
       );
     }
@@ -164,7 +156,7 @@ app.post("/api/files", async (req, res) => {
 
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error(err);
+    console.error("CREATE FILE ERROR:", err);
     res.status(500).json({ error: "File creation failed" });
   } finally {
     client.release();
@@ -180,11 +172,11 @@ app.get("/api/files/:id", async (req, res) => {
     );
 
     const data = {};
-    result.rows.forEach(r => data[r.member_id] = r.amount);
+    result.rows.forEach(r => (data[r.member_id] = r.amount));
     res.json(data);
 
   } catch (err) {
-    console.error(err);
+    console.error("OPEN FILE ERROR:", err);
     res.status(500).json({ error: "Open failed" });
   }
 });
@@ -211,21 +203,20 @@ app.put("/api/files/:id", async (req, res) => {
 
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error(err);
+    console.error("SAVE FILE ERROR:", err);
     res.status(500).json({ error: "Save failed" });
   } finally {
     client.release();
   }
 });
 
-// DELETE file (PERMANENT)
+// DELETE file
 app.delete("/api/files/:id", async (req, res) => {
   try {
     await pool.query("DELETE FROM files WHERE id=$1", [req.params.id]);
-    // file_rows auto-deleted
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error("DELETE FILE ERROR:", err);
     res.status(500).json({ error: "Delete failed" });
   }
 });
