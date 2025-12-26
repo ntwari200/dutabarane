@@ -1,10 +1,11 @@
-// database.js (PostgreSQL version)
-import pg from "pg";
+// database.js (PostgreSQL version - Render safe)
+
+import pkg from "pg";        // ✅ IMPORTANT: correct ES module import
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const { Pool } = pg;
+const { Pool } = pkg;
 
 /* =============================
    POSTGRES CONNECTION
@@ -65,7 +66,9 @@ export async function initDB() {
         CONSTRAINT fk_member
           FOREIGN KEY (member_id)
           REFERENCES members(id)
-          ON DELETE CASCADE
+          ON DELETE CASCADE,
+        CONSTRAINT unique_file_member
+          UNIQUE (file_id, member_id)
       )
     `);
 
