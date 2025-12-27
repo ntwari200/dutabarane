@@ -8,13 +8,16 @@ const { Pool } = pkg;
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
+  ssl: process.env.NODE_ENV === "production"
+    ? { rejectUnauthorized: false }
+    : false
 });
 
 export async function initDB() {
   const client = await pool.connect();
+
   try {
-    // Users
+    /* ---------- USERS ---------- */
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -23,7 +26,7 @@ export async function initDB() {
       )
     `);
 
-    // Members
+    /* ---------- MEMBERS ---------- */
     await client.query(`
       CREATE TABLE IF NOT EXISTS members (
         id SERIAL PRIMARY KEY,
@@ -32,7 +35,7 @@ export async function initDB() {
       )
     `);
 
-    // Files
+    /* ---------- FILES ---------- */
     await client.query(`
       CREATE TABLE IF NOT EXISTS files (
         id SERIAL PRIMARY KEY,
@@ -40,7 +43,7 @@ export async function initDB() {
       )
     `);
 
-    // File Rows
+    /* ---------- FILE ROWS ---------- */
     await client.query(`
       CREATE TABLE IF NOT EXISTS file_rows (
         id SERIAL PRIMARY KEY,
@@ -48,20 +51,25 @@ export async function initDB() {
         member_id INTEGER NOT NULL,
         amount TEXT DEFAULT '',
         loan TEXT DEFAULT '',
-        CONSTRAINT fk_file FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE,
-        CONSTRAINT fk_member FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
+        interest TEXT DEFAULT '',
+        CONSTRAINT fk_file FOREIGN KEY (file_id)
+          REFERENCES files(id) ON DELETE CASCADE,
+        CONSTRAINT fk_member FOREIGN KEY (member_id)
+          REFERENCES members(id) ON DELETE CASCADE,
         CONSTRAINT unique_file_member UNIQUE (file_id, member_id)
       )
     `);
 
-    // Create admin
+    /* ---------- CREATE ADMIN ---------- */
     const adminUser = process.env.ADMIN_USERNAME;
     const adminPass = process.env.ADMIN_PASSWORD;
+
     if (adminUser && adminPass) {
       const exists = await client.query(
-        "SELECT id FROM users WHERE username = $1",
+        "SELECT id FROM users WHERE username=$1",
         [adminUser]
       );
+
       if (exists.rowCount === 0) {
         await client.query(
           "INSERT INTO users (username, password) VALUES ($1,$2)",
@@ -72,6 +80,7 @@ export async function initDB() {
     }
 
     console.log("✅ PostgreSQL database initialized successfully");
+
   } catch (err) {
     console.error("❌ DB init error:", err);
   } finally {
