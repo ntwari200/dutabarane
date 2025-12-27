@@ -7,29 +7,21 @@ import { pool, initDB } from "./database.js";
 dotenv.config();
 const app = express();
 
-/* =======================
-   INITIALIZE DATABASE
-======================= */
+/* ======================= INITIALIZE DATABASE ======================= */
 await initDB();
 
-/* =======================
-   MIDDLEWARE
-======================= */
+/* ======================= MIDDLEWARE ======================= */
 app.use(express.json());
 
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-/* =======================
-   ROOT
-======================= */
+/* ======================= ROOT ======================= */
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/index.html"));
+  res.sendFile(path.join(__dirname, "../frontend/home.html"));
 });
 
-/* =======================
-   LOGIN
-======================= */
+/* ======================= LOGIN ======================= */
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -44,15 +36,11 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/* =======================
-   MEMBERS
-======================= */
-
+/* ======================= MEMBERS ======================= */
 // CREATE member
 app.post("/api/members", async (req, res) => {
   const { name, phone } = req.body;
-  if (!name || !phone)
-    return res.status(400).json({ error: "Missing data" });
+  if (!name || !phone) return res.status(400).json({ error: "Missing data" });
 
   const client = await pool.connect();
   try {
@@ -60,14 +48,13 @@ app.post("/api/members", async (req, res) => {
       "INSERT INTO members (name, phone) VALUES ($1,$2) RETURNING id",
       [name, phone]
     );
-
     const memberId = memberResult.rows[0].id;
 
-    // Add this member to all files with empty amount and loan
+    // Add member to all existing files
     const files = await client.query("SELECT id FROM files");
     for (const file of files.rows) {
       await client.query(
-        "INSERT INTO file_rows (file_id, member_id, amount, loan) VALUES ($1,$2,'','')",
+        "INSERT INTO file_rows (file_id, member_id, amount, loan, interest) VALUES ($1,$2,'','','')",
         [file.id, memberId]
       );
     }
@@ -103,15 +90,12 @@ app.delete("/api/members/:id", async (req, res) => {
   }
 });
 
-/* =======================
-   FILES
-======================= */
-
+/* ======================= FILES ======================= */
 // LIST files
 app.get("/api/files", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, file_name AS name FROM files ORDER BY id"
+      "SELECT id, name FROM files ORDER BY id"
     );
     res.json(result.rows);
   } catch (err) {
@@ -128,16 +112,15 @@ app.post("/api/files", async (req, res) => {
   const client = await pool.connect();
   try {
     const fileResult = await client.query(
-      "INSERT INTO files (file_name) VALUES ($1) RETURNING id",
+      "INSERT INTO files (name) VALUES ($1) RETURNING id",
       [name]
     );
-
     const fileId = fileResult.rows[0].id;
-    const members = await client.query("SELECT id FROM members");
 
+    const members = await client.query("SELECT id FROM members");
     for (const m of members.rows) {
       await client.query(
-        "INSERT INTO file_rows (file_id, member_id, amount, loan) VALUES ($1,$2,'','')",
+        "INSERT INTO file_rows (file_id, member_id, amount, loan, interest) VALUES ($1,$2,'','','')",
         [fileId, m.id]
       );
     }
@@ -151,17 +134,16 @@ app.post("/api/files", async (req, res) => {
   }
 });
 
-// OPEN file
+// OPEN file (get all member amounts, loans, interest)
 app.get("/api/files/:id", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT member_id, amount, loan FROM file_rows WHERE file_id=$1",
+      "SELECT member_id, amount, loan, interest FROM file_rows WHERE file_id=$1",
       [req.params.id]
     );
-
     const data = {};
     result.rows.forEach(r => {
-      data[r.member_id] = { amount: r.amount, loan: r.loan };
+      data[r.member_id] = { amount: r.amount, loan: r.loan, interest: r.interest };
     });
     res.json(data);
   } catch (err) {
@@ -178,9 +160,12 @@ app.put("/api/files/:id", async (req, res) => {
   const client = await pool.connect();
   try {
     for (const memberId in data) {
+      const row = data[memberId];
       await client.query(
-        "UPDATE file_rows SET amount=$1, loan=$2 WHERE file_id=$3 AND member_id=$4",
-        [data[memberId].amount, data[memberId].loan, fileId, memberId]
+        `UPDATE file_rows 
+         SET amount=$1, loan=$2, interest=$3 
+         WHERE file_id=$4 AND member_id=$5`,
+        [row.amount||"", row.loan||"", row.interest||"", fileId, memberId]
       );
     }
     res.json({ success: true });
@@ -203,11 +188,8 @@ app.delete("/api/files/:id", async (req, res) => {
   }
 });
 
-/* =======================
-   SERVER
-======================= */
+/* ======================= SERVER ======================= */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("✅ Server running on port", PORT);
 });
-
