@@ -7,21 +7,29 @@ import { pool, initDB } from "./database.js";
 dotenv.config();
 const app = express();
 
-/* ================= INIT DB ================= */
+/* =======================
+   INITIALIZE DATABASE
+======================= */
 await initDB();
 
-/* ================= MIDDLEWARE ================= */
+/* =======================
+   MIDDLEWARE
+======================= */
 app.use(express.json());
 
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-/* ================= ROOT ================= */
+/* =======================
+   ROOT
+======================= */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
-/* ================= LOGIN ================= */
+/* =======================
+   LOGIN
+======================= */
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -36,10 +44,15 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/* ================= MEMBERS ================= */
+/* =======================
+   MEMBERS
+======================= */
+
+// CREATE member
 app.post("/api/members", async (req, res) => {
   const { name, phone } = req.body;
-  if (!name || !phone) return res.status(400).json({ error: "Missing data" });
+  if (!name || !phone)
+    return res.status(400).json({ error: "Missing data" });
 
   const client = await pool.connect();
   try {
@@ -66,6 +79,7 @@ app.post("/api/members", async (req, res) => {
   }
 });
 
+// LIST members
 app.get("/api/members", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM members ORDER BY id");
@@ -76,6 +90,7 @@ app.get("/api/members", async (req, res) => {
   }
 });
 
+// DELETE member
 app.delete("/api/members/:id", async (req, res) => {
   try {
     await pool.query("DELETE FROM members WHERE id=$1", [req.params.id]);
@@ -86,25 +101,34 @@ app.delete("/api/members/:id", async (req, res) => {
   }
 });
 
-/* ================= FILES ================= */
+/* =======================
+   FILES
+======================= */
+
+// LIST files
 app.get("/api/files", async (req, res) => {
   try {
-    const result = await pool.query("SELECT id, name FROM files ORDER BY id");
-    res.json(result.rows);
+    const result = await pool.query(
+      "SELECT id, file_name FROM files ORDER BY id"
+    );
+    // Map file_name → name for frontend
+    res.json(result.rows.map(f => ({ id: f.id, name: f.file_name })));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Fetch failed" });
   }
 });
 
+// CREATE file
 app.post("/api/files", async (req, res) => {
   const { name } = req.body;
-  if (!name) return res.status(400).json({ error: "File name required" });
+  if (!name)
+    return res.status(400).json({ error: "File name required" });
 
   const client = await pool.connect();
   try {
     const fileResult = await client.query(
-      "INSERT INTO files (name) VALUES ($1) RETURNING id",
+      "INSERT INTO files (file_name) VALUES ($1) RETURNING id",
       [name]
     );
     const fileId = fileResult.rows[0].id;
@@ -126,6 +150,7 @@ app.post("/api/files", async (req, res) => {
   }
 });
 
+// OPEN file (get all rows for a file)
 app.get("/api/files/:id", async (req, res) => {
   try {
     const result = await pool.query(
@@ -141,6 +166,7 @@ app.get("/api/files/:id", async (req, res) => {
         interest: r.interest
       };
     });
+
     res.json(data);
   } catch (err) {
     console.error(err);
@@ -148,6 +174,7 @@ app.get("/api/files/:id", async (req, res) => {
   }
 });
 
+// SAVE file (update amounts, loans, interest)
 app.put("/api/files/:id", async (req, res) => {
   const fileId = req.params.id;
   const data = req.body;
@@ -155,10 +182,9 @@ app.put("/api/files/:id", async (req, res) => {
   const client = await pool.connect();
   try {
     for (const memberId in data) {
-      const { amount, loan, interest } = data[memberId];
       await client.query(
         "UPDATE file_rows SET amount=$1, loan=$2, interest=$3 WHERE file_id=$4 AND member_id=$5",
-        [amount, loan, interest, fileId, memberId]
+        [data[memberId].amount, data[memberId].loan, data[memberId].interest, fileId, memberId]
       );
     }
     res.json({ success: true });
@@ -170,6 +196,7 @@ app.put("/api/files/:id", async (req, res) => {
   }
 });
 
+// DELETE file
 app.delete("/api/files/:id", async (req, res) => {
   try {
     await pool.query("DELETE FROM files WHERE id=$1", [req.params.id]);
@@ -180,7 +207,9 @@ app.delete("/api/files/:id", async (req, res) => {
   }
 });
 
-/* ================= SERVER ================= */
+/* =======================
+   SERVER
+======================= */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("✅ Server running on port", PORT);
