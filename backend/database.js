@@ -6,6 +6,7 @@ dotenv.config();
 
 const { Pool } = pkg;
 
+/* ================= DATABASE POOL ================= */
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === "production"
@@ -13,11 +14,12 @@ export const pool = new Pool({
     : false
 });
 
+/* ================= INIT DATABASE ================= */
 export async function initDB() {
   const client = await pool.connect();
 
   try {
-    /* ---------- USERS ---------- */
+    /* ========== USERS (LOGIN) ========== */
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -26,7 +28,7 @@ export async function initDB() {
       )
     `);
 
-    /* ---------- MEMBERS ---------- */
+    /* ========== MEMBERS ========== */
     await client.query(`
       CREATE TABLE IF NOT EXISTS members (
         id SERIAL PRIMARY KEY,
@@ -35,15 +37,16 @@ export async function initDB() {
       )
     `);
 
-    /* ---------- FILES ---------- */
+    /* ========== FILES ========== */
     await client.query(`
       CREATE TABLE IF NOT EXISTS files (
         id SERIAL PRIMARY KEY,
-        file_name TEXT NOT NULL
+        name TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
 
-    /* ---------- FILE ROWS ---------- */
+    /* ========== FILE ROWS ========== */
     await client.query(`
       CREATE TABLE IF NOT EXISTS file_rows (
         id SERIAL PRIMARY KEY,
@@ -52,21 +55,41 @@ export async function initDB() {
         amount TEXT DEFAULT '',
         loan TEXT DEFAULT '',
         interest TEXT DEFAULT '',
-        CONSTRAINT fk_file FOREIGN KEY (file_id)
-          REFERENCES files(id) ON DELETE CASCADE,
-        CONSTRAINT fk_member FOREIGN KEY (member_id)
-          REFERENCES members(id) ON DELETE CASCADE,
+        CONSTRAINT fk_file
+          FOREIGN KEY (file_id)
+          REFERENCES files(id)
+          ON DELETE CASCADE,
+        CONSTRAINT fk_member
+          FOREIGN KEY (member_id)
+          REFERENCES members(id)
+          ON DELETE CASCADE,
         CONSTRAINT unique_file_member UNIQUE (file_id, member_id)
       )
     `);
 
-    /* ---------- CREATE ADMIN ---------- */
+    /* ========== SAFE MIGRATIONS (VERY IMPORTANT) ========== */
+    await client.query(`
+      ALTER TABLE file_rows
+      ADD COLUMN IF NOT EXISTS amount TEXT DEFAULT '';
+    `);
+
+    await client.query(`
+      ALTER TABLE file_rows
+      ADD COLUMN IF NOT EXISTS loan TEXT DEFAULT '';
+    `);
+
+    await client.query(`
+      ALTER TABLE file_rows
+      ADD COLUMN IF NOT EXISTS interest TEXT DEFAULT '';
+    `);
+
+    /* ========== CREATE ADMIN USER (ONCE) ========== */
     const adminUser = process.env.ADMIN_USERNAME;
     const adminPass = process.env.ADMIN_PASSWORD;
 
     if (adminUser && adminPass) {
       const exists = await client.query(
-        "SELECT id FROM users WHERE username=$1",
+        "SELECT id FROM users WHERE username = $1",
         [adminUser]
       );
 
@@ -79,11 +102,12 @@ export async function initDB() {
       }
     }
 
-    console.log("✅ PostgreSQL database initialized successfully");
+    console.log("✅ PostgreSQL database initialized & upgraded successfully");
 
   } catch (err) {
-    console.error("❌ DB init error:", err);
+    console.error("❌ Database initialization error:", err);
   } finally {
     client.release();
   }
 }
+
