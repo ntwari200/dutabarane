@@ -1,308 +1,112 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard</title>
+// database.js
+import pkg from "pg";
+import dotenv from "dotenv";
 
-<style>
-*{box-sizing:border-box;font-family:Arial}
-body{margin:0;background:#0b0b0b;color:white}
+dotenv.config();
 
-/* ================= LAYOUT ================= */
-h1,h2{color:#ff2b2b;text-align:center}
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:15px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:20px;
-}
-.left{flex:1 1 40%;display:flex;flex-direction:column;gap:20px}
-.right{flex:1 1 55%;display:flex;flex-direction:column;gap:20px}
+const { Pool } = pkg;
 
-/* ================= CARD ================= */
-.card{
-  background:#141414;
-  border:2px solid #ff2b2b;
-  border-radius:10px;
-  padding:15px;
-  box-shadow:0 0 15px rgba(255,0,0,.4);
-}
+/* ================= DATABASE POOL ================= */
+export const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === "production"
+    ? { rejectUnauthorized: false }
+    : false
+});
 
-/* ================= INPUT ================= */
-input,button{
-  width:100%;
-  padding:10px;
-  margin:6px 0;
-  background:#000;
-  border:2px solid #ff2b2b;
-  color:white;
-  border-radius:6px;
-}
-button{
-  background:#ff2b2b;
-  font-weight:bold;
-  cursor:pointer;
-  transition:.3s;
-}
-button:hover{background:#ff5555}
+/* ================= INIT DATABASE ================= */
+export async function initDB() {
+  const client = await pool.connect();
 
-/* ================= TABLE ================= */
-.table-box{max-height:300px;overflow:auto}
-table{width:100%;border-collapse:collapse;min-width:500px}
-th,td{border:1px solid #ff2b2b;padding:8px}
-th{background:#ff2b2b;color:black;position:sticky;top:0}
+  try {
+    /* ========== USERS (LOGIN) ========== */
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+      )
+    `);
 
-/* ================= FILE LIST ================= */
-#fileList{list-style:none;padding:0}
-#fileList li{
-  padding:10px;
-  margin:6px 0;
-  border:1px solid #ff2b2b;
-  border-radius:6px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-#fileList span{cursor:pointer}
-#fileList span:hover{color:#ff5555}
+    /* ========== MEMBERS ========== */
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS members (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        phone TEXT NOT NULL
+      )
+    `);
 
-/* ================= POPUP ================= */
-.popup{
-  position:fixed;
-  top:60px;
-  left:60px;
-  width:520px;
-  max-width:95%;
-  background:#111;
-  border:2px solid #ff2b2b;
-  border-radius:10px;
-  display:none;
-  z-index:1000;
-  box-shadow:0 0 25px rgba(255,0,0,.6);
-}
-.popup.max{
-  top:5%;
-  left:5%;
-  width:90%;
-  height:90%;
-}
-.popup-header{
-  background:#ff2b2b;
-  color:black;
-  padding:8px;
-  display:flex;
-  justify-content:space-between;
-  cursor:move;
-}
-.popup-body{
-  padding:10px;
-  max-height:400px;
-  overflow:auto;
-}
+    /* ========== FILES ========== */
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS files (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
 
-/* ================= MOBILE ================= */
-@media(max-width:768px){
-  .container{flex-direction:column}
-  .popup{
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    border-radius:0;
+    /* ========== FILE ROWS ========== */
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS file_rows (
+        id SERIAL PRIMARY KEY,
+        file_id INTEGER NOT NULL,
+        member_id INTEGER NOT NULL,
+        amount TEXT DEFAULT '',
+        loan TEXT DEFAULT '',
+        interest TEXT DEFAULT '',
+        CONSTRAINT fk_file
+          FOREIGN KEY (file_id)
+          REFERENCES files(id)
+          ON DELETE CASCADE,
+        CONSTRAINT fk_member
+          FOREIGN KEY (member_id)
+          REFERENCES members(id)
+          ON DELETE CASCADE,
+        CONSTRAINT unique_file_member UNIQUE (file_id, member_id)
+      )
+    `);
+
+    /* ========== SAFE MIGRATIONS (VERY IMPORTANT) ========== */
+    await client.query(`
+      ALTER TABLE file_rows
+      ADD COLUMN IF NOT EXISTS amount TEXT DEFAULT '';
+    `);
+
+    await client.query(`
+      ALTER TABLE file_rows
+      ADD COLUMN IF NOT EXISTS loan TEXT DEFAULT '';
+    `);
+
+    await client.query(`
+      ALTER TABLE file_rows
+      ADD COLUMN IF NOT EXISTS interest TEXT DEFAULT '';
+    `);
+
+    /* ========== CREATE ADMIN USER (ONCE) ========== */
+    const adminUser = process.env.ADMIN_USERNAME;
+    const adminPass = process.env.ADMIN_PASSWORD;
+
+    if (adminUser && adminPass) {
+      const exists = await client.query(
+        "SELECT id FROM users WHERE username = $1",
+        [adminUser]
+      );
+
+      if (exists.rowCount === 0) {
+        await client.query(
+          "INSERT INTO users (username, password) VALUES ($1,$2)",
+          [adminUser, adminPass]
+        );
+        console.log("✅ Admin user created");
+      }
+    }
+
+    console.log("✅ PostgreSQL database initialized & upgraded successfully");
+
+  } catch (err) {
+    console.error("❌ Database initialization error:", err);
+  } finally {
+    client.release();
   }
-  .popup-body{
-    height:calc(100% - 50px);
-    overflow-y:auto;
-  }
-  .popup-header{cursor:default}
 }
-</style>
-</head>
-
-<body>
-
-<div class="container">
-<h1 style="flex-basis:100%">ADMIN CONTROL PANEL</h1>
-
-<!-- MEMBERS -->
-<div class="left">
-<div class="card">
-<h2>Members</h2>
-<input placeholder="Search..." onkeyup="searchMembers(this.value)">
-<form id="memberForm">
-<input id="mName" placeholder="Name" required>
-<input id="mPhone" placeholder="Phone" required>
-<button>Add Member</button>
-</form>
-</div>
-
-<div class="card">
-<div class="table-box">
-<table>
-<thead><tr><th>Name</th><th>Phone</th><th>❌</th></tr></thead>
-<tbody id="members"></tbody>
-</table>
-</div>
-</div>
-</div>
-
-<!-- FILES -->
-<div class="right">
-<div class="card">
-<h2>Files</h2>
-<input placeholder="Search file..." onkeyup="searchFiles(this.value)">
-<form id="fileForm">
-<input id="fileName" placeholder="File name" required>
-<button>Create File</button>
-</form>
-<ul id="fileList"></ul>
-</div>
-</div>
-</div>
-
-<!-- FILE POPUP -->
-<div class="popup" id="popup">
-<div class="popup-header" id="popupHeader">
-<b id="currentFile"></b>
-<div>
-<span onclick="min()">➖</span>
-<span onclick="max()">⬜</span>
-<span onclick="closeP()">❌</span>
-</div>
-</div>
-<div class="popup-body">
-<div class="table-box">
-<table>
-<thead>
-<tr>
-<th>Member</th>
-<th>Amount</th>
-<th>Loan</th>
-<th>Interest</th>
-</tr>
-</thead>
-<tbody id="fileTable"></tbody>
-</table>
-</div>
-<button onclick="saveFile()">Save</button>
-<button onclick="deleteFile()" style="background:black;color:red">Delete File</button>
-</div>
-</div>
-
-<script>
-const BASE="/api/";
-let members=[],files=[],currentFile=null;
-
-/* MEMBERS */
-async function loadMembers(){
-  const r=await fetch(BASE+"members");
-  members=await r.json();
-  document.getElementById("members").innerHTML=
-    members.map(m=>`
-      <tr>
-        <td>${m.name}</td>
-        <td>${m.phone}</td>
-        <td><button onclick="delMember(${m.id})">X</button></td>
-      </tr>`).join("");
-}
-function searchMembers(v){
-  loadMembers();
-  setTimeout(()=>{
-    document.querySelectorAll("#members tr").forEach(tr=>{
-      tr.style.display=tr.innerText.toLowerCase().includes(v.toLowerCase())?"":"none";
-    });
-  },100);
-}
-async function delMember(id){
-  if(!confirm("Delete member?"))return;
-  await fetch(BASE+"members/"+id,{method:"DELETE"});
-  loadMembers();
-}
-
-/* FILES */
-async function loadFiles(){
-  const r=await fetch(BASE+"files");
-  files=await r.json();
-  fileList.innerHTML=files.map(f=>`
-    <li>
-      <span onclick="openFile(${f.id},'${f.name.replace(/'/g,"")}')">${f.name}</span>
-      <button onclick="delFile(event,${f.id})">X</button>
-    </li>`).join("");
-}
-function searchFiles(v){
-  [...fileList.children].forEach(li=>{
-    li.style.display=li.innerText.toLowerCase().includes(v.toLowerCase())?"":"none";
-  });
-}
-async function delFile(e,id){
-  e.stopPropagation();
-  if(!confirm("Delete file?"))return;
-  await fetch(BASE+"files/"+id,{method:"DELETE"});
-  loadFiles();
-}
-
-/* FILE VIEW */
-async function openFile(id,name){
-  currentFile=id;
-  popup.style.display="block";
-  currentFile.innerText=name;
-  const r=await fetch(BASE+"files/"+id);
-  const data=await r.json();
-
-  fileTable.innerHTML=members.map(m=>`
-    <tr>
-      <td>${m.name}</td>
-      <td><input value="${data[m.id]?.amount||''}"></td>
-      <td><input value="${data[m.id]?.loan||''}"></td>
-      <td><input value="${data[m.id]?.interest||''}"></td>
-    </tr>`).join("");
-}
-function saveFile(){
-  const payload={};
-  [...fileTable.querySelectorAll("tr")].forEach((tr,i)=>{
-    const inp=tr.querySelectorAll("input");
-    payload[members[i].id]={amount:inp[0].value,loan:inp[1].value,interest:inp[2].value};
-  });
-  fetch(BASE+"files/"+currentFile,{method:"PUT",headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  alert("Saved");
-}
-function deleteFile(){
-  if(!confirm("Delete file?"))return;
-  fetch(BASE+"files/"+currentFile,{method:"DELETE"});
-  closeP();loadFiles();
-}
-
-/* POPUP */
-function closeP(){popup.style.display="none"}
-function min(){popup.style.display="none"}
-function max(){popup.classList.toggle("max")}
-
-/* DRAG DESKTOP */
-let d=false,x,y;
-if(window.innerWidth>768){
-popupHeader.onmousedown=e=>{d=true;x=e.clientX-popup.offsetLeft;y=e.clientY-popup.offsetTop};
-document.onmousemove=e=>{if(d){popup.style.left=e.clientX-x+"px";popup.style.top=e.clientY-y+"px"}};
-document.onmouseup=()=>d=false;
-}
-
-/* FORMS */
-memberForm.onsubmit=e=>{
-  e.preventDefault();
-  fetch(BASE+"members",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({name:mName.value,phone:mPhone.value})});
-  e.target.reset();setTimeout(loadMembers,300);
-};
-fileForm.onsubmit=e=>{
-  e.preventDefault();
-  fetch(BASE+"files",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({name:fileName.value})});
-  e.target.reset();setTimeout(loadFiles,300);
-};
-
-loadMembers();
-loadFiles();
-</script>
-
-</body>
-</html>
