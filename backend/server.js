@@ -7,21 +7,21 @@ import { pool, initDB } from "./database.js";
 dotenv.config();
 const app = express();
 
-/* ======================= INITIALIZE DATABASE ======================= */
+/* ================= INIT DB ================= */
 await initDB();
 
-/* ======================= MIDDLEWARE ======================= */
+/* ================= MIDDLEWARE ================= */
 app.use(express.json());
 
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-/* ======================= ROOT ======================= */
+/* ================= ROOT ================= */
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/home.html"));
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
-/* ======================= LOGIN ======================= */
+/* ================= LOGIN ================= */
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -36,8 +36,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-/* ======================= MEMBERS ======================= */
-// CREATE member
+/* ================= MEMBERS ================= */
 app.post("/api/members", async (req, res) => {
   const { name, phone } = req.body;
   if (!name || !phone) return res.status(400).json({ error: "Missing data" });
@@ -50,7 +49,6 @@ app.post("/api/members", async (req, res) => {
     );
     const memberId = memberResult.rows[0].id;
 
-    // Add member to all existing files
     const files = await client.query("SELECT id FROM files");
     for (const file of files.rows) {
       await client.query(
@@ -68,7 +66,6 @@ app.post("/api/members", async (req, res) => {
   }
 });
 
-// LIST members
 app.get("/api/members", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM members ORDER BY id");
@@ -79,7 +76,6 @@ app.get("/api/members", async (req, res) => {
   }
 });
 
-// DELETE member
 app.delete("/api/members/:id", async (req, res) => {
   try {
     await pool.query("DELETE FROM members WHERE id=$1", [req.params.id]);
@@ -90,13 +86,10 @@ app.delete("/api/members/:id", async (req, res) => {
   }
 });
 
-/* ======================= FILES ======================= */
-// LIST files
+/* ================= FILES ================= */
 app.get("/api/files", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT id, name FROM files ORDER BY id"
-    );
+    const result = await pool.query("SELECT id, name FROM files ORDER BY id");
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -104,7 +97,6 @@ app.get("/api/files", async (req, res) => {
   }
 });
 
-// CREATE file
 app.post("/api/files", async (req, res) => {
   const { name } = req.body;
   if (!name) return res.status(400).json({ error: "File name required" });
@@ -134,16 +126,20 @@ app.post("/api/files", async (req, res) => {
   }
 });
 
-// OPEN file (get all member amounts, loans, interest)
 app.get("/api/files/:id", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT member_id, amount, loan, interest FROM file_rows WHERE file_id=$1",
       [req.params.id]
     );
+
     const data = {};
     result.rows.forEach(r => {
-      data[r.member_id] = { amount: r.amount, loan: r.loan, interest: r.interest };
+      data[r.member_id] = {
+        amount: r.amount,
+        loan: r.loan,
+        interest: r.interest
+      };
     });
     res.json(data);
   } catch (err) {
@@ -152,7 +148,6 @@ app.get("/api/files/:id", async (req, res) => {
   }
 });
 
-// SAVE file
 app.put("/api/files/:id", async (req, res) => {
   const fileId = req.params.id;
   const data = req.body;
@@ -160,12 +155,10 @@ app.put("/api/files/:id", async (req, res) => {
   const client = await pool.connect();
   try {
     for (const memberId in data) {
-      const row = data[memberId];
+      const { amount, loan, interest } = data[memberId];
       await client.query(
-        `UPDATE file_rows 
-         SET amount=$1, loan=$2, interest=$3 
-         WHERE file_id=$4 AND member_id=$5`,
-        [row.amount||"", row.loan||"", row.interest||"", fileId, memberId]
+        "UPDATE file_rows SET amount=$1, loan=$2, interest=$3 WHERE file_id=$4 AND member_id=$5",
+        [amount, loan, interest, fileId, memberId]
       );
     }
     res.json({ success: true });
@@ -177,7 +170,6 @@ app.put("/api/files/:id", async (req, res) => {
   }
 });
 
-// DELETE file
 app.delete("/api/files/:id", async (req, res) => {
   try {
     await pool.query("DELETE FROM files WHERE id=$1", [req.params.id]);
@@ -188,7 +180,7 @@ app.delete("/api/files/:id", async (req, res) => {
   }
 });
 
-/* ======================= SERVER ======================= */
+/* ================= SERVER ================= */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("✅ Server running on port", PORT);
