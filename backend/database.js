@@ -9,15 +9,12 @@ const { Pool } = pkg;
 /* ================= DATABASE POOL ================= */
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production"
-    ? { rejectUnauthorized: false }
-    : false
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
 });
 
 /* ================= INIT DATABASE ================= */
 export async function initDB() {
   const client = await pool.connect();
-
   try {
     /* ========== USERS (LOGIN) ========== */
     await client.query(`
@@ -55,44 +52,25 @@ export async function initDB() {
         amount TEXT DEFAULT '',
         loan TEXT DEFAULT '',
         interest TEXT DEFAULT '',
-        CONSTRAINT fk_file
-          FOREIGN KEY (file_id)
-          REFERENCES files(id)
-          ON DELETE CASCADE,
-        CONSTRAINT fk_member
-          FOREIGN KEY (member_id)
-          REFERENCES members(id)
-          ON DELETE CASCADE,
+        CONSTRAINT fk_file FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE,
+        CONSTRAINT fk_member FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
         CONSTRAINT unique_file_member UNIQUE (file_id, member_id)
       )
     `);
 
-    /* ========== SAFE MIGRATIONS (VERY IMPORTANT) ========== */
-    await client.query(`
-      ALTER TABLE file_rows
-      ADD COLUMN IF NOT EXISTS amount TEXT DEFAULT '';
-    `);
-
-    await client.query(`
-      ALTER TABLE file_rows
-      ADD COLUMN IF NOT EXISTS loan TEXT DEFAULT '';
-    `);
-
-    await client.query(`
-      ALTER TABLE file_rows
-      ADD COLUMN IF NOT EXISTS interest TEXT DEFAULT '';
-    `);
+    /* ========== SAFE MIGRATIONS ========== */
+    await client.query(`ALTER TABLE file_rows ADD COLUMN IF NOT EXISTS amount TEXT DEFAULT ''`);
+    await client.query(`ALTER TABLE file_rows ADD COLUMN IF NOT EXISTS loan TEXT DEFAULT ''`);
+    await client.query(`ALTER TABLE file_rows ADD COLUMN IF NOT EXISTS interest TEXT DEFAULT ''`);
 
     /* ========== CREATE ADMIN USER (ONCE) ========== */
     const adminUser = process.env.ADMIN_USERNAME;
     const adminPass = process.env.ADMIN_PASSWORD;
-
     if (adminUser && adminPass) {
       const exists = await client.query(
         "SELECT id FROM users WHERE username = $1",
         [adminUser]
       );
-
       if (exists.rowCount === 0) {
         await client.query(
           "INSERT INTO users (username, password) VALUES ($1,$2)",
@@ -110,4 +88,3 @@ export async function initDB() {
     client.release();
   }
 }
-
