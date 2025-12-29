@@ -105,7 +105,12 @@ th {background: #ff2b2b; color: black; position: sticky; top: 0;}
       <input id="fileName" placeholder="File name" required>
       <button>Create File</button>
     </form>
-    <ul id="fileList"></ul>
+  <button id="toggleFiles" onclick="toggleFilesList()">Show All ▼</button>
+
+<div class="table-scroll" id="filesScroll">
+  <ul id="fileList"></ul>
+</div>
+
   </div>
 </div>
 </div>
@@ -309,6 +314,18 @@ fileForm.onsubmit = async e=>{
   e.target.reset();
   loadFiles();
 };
+function toggleFilesList() {
+  const listDiv = document.getElementById("filesScroll");
+  const btn = document.getElementById("toggleFiles");
+
+  if (listDiv.style.display === "none" || listDiv.style.display === "") {
+    listDiv.style.display = "block";
+    btn.innerText = "Hide ▲";
+  } else {
+    listDiv.style.display = "none";
+    btn.innerText = "Show All ▼";
+  }
+}
 
 /* ================= TOGGLE SHOW/HIDE TABLES ================= */
 function toggleMembersTable() {
