@@ -6,6 +6,13 @@
 <title>Admin Dashboard</title>
 
 <style>
+  .table-scroll {
+  max-height: 300px;  /* Height when expanded */
+  overflow-y: auto;   /* Vertical scroll */
+  display: none;      /* Initially hidden */
+  margin-top: 10px;
+}
+
 * {
   box-sizing: border-box;
   font-family: Arial, sans-serif;
@@ -262,13 +269,25 @@ th {
 
   <div class="card">
     <div class="table-box">
-      <table>
-        <thead>
-          <tr><th>Name</th><th>Phone</th><th>❌</th></tr>
-        </thead>
-        <tbody id="members"></tbody>
-      </table>
-    </div>
+      <div class="table-box">
+  <button id="toggleMembers" onclick="toggleMembersTable()">Show All ▼</button>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Phone</th><th>❌</th></tr>
+    </thead>
+    <tbody id="members"></tbody>
+  </table>
+</div>
+
+    <div class="table-scroll" id="membersScroll">
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Phone</th><th>❌</th></tr>
+    </thead>
+    <tbody id="members"></tbody>
+  </table>
+</div>
+
   </div>
 </div>
 
@@ -306,17 +325,13 @@ th {
 >
 
     <div class="table-box">
-      <table>
-        <thead>
-          <tr>
-            <th>Member</th>
-            <th>Amount</th>
-            <th>Loan</th>
-            <th>Interest</th>
-          </tr>
-        </thead>
-        <tbody id="fileTable"></tbody>
-      </table>
+     <button id="toggleFileMembers" onclick="toggleFileTable()">Show All ▼</button>
+<div class="table-scroll" id="fileScroll">
+  <table>
+    <thead><tr><th>Member</th><th>Amount</th><th>Loan</th><th>Interest</th></tr></thead>
+    <tbody id="fileTable"></tbody>
+  </table>
+</div>
     </div>
 
     <button onclick="saveFile()">Save</button>
@@ -366,6 +381,17 @@ function showUndo(){
   undoArea.innerHTML=`<div class="undo-box">Member deleted <button onclick="undoDelete()">UNDO</button></div>`;
   setTimeout(()=>undoArea.innerHTML="",7000);
 }
+function toggleFileTable() {
+  const tableDiv = document.getElementById("fileScroll");
+  const btn = document.getElementById("toggleFileMembers");
+  if (tableDiv.style.display === "none" || tableDiv.style.display === "") {
+    tableDiv.style.display = "block";
+    btn.innerText = "Hide ▲";
+  } else {
+    tableDiv.style.display = "none";
+    btn.innerText = "Show All ▼";
+  }
+}
 
 async function undoDelete(){
   if(!lastDeleted) return;
@@ -400,6 +426,17 @@ async function deleteFileList(e,id){
   if(!confirm("Delete file?")) return;
   await fetch(BASE+"files/"+id,{method:"DELETE"});
   loadFiles();
+}
+function toggleMembersTable() {
+  const tableDiv = document.getElementById("membersScroll");
+  const btn = document.getElementById("toggleMembers");
+  if (tableDiv.style.display === "none" || tableDiv.style.display === "") {
+    tableDiv.style.display = "block";
+    btn.innerText = "Hide ▲";
+  } else {
+    tableDiv.style.display = "none";
+    btn.innerText = "Show All ▼";
+  }
 }
 
 /* ================= FILE POPUP ================= */
