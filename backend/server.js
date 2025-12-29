@@ -28,18 +28,20 @@ app.get("/", (req, res) => {
 });
 
 /* =======================
-   LOGIN
+   LOGIN (simple auth)
 ======================= */
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
+
   try {
     const result = await pool.query(
       "SELECT id FROM users WHERE username=$1 AND password=$2",
       [username, password]
     );
+
     res.json({ success: result.rowCount > 0 });
   } catch (err) {
-    console.error(err);
+    console.error("LOGIN ERROR:", err);
     res.status(500).json({ success: false });
   }
 });
@@ -56,23 +58,29 @@ app.post("/api/members", async (req, res) => {
 
   const client = await pool.connect();
   try {
+    await client.query("BEGIN");
+
     const memberResult = await client.query(
       "INSERT INTO members (name, phone) VALUES ($1,$2) RETURNING id",
       [name, phone]
     );
+
     const memberId = memberResult.rows[0].id;
 
     const files = await client.query("SELECT id FROM files");
     for (const file of files.rows) {
       await client.query(
-        "INSERT INTO file_rows (file_id, member_id, amount, loan, interest) VALUES ($1,$2,'','','')",
+        `INSERT INTO file_rows (file_id, member_id, amount, loan, interest)
+         VALUES ($1,$2,'','','')`,
         [file.id, memberId]
       );
     }
 
+    await client.query("COMMIT");
     res.json({ id: memberId });
   } catch (err) {
-    console.error(err);
+    await client.query("ROLLBACK");
+    console.error("ADD MEMBER ERROR:", err);
     res.status(500).json({ error: "Add member failed" });
   } finally {
     client.release();
@@ -82,10 +90,12 @@ app.post("/api/members", async (req, res) => {
 // LIST members
 app.get("/api/members", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM members ORDER BY id");
+    const result = await pool.query(
+      "SELECT id, name, phone FROM members ORDER BY id"
+    );
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error("FETCH MEMBERS ERROR:", err);
     res.status(500).json({ error: "Fetch failed" });
   }
 });
@@ -96,7 +106,7 @@ app.delete("/api/members/:id", async (req, res) => {
     await pool.query("DELETE FROM members WHERE id=$1", [req.params.id]);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error("DELETE MEMBER ERROR:", err);
     res.status(500).json({ error: "Delete failed" });
   }
 });
@@ -111,10 +121,15 @@ app.get("/api/files", async (req, res) => {
     const result = await pool.query(
       "SELECT id, file_name FROM files ORDER BY id"
     );
-    // Map file_name → name for frontend
-    res.json(result.rows.map(f => ({ id: f.id, name: f.file_name })));
+
+    res.json(
+      result.rows.map(f => ({
+        id: f.id,
+        name: f.file_name
+      }))
+    );
   } catch (err) {
-    console.error(err);
+    console.error("FETCH FILES ERROR:", err);
     res.status(500).json({ error: "Fetch failed" });
   }
 });
@@ -127,69 +142,95 @@ app.post("/api/files", async (req, res) => {
 
   const client = await pool.connect();
   try {
+    await client.query("BEGIN");
+
     const fileResult = await client.query(
       "INSERT INTO files (file_name) VALUES ($1) RETURNING id",
       [name]
     );
+
     const fileId = fileResult.rows[0].id;
 
     const members = await client.query("SELECT id FROM members");
     for (const m of members.rows) {
       await client.query(
-        "INSERT INTO file_rows (file_id, member_id, amount, loan, interest) VALUES ($1,$2,'','','')",
+        `INSERT INTO file_rows (file_id, member_id, amount, loan, interest)
+         VALUES ($1,$2,'','','')`,
         [fileId, m.id]
       );
     }
 
+    await client.query("COMMIT");
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    await client.query("ROLLBACK");
+    console.error("CREATE FILE ERROR:", err);
     res.status(500).json({ error: "Create file failed" });
   } finally {
     client.release();
   }
 });
 
-// OPEN file (get all rows for a file)
+// OPEN file
 app.get("/api/files/:id", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT member_id, amount, loan, interest FROM file_rows WHERE file_id=$1",
+      `SELECT member_id, amount, loan, interest
+       FROM file_rows
+       WHERE file_id=$1`,
       [req.params.id]
     );
 
     const data = {};
     result.rows.forEach(r => {
       data[r.member_id] = {
-        amount: r.amount,
-        loan: r.loan,
-        interest: r.interest
+        amount: r.amount || "",
+        loan: r.loan || "",
+        interest: r.interest || ""
       };
     });
 
     res.json(data);
   } catch (err) {
-    console.error(err);
+    console.error("OPEN FILE ERROR:", err);
     res.status(500).json({ error: "Open failed" });
   }
 });
 
-// SAVE file (update amounts, loans, interest)
+// SAVE file (THIS IS THE CRITICAL FIX)
 app.put("/api/files/:id", async (req, res) => {
   const fileId = req.params.id;
-  const data = req.body;
+  const rows = req.body;
 
   const client = await pool.connect();
   try {
-    for (const memberId in data) {
+    await client.query("BEGIN");
+
+    for (const memberId in rows) {
+      const { amount, loan, interest } = rows[memberId];
+
       await client.query(
-        "UPDATE file_rows SET amount=$1, loan=$2, interest=$3 WHERE file_id=$4 AND member_id=$5",
-        [data[memberId].amount, data[memberId].loan, data[memberId].interest, fileId, memberId]
+        `UPDATE file_rows
+         SET amount=$1,
+             loan=$2,
+             interest=$3
+         WHERE file_id=$4
+           AND member_id=$5`,
+        [
+          amount ?? "",
+          loan ?? "",
+          interest ?? "",
+          fileId,
+          memberId
+        ]
       );
     }
+
+    await client.query("COMMIT");
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    await client.query("ROLLBACK");
+    console.error("SAVE FILE ERROR:", err);
     res.status(500).json({ error: "Save failed" });
   } finally {
     client.release();
@@ -202,7 +243,7 @@ app.delete("/api/files/:id", async (req, res) => {
     await pool.query("DELETE FROM files WHERE id=$1", [req.params.id]);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error("DELETE FILE ERROR:", err);
     res.status(500).json({ error: "Delete failed" });
   }
 });
