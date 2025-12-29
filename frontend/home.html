@@ -298,6 +298,13 @@ th {
   </div>
 
   <div class="popup-body">
+    <!-- Search member inside opened file -->
+<input
+  class="search"
+  placeholder="Search member in file..."
+  onkeyup="searchFileMembers(this.value)"
+>
+
     <div class="table-box">
       <table>
         <thead>
@@ -326,6 +333,13 @@ async function loadMembers(){
   const r=await fetch(BASE+"members");
   members=await r.json();
   renderMembers(members);
+}
+function searchFileMembers(value) {
+  value = value.toLowerCase();
+  document.querySelectorAll("#fileTable tr").forEach(row => {
+    const memberName = row.children[0].innerText.toLowerCase();
+    row.style.display = memberName.includes(value) ? "" : "none";
+  });
 }
 
 function renderMembers(data){
