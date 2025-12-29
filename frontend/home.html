@@ -6,130 +6,238 @@
 <title>Admin Dashboard</title>
 
 <style>
-* { box-sizing:border-box; font-family:Arial; margin:0; padding:0; }
-body { background:#0b0b0b; color:white; }
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #0b0b0b;
+  color: white;
+}
 
 /* ================= LAYOUT ================= */
-h1,h2 { color:#ff2b2b; text-align:center; }
-.container {
-  max-width:1200px;
-  margin:auto;
-  padding:15px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:20px;
+h1, h2 {
+  color: #ff2b2b;
+  text-align: center;
 }
-.left-section { flex:1 1 40%; display:flex; flex-direction:column; gap:20px; }
-.right-section { flex:1 1 55%; display:flex; flex-direction:column; gap:20px; }
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.left-section {
+  flex: 1 1 40%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.right-section {
+  flex: 1 1 55%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
 /* ================= CARDS ================= */
 .card {
-  background:#141414;
-  border:2px solid #ff2b2b;
-  border-radius:12px;
-  padding:15px;
-  box-shadow:0 0 12px rgba(255,0,0,.35);
+  background: #141414;
+  border: 2px solid #ff2b2b;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 0 12px rgba(255,0,0,.35);
 }
 
 input {
-  padding:10px;
-  margin:6px 0;
-  width:100%;
-  background:#000;
-  border:2px solid #333;
-  color:white;
-  border-radius:6px;
+  padding: 10px;
+  margin: 6px 0;
+  width: 100%;
+  background: #000;
+  border: 2px solid #333;
+  color: white;
+  border-radius: 6px;
 }
 
 button {
-  padding:10px;
-  margin-top:8px;
-  width:100%;
-  background:#ff2b2b;
-  border:none;
-  color:white;
-  border-radius:8px;
-  font-weight:bold;
-  cursor:pointer;
+  padding: 10px;
+  margin-top: 8px;
+  width: 100%;
+  background: #ff2b2b;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.25s;
 }
 
-button:hover { background:#ff5555; }
+button:hover {
+  background: #ff5555;
+}
 
 /* ================= INPUT COLORS ================= */
-.amount-input { border-color:#00c853; }
-.loan-input { border-color:#ff9100; }
-.interest-input { border-color:#2979ff; }
+.amount-input {
+  border-color: #00c853;
+}
+
+.loan-input {
+  border-color: #ff9100;
+}
+
+.interest-input {
+  border-color: #2979ff;
+}
 
 /* ================= SMALL DELETE BUTTON ================= */
 .btn-delete-small {
-  width:32px;
-  height:32px;
-  padding:0;
-  background:#000;
-  color:red;
-  border:1px solid red;
-  border-radius:6px;
-  font-weight:bold;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: #000;
+  color: red;
+  border: 1px solid red;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-delete-small:hover {
+  background: red;
+  color: white;
 }
 
 /* ================= TABLE ================= */
-.table-box { overflow:auto; max-height:320px; }
-table { width:100%; border-collapse:collapse; min-width:420px; }
-th,td { border:1px solid #333; padding:8px; text-align:center; }
-th { background:#ff2b2b; color:black; position:sticky; top:0; }
+.table-box {
+  overflow: auto;
+  max-height: 320px;
+}
 
-.search { margin-bottom:10px; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 420px;
+}
+
+th, td {
+  border: 1px solid #333;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background: #ff2b2b;
+  color: black;
+  position: sticky;
+  top: 0;
+}
+
+.search {
+  margin-bottom: 10px;
+}
 
 /* ================= FILE LIST ================= */
-#fileList { list-style:none; padding:0; }
-#fileList li {
-  padding:10px;
-  margin:6px 0;
-  border:1px solid #ff2b2b;
-  border-radius:8px;
-  display:flex;
-  align-items:center;
-  gap:10px;
+#fileList {
+  list-style: none;
+  padding: 0;
 }
-.file-name { flex:1; cursor:pointer; }
-.file-name:hover { color:#ff2b2b; }
+
+#fileList li {
+  padding: 10px;
+  margin: 6px 0;
+  border: 1px solid #ff2b2b;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-name {
+  flex: 1;
+  cursor: pointer;
+}
+
+.file-name:hover {
+  color: #ff2b2b;
+}
 
 /* ================= POPUP ================= */
 .popup {
-  position:fixed;
-  top:60px;
-  left:50%;
-  transform:translateX(-50%);
-  width:520px;
-  max-width:95%;
-  background:#111;
-  border:2px solid #ff2b2b;
-  border-radius:12px;
-  display:none;
-  z-index:1000;
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 520px;
+  max-width: 95%;
+  background: #111;
+  border: 2px solid #ff2b2b;
+  border-radius: 12px;
+  display: none;
+  z-index: 1000;
 }
-.popup.max { width:95%; height:95%; top:10px; }
+
+.popup.max {
+  width: 95%;
+  height: 95%;
+  top: 10px;
+}
 
 .popup-header {
-  background:#ff2b2b;
-  color:black;
-  padding:10px;
-  display:flex;
-  justify-content:space-between;
+  background: #ff2b2b;
+  color: black;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.popup-header span {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0 6px;
 }
 
 .popup-body {
-  padding:12px;
-  max-height:65vh;
-  overflow-y:auto;
+  padding: 12px;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+/* ================= UNDO ================= */
+.undo-box {
+  background: #000;
+  border: 1px solid #ff2b2b;
+  padding: 8px;
+  margin-top: 5px;
+  text-align: center;
 }
 
 /* ================= MOBILE ================= */
-@media(max-width:768px){
-  .container { flex-direction:column; }
-  table { min-width:100%; }
-  .popup { width:96%; left:2%; transform:none; }
-  .popup-body { max-height:75vh; }
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  table {
+    min-width: 100%;
+  }
+
+  .popup {
+    width: 96%;
+    left: 2%;
+    transform: none;
+  }
+
+  .popup-body {
+    max-height: 75vh;
+  }
 }
 </style>
 </head>
@@ -141,78 +249,79 @@ th { background:#ff2b2b; color:black; position:sticky; top:0; }
 
 <!-- ================= MEMBERS ================= -->
 <div class="left-section">
-<div class="card">
-<h2>Members</h2>
-<input class="search" placeholder="Search..." onkeyup="searchMembers(this.value)">
-<form id="memberForm">
-<input id="mName" placeholder="Name" required>
-<input id="mPhone" placeholder="Phone" required>
-<button>Add Member</button>
-</form>
-<div id="undoArea"></div>
-</div>
+  <div class="card">
+    <h2>Members</h2>
+    <input class="search" placeholder="Search..." onkeyup="searchMembers(this.value)">
+    <form id="memberForm">
+      <input id="mName" placeholder="Name" required>
+      <input id="mPhone" placeholder="Phone" required>
+      <button>Add Member</button>
+    </form>
+    <div id="undoArea"></div>
+  </div>
 
-<div class="card">
-<div class="table-box">
-<table>
-<thead><tr><th>Name</th><th>Phone</th><th>❌</th></tr></thead>
-<tbody id="members"></tbody>
-</table>
-</div>
-</div>
+  <div class="card">
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Phone</th><th>❌</th></tr>
+        </thead>
+        <tbody id="members"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <!-- ================= FILES ================= -->
 <div class="right-section">
-<div class="card">
-<h2>Files</h2>
-<input class="search" placeholder="Search file..." onkeyup="searchFiles(this.value)">
-<form id="fileForm">
-<input id="fileName" placeholder="File name" required>
-<button>Create File</button>
-</form>
-<ul id="fileList"></ul>
-</div>
+  <div class="card">
+    <h2>Files</h2>
+    <input class="search" placeholder="Search file..." onkeyup="searchFiles(this.value)">
+    <form id="fileForm">
+      <input id="fileName" placeholder="File name" required>
+      <button>Create File</button>
+    </form>
+    <ul id="fileList"></ul>
+  </div>
 </div>
 </div>
 
 <!-- ================= FILE POPUP ================= -->
 <div class="popup" id="filePopup">
-<div class="popup-header" id="popupHeader">
-<b id="currentFile"></b>
-<div>
-<span onclick="minPopup()">➖</span>
-<span onclick="maxPopup()">⬜</span>
-<span onclick="closePopup()">❌</span>
-</div>
-</div>
+  <div class="popup-header" id="popupHeader">
+    <b id="currentFile"></b>
+    <div>
+      <span onclick="minPopup()">➖</span>
+      <span onclick="maxPopup()">⬜</span>
+      <span onclick="closePopup()">❌</span>
+    </div>
+  </div>
 
-<div class="popup-body">
-
-<!-- 🔍 NEW: MEMBER SEARCH INSIDE FILE -->
+  <div class="popup-body">
+    <!-- Search member inside opened file -->
 <input
   class="search"
   placeholder="Search member in file..."
   onkeyup="searchFileMembers(this.value)"
 >
 
-<div class="table-box">
-<table>
-<thead>
-<tr>
-<th>Member</th>
-<th>Amount</th>
-<th>Loan</th>
-<th>Interest</th>
-</tr>
-</thead>
-<tbody id="fileTable"></tbody>
-</table>
-</div>
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Amount</th>
+            <th>Loan</th>
+            <th>Interest</th>
+          </tr>
+        </thead>
+        <tbody id="fileTable"></tbody>
+      </table>
+    </div>
 
-<button onclick="saveFile()">Save</button>
-<button onclick="deleteFile()" style="background:black;color:red">Delete File</button>
-</div>
+    <button onclick="saveFile()">Save</button>
+    <button onclick="deleteFile()" style="background:black;color:red">Delete File</button>
+  </div>
 </div>
 
 <script>
@@ -225,9 +334,15 @@ async function loadMembers(){
   members=await r.json();
   renderMembers(members);
 }
-
+  function searchFileMembers(value) {
+  value = value.toLowerCase();
+  document.querySelectorAll("#fileTable tr").forEach(row => {
+    const memberName = row.children[0].innerText.toLowerCase();
+    row.style.display = memberName.includes(value) ? "" : "none";
+  });
+}
 function renderMembers(data){
-  members.innerHTML = data.map(m=>`
+  document.getElementById("members").innerHTML = data.map(m=>`
     <tr>
       <td>${m.name}</td>
       <td>${m.phone}</td>
@@ -239,13 +354,52 @@ function searchMembers(v){
   renderMembers(members.filter(m=>m.name.toLowerCase().includes(v.toLowerCase())));
 }
 
-/* ================= FILE MEMBER SEARCH (NEW) ================= */
-function searchFileMembers(value){
-  value = value.toLowerCase();
-  [...fileTable.querySelectorAll("tr")].forEach(tr=>{
-    const name = tr.children[0].innerText.toLowerCase();
-    tr.style.display = name.includes(value) ? "" : "none";
+async function deleteMember(id){
+  lastDeleted = members.find(m=>m.id===id);
+  await fetch(BASE+"members/"+id,{method:"DELETE"});
+  members = members.filter(m=>m.id!==id);
+  renderMembers(members);
+  showUndo();
+}
+
+function showUndo(){
+  undoArea.innerHTML=`<div class="undo-box">Member deleted <button onclick="undoDelete()">UNDO</button></div>`;
+  setTimeout(()=>undoArea.innerHTML="",7000);
+}
+
+async function undoDelete(){
+  if(!lastDeleted) return;
+  await fetch(BASE+"members",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(lastDeleted)
   });
+  loadMembers();
+}
+
+/* ================= FILES ================= */
+async function loadFiles(){
+  const r=await fetch(BASE+"files");
+  files = await r.json();
+  fileList.innerHTML = files.map(f=>`
+    <li>
+      <span class="file-name" onclick="openFile(${f.id},'${f.name.replace(/'/g,"")}')">${f.name}</span>
+      <button class="btn-delete-small" onclick="deleteFileList(event,${f.id})">✕</button>
+    </li>
+  `).join("");
+}
+
+function searchFiles(v){
+  [...fileList.children].forEach(li=>{
+    li.style.display = li.innerText.toLowerCase().includes(v.toLowerCase()) ? "" : "none";
+  });
+}
+
+async function deleteFileList(e,id){
+  e.stopPropagation();
+  if(!confirm("Delete file?")) return;
+  await fetch(BASE+"files/"+id,{method:"DELETE"});
+  loadFiles();
 }
 
 /* ================= FILE POPUP ================= */
@@ -267,14 +421,17 @@ async function openFile(id,name){
   `).join("");
 }
 
-/* ================= SAVE ================= */
+function closePopup(){filePopup.style.display="none";}
+function minPopup(){filePopup.style.display="none";}
+function maxPopup(){filePopup.classList.toggle("max");}
+
 async function saveFile(){
   const payload = {};
   [...fileTable.querySelectorAll("tr")].forEach((tr,i)=>{
     payload[members[i].id] = {
-      amount: tr.children[1].firstChild.value,
-      loan: tr.children[2].firstChild.value,
-      interest: tr.children[3].firstChild.value
+      amount: tr.querySelectorAll("input")[0].value,
+      loan: tr.querySelectorAll("input")[1].value,
+      interest: tr.querySelectorAll("input")[2].value
     };
   });
 
@@ -286,6 +443,46 @@ async function saveFile(){
 
   alert("Saved");
 }
+
+/* ================= DRAG (DESKTOP ONLY) ================= */
+let drag=false, dx, dy;
+if(window.innerWidth>768){
+  popupHeader.onmousedown = e=>{
+    drag=true;
+    dx = e.clientX - filePopup.offsetLeft;
+    dy = e.clientY - filePopup.offsetTop;
+  };
+  document.onmousemove = e=>{
+    if(drag){
+      filePopup.style.left = (e.clientX - dx) + "px";
+      filePopup.style.top = (e.clientY - dy) + "px";
+    }
+  };
+  document.onmouseup = ()=> drag=false;
+}
+
+/* ================= INIT FORMS ================= */
+memberForm.onsubmit = async e=>{
+  e.preventDefault();
+  await fetch(BASE+"members",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name:mName.value, phone:mPhone.value})
+  });
+  e.target.reset();
+  loadMembers();
+};
+
+fileForm.onsubmit = async e=>{
+  e.preventDefault();
+  await fetch(BASE+"files",{
+    method:"POST",
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name:fileName.value})
+  });
+  e.target.reset();
+  loadFiles();
+};
 
 /* ================= INIT ================= */
 loadMembers();
