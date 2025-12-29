@@ -6,13 +6,6 @@
 <title>Admin Dashboard</title>
 
 <style>
-  .table-scroll {
-  max-height: 300px;  /* Height when expanded */
-  overflow-y: auto;   /* Vertical scroll */
-  display: none;      /* Initially hidden */
-  margin-top: 10px;
-}
-
 * {
   box-sizing: border-box;
   font-family: Arial, sans-serif;
@@ -269,24 +262,12 @@ th {
 
   <div class="card">
     <div class="table-box">
-      <div class="table-box">
-  <button id="toggleMembers" onclick="toggleMembersTable()">Show All ▼</button>
-  <table>
-    <thead>
-      <tr><th>Name</th><th>Phone</th><th>❌</th></tr>
-    </thead>
-    <tbody id="members"></tbody>
-  </table>
-</div>
-
-    <div class="table-scroll" id="membersScroll">
-  <table>
-    <thead>
-      <tr><th>Name</th><th>Phone</th><th>❌</th></tr>
-    </thead>
-    <tbody id="members"></tbody>
-  </table>
-</div>
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Phone</th><th>❌</th></tr>
+        </thead>
+        <tbody id="members"></tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -317,21 +298,18 @@ th {
   </div>
 
   <div class="popup-body">
-    <!-- Search member inside opened file -->
-<input
-  class="search"
-  placeholder="Search member in file..."
-  onkeyup="searchFileMembers(this.value)"
->
-
     <div class="table-box">
-     <button id="toggleFileMembers" onclick="toggleFileTable()">Show All ▼</button>
-<div class="table-scroll" id="fileScroll">
-  <table>
-    <thead><tr><th>Member</th><th>Amount</th><th>Loan</th><th>Interest</th></tr></thead>
-    <tbody id="fileTable"></tbody>
-  </table>
-</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Member</th>
+            <th>Amount</th>
+            <th>Loan</th>
+            <th>Interest</th>
+          </tr>
+        </thead>
+        <tbody id="fileTable"></tbody>
+      </table>
     </div>
 
     <button onclick="saveFile()">Save</button>
@@ -349,13 +327,7 @@ async function loadMembers(){
   members=await r.json();
   renderMembers(members);
 }
-  function searchFileMembers(value) {
-  value = value.toLowerCase();
-  document.querySelectorAll("#fileTable tr").forEach(row => {
-    const memberName = row.children[0].innerText.toLowerCase();
-    row.style.display = memberName.includes(value) ? "" : "none";
-  });
-}
+
 function renderMembers(data){
   document.getElementById("members").innerHTML = data.map(m=>`
     <tr>
@@ -380,17 +352,6 @@ async function deleteMember(id){
 function showUndo(){
   undoArea.innerHTML=`<div class="undo-box">Member deleted <button onclick="undoDelete()">UNDO</button></div>`;
   setTimeout(()=>undoArea.innerHTML="",7000);
-}
-function toggleFileTable() {
-  const tableDiv = document.getElementById("fileScroll");
-  const btn = document.getElementById("toggleFileMembers");
-  if (tableDiv.style.display === "none" || tableDiv.style.display === "") {
-    tableDiv.style.display = "block";
-    btn.innerText = "Hide ▲";
-  } else {
-    tableDiv.style.display = "none";
-    btn.innerText = "Show All ▼";
-  }
 }
 
 async function undoDelete(){
@@ -426,17 +387,6 @@ async function deleteFileList(e,id){
   if(!confirm("Delete file?")) return;
   await fetch(BASE+"files/"+id,{method:"DELETE"});
   loadFiles();
-}
-function toggleMembersTable() {
-  const tableDiv = document.getElementById("membersScroll");
-  const btn = document.getElementById("toggleMembers");
-  if (tableDiv.style.display === "none" || tableDiv.style.display === "") {
-    tableDiv.style.display = "block";
-    btn.innerText = "Hide ▲";
-  } else {
-    tableDiv.style.display = "none";
-    btn.innerText = "Show All ▼";
-  }
 }
 
 /* ================= FILE POPUP ================= */
