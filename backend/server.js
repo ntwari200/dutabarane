@@ -71,7 +71,7 @@ app.post("/api/members", async (req, res) => {
     for (const file of files.rows) {
       await client.query(
         `INSERT INTO file_rows (file_id, member_id, amount, loan, interest)
-         VALUES ($1,$2,'','','')`,
+         VALUES ($1,$2,'NULL','NULL','NULL')`,
         [file.id, memberId]
       );
     }
