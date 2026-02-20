@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
@@ -10,7 +9,13 @@ const app = express();
 /* =======================
    INITIALIZE DATABASE
 ======================= */
-await initDB();
+try {
+  await initDB();
+  console.log("✅ Database initialized");
+} catch (err) {
+  console.error("❌ DATABASE INIT FAILED:", err);
+  process.exit(1);
+}
 
 /* =======================
    MIDDLEWARE
@@ -28,7 +33,7 @@ app.get("/", (req, res) => {
 });
 
 /* =======================
-   LOGIN (simple auth)
+   LOGIN
 ======================= */
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -42,7 +47,7 @@ app.post("/login", async (req, res) => {
     res.json({ success: result.rowCount > 0 });
   } catch (err) {
     console.error("LOGIN ERROR:", err);
-    res.status(500).json({ success: false });
+    res.status(500).json({ error: "Login failed" });
   }
 });
 
@@ -50,13 +55,15 @@ app.post("/login", async (req, res) => {
    MEMBERS
 ======================= */
 
-// CREATE member
+// CREATE MEMBER
 app.post("/api/members", async (req, res) => {
   const { name, phone } = req.body;
+
   if (!name || !phone)
     return res.status(400).json({ error: "Missing data" });
 
   const client = await pool.connect();
+
   try {
     await client.query("BEGIN");
 
@@ -68,16 +75,18 @@ app.post("/api/members", async (req, res) => {
     const memberId = memberResult.rows[0].id;
 
     const files = await client.query("SELECT id FROM files");
+
     for (const file of files.rows) {
       await client.query(
         `INSERT INTO file_rows (file_id, member_id, amount, loan, interest)
-         VALUES ($1,$2,'NULL','NULL','NULL')`,
+         VALUES ($1,$2,NULL,NULL,NULL)`,
         [file.id, memberId]
       );
     }
 
     await client.query("COMMIT");
     res.json({ id: memberId });
+
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("ADD MEMBER ERROR:", err);
@@ -87,7 +96,7 @@ app.post("/api/members", async (req, res) => {
   }
 });
 
-// LIST members
+// LIST MEMBERS
 app.get("/api/members", async (req, res) => {
   try {
     const result = await pool.query(
@@ -100,7 +109,7 @@ app.get("/api/members", async (req, res) => {
   }
 });
 
-// DELETE member
+// DELETE MEMBER
 app.delete("/api/members/:id", async (req, res) => {
   try {
     await pool.query("DELETE FROM members WHERE id=$1", [req.params.id]);
@@ -115,7 +124,7 @@ app.delete("/api/members/:id", async (req, res) => {
    FILES
 ======================= */
 
-// LIST files
+// LIST FILES
 app.get("/api/files", async (req, res) => {
   try {
     const result = await pool.query(
@@ -134,13 +143,15 @@ app.get("/api/files", async (req, res) => {
   }
 });
 
-// CREATE file
+// CREATE FILE
 app.post("/api/files", async (req, res) => {
   const { name } = req.body;
+
   if (!name)
     return res.status(400).json({ error: "File name required" });
 
   const client = await pool.connect();
+
   try {
     await client.query("BEGIN");
 
@@ -152,16 +163,18 @@ app.post("/api/files", async (req, res) => {
     const fileId = fileResult.rows[0].id;
 
     const members = await client.query("SELECT id FROM members");
+
     for (const m of members.rows) {
       await client.query(
         `INSERT INTO file_rows (file_id, member_id, amount, loan, interest)
-         VALUES ($1,$2,'','','')`,
+         VALUES ($1,$2,NULL,NULL,NULL)`,
         [fileId, m.id]
       );
     }
 
     await client.query("COMMIT");
     res.json({ success: true });
+
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("CREATE FILE ERROR:", err);
@@ -171,7 +184,7 @@ app.post("/api/files", async (req, res) => {
   }
 });
 
-// OPEN file
+// OPEN FILE
 app.get("/api/files/:id", async (req, res) => {
   try {
     const result = await pool.query(
@@ -184,25 +197,27 @@ app.get("/api/files/:id", async (req, res) => {
     const data = {};
     result.rows.forEach(r => {
       data[r.member_id] = {
-        amount: r.amount || "",
-        loan: r.loan || "",
-        interest: r.interest || ""
+        amount: r.amount ?? "",
+        loan: r.loan ?? "",
+        interest: r.interest ?? ""
       };
     });
 
     res.json(data);
+
   } catch (err) {
     console.error("OPEN FILE ERROR:", err);
     res.status(500).json({ error: "Open failed" });
   }
 });
 
-// SAVE file (THIS IS THE CRITICAL FIX)
+// SAVE FILE
 app.put("/api/files/:id", async (req, res) => {
   const fileId = req.params.id;
   const rows = req.body;
 
   const client = await pool.connect();
+
   try {
     await client.query("BEGIN");
 
@@ -217,9 +232,9 @@ app.put("/api/files/:id", async (req, res) => {
          WHERE file_id=$4
            AND member_id=$5`,
         [
-          amount ?? "",
-          loan ?? "",
-          interest ?? "",
+          amount || null,
+          loan || null,
+          interest || null,
           fileId,
           memberId
         ]
@@ -228,6 +243,7 @@ app.put("/api/files/:id", async (req, res) => {
 
     await client.query("COMMIT");
     res.json({ success: true });
+
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("SAVE FILE ERROR:", err);
@@ -237,7 +253,7 @@ app.put("/api/files/:id", async (req, res) => {
   }
 });
 
-// DELETE file
+// DELETE FILE
 app.delete("/api/files/:id", async (req, res) => {
   try {
     await pool.query("DELETE FROM files WHERE id=$1", [req.params.id]);
@@ -252,6 +268,7 @@ app.delete("/api/files/:id", async (req, res) => {
    SERVER
 ======================= */
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
-  console.log("✅ Server running on port", PORT);
+  console.log("🚀 Server running on port", PORT);
 });
