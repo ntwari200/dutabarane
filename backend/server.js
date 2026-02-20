@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
@@ -128,13 +129,13 @@ app.delete("/api/members/:id", async (req, res) => {
 app.get("/api/files", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, file_name FROM files ORDER BY id"
+      "SELECT id, name FROM files ORDER BY id"
     );
 
     res.json(
       result.rows.map(f => ({
         id: f.id,
-        name: f.file_name
+        name: f.name
       }))
     );
   } catch (err) {
@@ -156,7 +157,7 @@ app.post("/api/files", async (req, res) => {
     await client.query("BEGIN");
 
     const fileResult = await client.query(
-      "INSERT INTO files (file_name) VALUES ($1) RETURNING id",
+      "INSERT INTO files (name) VALUES ($1) RETURNING id",
       [name]
     );
 
@@ -232,9 +233,9 @@ app.put("/api/files/:id", async (req, res) => {
          WHERE file_id=$4
            AND member_id=$5`,
         [
-          amount || null,
-          loan || null,
-          interest || null,
+          amount ?? null,
+          loan ?? null,
+          interest ?? null,
           fileId,
           memberId
         ]
