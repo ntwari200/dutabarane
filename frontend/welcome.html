@@ -4,35 +4,153 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Internal System</title>
+    <!-- Font Awesome for icons (needed for eye icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Your CSS file -->
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Additional styles for eye icons - add to your style.css or keep here */
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding-right: 45px !important; /* Make space for the icon */
+        }
+
+        .toggle-icon {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #99bbee;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 10;
+            padding: 10px;
+        }
+
+        .toggle-icon:hover {
+            color: #3b82f6;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .toggle-icon.active {
+            color: #3b82f6;
+            text-shadow: 0 0 8px #3b82f6;
+        }
+
+        /* Adjust input box for icon */
+        .input-box {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        /* Animation for icon */
+        @keyframes iconPulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .toggle-icon {
+            animation: iconPulse 2s ease-in-out infinite alternate;
+        }
+    </style>
 </head>
-    <font color="red">
 <body>
-<div class="container">
-    <div class="form-box">
-        <h2 class="title"><u>INTERNAL SYSTEM</u></h2>
+    <!-- Floating particles (optional) -->
+    <div class="particles"></div>
 
-        <form id="loginForm">
-            <div class="input-box">
-                <input type="text" id="username" required>
-                <label>Username</label>
-                <span class="underline"></span>
-            </div>
+    <div class="container">
+        <div class="form-box">
+            <h2 class="title"><u>INTERNAL SYSTEM</u></h2>
 
-            <div class="input-box">
-                <input type="password" id="password" required>
-                <label>Password</label>
-                <span class="underline"></span>
-            </div>
+            <form id="loginForm">
+                <!-- Username field with eye icon -->
+                <div class="input-box">
+                    <div class="input-wrapper">
+                        <input type="text" id="username" required>
+                        <i class="fas fa-eye toggle-icon" id="toggleUsername" title="Show/Hide Username"></i>
+                    </div>
+                    <label>Username</label>
+                    <span class="underline"></span>
+                </div>
 
-            <button class="login-btn" type="submit">Login</button>
-        </form>
+                <!-- Password field with eye icon -->
+                <div class="input-box">
+                    <div class="input-wrapper">
+                        <input type="password" id="password" required>
+                        <i class="fas fa-eye toggle-icon" id="togglePassword" title="Show/Hide Password"></i>
+                    </div>
+                    <label>Password</label>
+                    <span class="underline"></span>
+                </div>
 
-        <p id="message"></p>
+                <button class="login-btn" type="submit">Login</button>
+            </form>
+
+            <p id="message"></p>
+        </div>
     </div>
-</div>
 
-<script src="script.js"></script>
-    </font>
+    <!-- Tornado Software branding -->
+    <div class="tornado-branding">
+        <i class="fas fa-bolt"></i> Tornado Software
+    </div>
+
+    <script src="script.js"></script>
+    
+    <!-- Add this JavaScript for the eye icon functionality -->
+    <script>
+        (function() {
+            // Toggle Password Visibility
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            
+            togglePassword.addEventListener('click', function() {
+                // Toggle the type attribute
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle the eye icon
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+                this.classList.toggle('active');
+            });
+
+            // Toggle Username Visibility (optional - if you want to hide/show username too)
+            const toggleUsername = document.getElementById('toggleUsername');
+            const usernameInput = document.getElementById('username');
+            
+            toggleUsername.addEventListener('click', function() {
+                // Toggle the type attribute (username is usually text, but we can still toggle)
+                const type = usernameInput.getAttribute('type') === 'text' ? 'password' : 'text';
+                usernameInput.setAttribute('type', type);
+                
+                // Toggle the eye icon
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+                this.classList.toggle('active');
+            });
+
+            // Optional: Add tooltip functionality
+            const icons = document.querySelectorAll('.toggle-icon');
+            icons.forEach(icon => {
+                icon.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-50%) scale(1.1)';
+                });
+                icon.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(-50%) scale(1)';
+                });
+            });
+
+            console.log('✅ Eye icons added - Click to show/hide text');
+        })();
+    </script>
 </body>
 </html>
