@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dutabarane · Cooperative Management System</title>
-    <!-- Font Awesome 6 -->
+    <!-- Font Awesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Google Fonts -->
+    <!-- Google Fonts for modern typography -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <!-- Your existing CSS files (linked) -->
-    <link rel="stylesheet" href="style.css">
     <style>
-        /* Additional styles specific to welcome page */
+        /* Reset and base styles */
         * {
             margin: 0;
             padding: 0;
@@ -28,6 +26,7 @@
             overflow: hidden;
         }
 
+        /* Main dashboard container - glass morphism effect */
         .dashboard {
             width: 1400px;
             max-width: 98vw;
@@ -56,6 +55,7 @@
             box-shadow: 8px 0 25px rgba(0, 20, 40, 0.8);
         }
 
+        /* Tornado Software branding */
         .brand {
             margin-bottom: 35px;
             padding-left: 8px;
@@ -94,7 +94,13 @@
             border: 1px solid #0066ff55;
         }
 
-        /* ADMIN BUTTON - NOW LINKED TO INDEX.HTML (LOGIN PAGE) */
+        .slogan i {
+            font-size: 0.7rem;
+            color: #4a9eff;
+            margin-right: 6px;
+        }
+
+        /* ADMIN BUTTON - Blue and prominent */
         .admin-btn-container {
             margin: 15px 0 35px 0;
         }
@@ -140,7 +146,7 @@
             transform: translateY(2px);
         }
 
-        /* NAVIGATION LINKS - ONLY HOW IT WORKS & CONTACT US */
+        /* Navigation links - only two as requested */
         .nav-links {
             display: flex;
             flex-direction: column;
@@ -187,15 +193,40 @@
             transform: translateX(5px);
         }
 
+        /* Message for non-administrators */
+        .non-admin-message {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #ffc107;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .non-admin-message i {
+            font-size: 1.5rem;
+        }
+
+        /* Cooperative badge at bottom of sidebar */
         .coop-badge {
             margin-top: auto;
             padding-top: 25px;
             border-top: 1px solid #1e3b5a;
             color: #6688aa;
             font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* ========== MAIN CONTENT ========== */
+        .coop-badge i {
+            color: #3b82f6;
+        }
+
+        /* ========== MAIN CONTENT AREA ========== */
         .main {
             flex: 1;
             padding: 48px 52px;
@@ -204,7 +235,7 @@
             backdrop-filter: blur(6px);
         }
 
-        /* WELCOME SECTION */
+        /* Welcome header section */
         .welcome-header {
             margin-bottom: 50px;
             animation: glowFade 0.9s ease;
@@ -226,6 +257,10 @@
             border-radius: 30px;
             margin-bottom: 20px;
             border: 1px solid #2a7fff;
+        }
+
+        .greeting i {
+            margin-right: 8px;
         }
 
         .title {
@@ -259,7 +294,13 @@
             border: 1px solid #2a7fff99;
         }
 
-        /* TRIAL INFORMATION SECTION */
+        .sub-message i {
+            color: #3b82f6;
+            margin-right: 12px;
+            font-size: 1.5rem;
+        }
+
+        /* TRIAL INFORMATION SECTION - How It Works */
         .trial-section {
             background: rgba(0, 15, 30, 0.7);
             border-radius: 32px;
@@ -334,6 +375,10 @@
             font-weight: 600;
         }
 
+        .trial-badge i {
+            margin-right: 8px;
+        }
+
         /* CONTACT SECTION */
         .contact-section {
             background: rgba(0, 15, 30, 0.7);
@@ -348,6 +393,13 @@
             font-size: 2.5rem;
             font-family: 'Space Grotesk', sans-serif;
             margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .contact-section h2 i {
+            color: #3b82f6;
         }
 
         .contact-grid {
@@ -380,9 +432,25 @@
         .email-icon { color: #EA4335; }
         .phone-icon { color: #34A853; }
 
+        .contact-card h3 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .contact-detail {
+            color: #aaccff;
+            font-size: 1rem;
+            margin: 10px 0 15px;
+            word-break: break-all;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
         .contact-link {
             display: inline-block;
-            margin-top: 15px;
+            margin-top: 10px;
             padding: 12px 25px;
             background: linear-gradient(145deg, #002244, #001433);
             border: 2px solid #2a7fff;
@@ -401,14 +469,7 @@
         }
 
         .contact-link i {
-            margin-right: 10px;
-        }
-
-        .contact-detail {
-            color: #aaccff;
-            font-size: 1rem;
-            margin: 10px 0;
-            word-break: break-all;
+            margin-right: 8px;
         }
 
         /* Tornado footer */
@@ -421,6 +482,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         .tornado-footer i {
@@ -430,8 +492,21 @@
 
         .tornado-footer strong {
             color: #7fabff;
+            font-weight: 700;
         }
 
+        .tornado-footer em {
+            color: #6688cc;
+            font-style: italic;
+        }
+
+        .rwanda-flag {
+            margin-left: auto;
+            color: #3b82f6;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
         @keyframes glowFade {
             0% { opacity: 0; filter: blur(5px); }
             100% { opacity: 1; filter: blur(0); }
@@ -442,30 +517,42 @@
             100% { opacity: 1; transform: translateY(0); }
         }
 
-        /* Non-admin message */
-        .non-admin-message {
-            background: rgba(255, 193, 7, 0.1);
-            border: 1px solid #ffc107;
-            border-radius: 12px;
-            padding: 15px 20px;
-            margin: 20px 0;
-            color: #ffc107;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        /* Custom scrollbar */
+        .main::-webkit-scrollbar {
+            width: 6px;
+        }
+        .main::-webkit-scrollbar-track {
+            background: #0a1424;
+        }
+        .main::-webkit-scrollbar-thumb {
+            background: #2a7fff;
+            border-radius: 10px;
         }
 
-        .non-admin-message i {
-            font-size: 1.5rem;
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            .dashboard {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #1e3b5a;
+            }
+            .title {
+                font-size: 2.5rem;
+            }
+            .title span {
+                font-size: 1.8rem;
+            }
         }
     </style>
-    <!-- Your existing JavaScript files (linked) -->
-    <script src="script.js" defer></script>
 </head>
 <body>
     <div class="dashboard">
         <!-- SIDEBAR -->
         <div class="sidebar">
+            <!-- Tornado Software Branding -->
             <div class="brand">
                 <div class="brand-name">
                     <i class="fas fa-bolt"></i> Tornado
@@ -475,14 +562,14 @@
                 </div>
             </div>
 
-            <!-- ADMIN BUTTON - NOW LINKED TO INDEX.HTML (LOGIN PAGE) -->
+            <!-- ADMIN BUTTON - Goes to login page -->
             <div class="admin-btn-container">
                 <button class="admin-btn" id="adminContinueBtn">
                     <i class="fas fa-user-shield"></i> continue as administrator
                 </button>
             </div>
 
-            <!-- NAVIGATION LINKS - ONLY HOW IT WORKS & CONTACT US -->
+            <!-- NAVIGATION LINKS - Only How It Works and Contact Us -->
             <div class="nav-links">
                 <a href="#" class="nav-item active" id="howItWorksNav">
                     <i class="fas fa-info-circle"></i> How It Works
@@ -498,8 +585,10 @@
                 <span>Non-administrators can view How It Works and Contact Us pages</span>
             </div>
 
+            <!-- Cooperative badge -->
             <div class="coop-badge">
-                <i class="fas fa-database"></i> supporting Rwandan cooperatives
+                <i class="fas fa-database"></i>
+                <span>supporting Rwandan cooperatives</span>
             </div>
         </div>
 
@@ -521,7 +610,7 @@
                 </div>
             </div>
 
-            <!-- TRIAL INFORMATION SECTION (How It Works) -->
+            <!-- HOW IT WORKS / TRIAL SECTION -->
             <div class="trial-section" id="howItWorksSection">
                 <h2>
                     <i class="fas fa-rocket"></i> 
@@ -562,7 +651,7 @@
                 </div>
 
                 <p style="color: #99bbee; margin-top: 30px; font-style: italic;">
-                    * Non-administrators can explore how Dutabarane works. Click "Continue as Administrator" to start your free trial.
+                    * Non-administrators can explore how Dutabarane works. Click "Continue as Administrator" to access the login page.
                 </p>
             </div>
 
@@ -577,7 +666,7 @@
                         <div class="contact-icon instagram-icon">
                             <i class="fab fa-instagram"></i>
                         </div>
-                        <h3 style="color: white; margin-bottom: 10px;">Instagram</h3>
+                        <h3>Instagram</h3>
                         <div class="contact-detail">@compiler_jn</div>
                         <a href="https://instagram.com/compiler_jn" target="_blank" class="contact-link">
                             <i class="fab fa-instagram"></i> Follow Us
@@ -589,7 +678,7 @@
                         <div class="contact-icon email-icon">
                             <i class="fas fa-envelope"></i>
                         </div>
-                        <h3 style="color: white; margin-bottom: 10px;">Email</h3>
+                        <h3>Email</h3>
                         <div class="contact-detail">ntwarijustin2007@gmail.com</div>
                         <a href="mailto:ntwarijustin2007@gmail.com" class="contact-link">
                             <i class="fas fa-envelope"></i> Send Email
@@ -601,7 +690,7 @@
                         <div class="contact-icon phone-icon">
                             <i class="fas fa-phone-alt"></i>
                         </div>
-                        <h3 style="color: white; margin-bottom: 10px;">Phone</h3>
+                        <h3>Phone</h3>
                         <div class="contact-detail">0723532313</div>
                         <a href="tel:+250723532313" class="contact-link">
                             <i class="fas fa-phone-alt"></i> Call Now
@@ -614,55 +703,69 @@
                 </p>
             </div>
 
-            <!-- TORNADO FOOTER -->
+            <!-- TORNADO SOFTWARE FOOTER -->
             <div class="tornado-footer">
                 <i class="fas fa-wind"></i>
                 <span><strong>Tornado Software Solutions</strong> — <em>“spinning data into progress”</em></span>
-                <span style="margin-left: auto; color: #3b82f6;">🇷🇼 iyubakire Rwanda</span>
+                <span class="rwanda-flag">🇷🇼 iyubakire Rwanda</span>
             </div>
         </div>
     </div>
 
-    <!-- LINKING JAVASCRIPT - FIXED WITH CORRECT LINKS -->
+    <!-- JAVASCRIPT FOR NAVIGATION -->
     <script>
         (function() {
+            // Get elements
+            const adminBtn = document.getElementById('adminContinueBtn');
+            const howItWorksNav = document.getElementById('howItWorksNav');
+            const contactNav = document.getElementById('contactNav');
+            const howItWorksSection = document.getElementById('howItWorksSection');
+            const contactSection = document.getElementById('contactSection');
+
             // ============================================
-            // ADMIN BUTTON - Goes to index.html (LOGIN PAGE)
+            // ADMIN BUTTON - Goes to login page
             // ============================================
-            document.getElementById('adminContinueBtn').addEventListener('click', function(e) {
+            adminBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                // This takes administrators to the LOGIN PAGE first
-                window.location.href = 'index.html';
-                // After login, index.html will redirect to dashboard.html
-                // (assuming your login system handles this)
+                // This takes administrators to the LOGIN page
+                window.location.href = 'login.html';  // Your login page
             });
 
             // ============================================
-            // HOW IT WORKS NAVIGATION - Goes to aboutus.html
+            // HOW IT WORKS NAVIGATION
             // ============================================
-            document.getElementById('howItWorksNav').addEventListener('click', function(e) {
+            howItWorksNav.addEventListener('click', function(e) {
                 e.preventDefault();
-                // This takes non-administrators to your About Us page
-                window.location.href = 'aboutus.html';
+                
+                // Update active states
+                howItWorksNav.classList.add('active');
+                contactNav.classList.remove('active');
+                
+                // Show/hide sections
+                howItWorksSection.style.display = 'block';
+                contactSection.style.display = 'none';
             });
 
             // ============================================
-            // CONTACT US NAVIGATION - Goes to contactus.html
+            // CONTACT US NAVIGATION
             // ============================================
-            document.getElementById('contactNav').addEventListener('click', function(e) {
+            contactNav.addEventListener('click', function(e) {
                 e.preventDefault();
-                // This takes non-administrators to your Contact page
-                window.location.href = 'contactus.html';
+                
+                // Update active states
+                contactNav.classList.add('active');
+                howItWorksNav.classList.remove('active');
+                
+                // Show/hide sections
+                contactSection.style.display = 'block';
+                howItWorksSection.style.display = 'none';
             });
 
-            // ============================================
-            // OPTIONAL: Keep the same-page toggle for preview
-            // but we're using separate pages now
-            // ============================================
-            console.log('✅ Welcome page loaded - All links connected!');
-            console.log('📌 Admin button → index.html (Login Page)');
-            console.log('📌 How It Works → aboutus.html');
-            console.log('📌 Contact Us → contactus.html');
+            // Console log for debugging
+            console.log('✅ Welcome to Dutabarane!');
+            console.log('📌 Admin button → login.html');
+            console.log('📌 How It Works → showing trial section');
+            console.log('📌 Contact Us → showing contact section');
         })();
     </script>
 </body>
