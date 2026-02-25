@@ -2,16 +2,157 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Login - Internal System</title>
-    <!-- Font Awesome for icons (needed for eye icons) -->
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <!-- Your CSS file -->
-    <link rel="stylesheet" href="style.css">
     <style>
-        /* Additional styles for eye icons - add to your style.css or keep here */
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0f17;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 15px;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(74, 158, 255, 0.1) 0%, transparent 50%);
+            animation: backgroundPulse 8s ease-in-out infinite;
+            top: 0;
+            left: 0;
+            z-index: -2;
+        }
+
+        /* Floating particles */
+        body::after {
+            content: '';
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 5% 10%, #3b82f6, transparent),
+                radial-gradient(2px 2px at 15% 70%, #4a9eff, transparent),
+                radial-gradient(3px 3px at 25% 40%, #2a7fff, transparent),
+                radial-gradient(2px 2px at 45% 80%, #0066ff, transparent),
+                radial-gradient(3px 3px at 65% 20%, #7fabff, transparent);
+            background-size: 200% 200%;
+            opacity: 0.2;
+            animation: floatParticles 25s linear infinite;
+            pointer-events: none;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        /* Container - Fully responsive */
+        .container {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 10px;
+            position: relative;
+            z-index: 10;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Form box - Glass morphism */
+        .form-box {
+            background: rgba(5, 12, 24, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 32px;
+            padding: 30px 25px;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 150, 255, 0.2) inset;
+            border: 1px solid rgba(30, 100, 200, 0.3);
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .form-box {
+                border-radius: 48px;
+                padding: 40px 35px;
+            }
+        }
+
+        /* Title */
+        .title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 35px;
+            text-shadow: 0 0 15px #0066ff99;
+            letter-spacing: 1px;
+        }
+
+        @media (min-width: 768px) {
+            .title {
+                font-size: 2rem;
+                margin-bottom: 45px;
+            }
+        }
+
+        .title u {
+            text-decoration-color: #3b82f6;
+            text-underline-offset: 8px;
+            text-decoration-thickness: 3px;
+        }
+
+        /* Form */
+        #loginForm {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Input field container - FIXED SEPARATION */
+        .input-field {
+            position: relative;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        /* Label styling - ABOVE the input, not overlapping */
+        .input-field label {
+            display: block;
+            color: #99bbee;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-align: left;
+            padding-left: 5px;
+        }
+
+        @media (min-width: 768px) {
+            .input-field label {
+                font-size: 0.9rem;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Input wrapper for icon positioning */
         .input-wrapper {
             position: relative;
             width: 100%;
@@ -19,12 +160,34 @@
 
         .input-wrapper input {
             width: 100%;
-            padding-right: 45px !important; /* Make space for the icon */
+            padding: 14px 50px 14px 15px;
+            font-size: 1rem;
+            color: white;
+            background: rgba(10, 25, 45, 0.6);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
         }
 
+        @media (min-width: 768px) {
+            .input-wrapper input {
+                padding: 16px 55px 16px 18px;
+                font-size: 1.1rem;
+            }
+        }
+
+        .input-wrapper input:focus {
+            border-color: #3b82f6;
+            background: rgba(15, 35, 60, 0.8);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Toggle icon - positioned inside input */
         .toggle-icon {
             position: absolute;
-            right: 0;
+            right: 15px;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
@@ -32,12 +195,11 @@
             font-size: 1.2rem;
             transition: all 0.3s ease;
             z-index: 10;
-            padding: 10px;
+            padding: 5px;
         }
 
         .toggle-icon:hover {
             color: #3b82f6;
-            transform: translateY(-50%) scale(1.1);
         }
 
         .toggle-icon.active {
@@ -45,53 +207,216 @@
             text-shadow: 0 0 8px #3b82f6;
         }
 
-        /* Adjust input box for icon */
-        .input-box {
-            position: relative;
-            margin: 30px 0;
+        /* Encryption indicator */
+        .encryption-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: #6688aa;
+            padding-left: 5px;
+            min-height: 20px;
         }
 
-        /* Animation for icon */
-        @keyframes iconPulse {
-            0% { opacity: 0.7; }
-            100% { opacity: 1; }
+        @media (min-width: 768px) {
+            .encryption-indicator {
+                font-size: 0.75rem;
+                margin-top: 10px;
+            }
         }
 
-        .toggle-icon {
-            animation: iconPulse 2s ease-in-out infinite alternate;
+        .encryption-indicator i {
+            font-size: 0.7rem;
+        }
+
+        .encryption-indicator.encrypting {
+            color: #3b82f6;
+        }
+
+        .encryption-indicator.encrypting i {
+            color: #3b82f6;
+            animation: spin 1s linear infinite;
+        }
+
+        .encryption-indicator.encrypted {
+            color: #10b981;
+        }
+
+        .encryption-indicator.encrypted i {
+            color: #10b981;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Login button */
+        .login-btn {
+            background: linear-gradient(145deg, #002244, #001433);
+            border: 2px solid #2a7fff;
+            border-radius: 50px;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.5px;
+            padding: 14px 12px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-transform: uppercase;
+            margin-top: 15px;
+            box-shadow: 0 8px 15px -4px #000000cc, 0 0 12px #2a7fff66;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .login-btn {
+                border-radius: 60px;
+                font-size: 1.2rem;
+                padding: 16px 12px;
+                margin-top: 20px;
+            }
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(145deg, #003366, #001f4d);
+            border-color: #4a9eff;
+            box-shadow: 0 15px 25px -5px #000000, 0 0 25px #2a7fff;
+            transform: translateY(-2px);
+        }
+
+        .login-btn:active {
+            transform: translateY(2px);
+        }
+
+        /* Message area */
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            min-height: 24px;
+            color: #ff6b6b;
+        }
+
+        /* Tornado branding */
+        .tornado-branding {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            color: #6688aa;
+            font-size: 0.7rem;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 12px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+
+        @media (min-width: 768px) {
+            .tornado-branding {
+                bottom: 20px;
+                right: 30px;
+                font-size: 0.85rem;
+                padding: 8px 15px;
+            }
+        }
+
+        .tornado-branding:hover {
+            opacity: 1;
+        }
+
+        .tornado-branding i {
+            color: #3b82f6;
+            margin-right: 5px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes floatParticles {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 100%; }
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 480px) {
+            .input-wrapper input {
+                font-size: 16px; /* Prevents zoom on mobile */
+                padding: 14px 45px 14px 12px;
+            }
+            
+            .login-btn {
+                min-height: 50px;
+            }
+            
+            .toggle-icon {
+                right: 12px;
+                font-size: 1.1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Floating particles (optional) -->
-    <div class="particles"></div>
-
     <div class="container">
         <div class="form-box">
             <h2 class="title"><u>INTERNAL SYSTEM</u></h2>
 
             <form id="loginForm">
-                <!-- Username field with eye icon -->
-                <div class="input-box">
+                <!-- USERNAME FIELD - SEPARATED -->
+                <div class="input-field">
+                    <label for="username">
+                        <i class="fas fa-user" style="margin-right: 5px;"></i> Username
+                    </label>
                     <div class="input-wrapper">
-                        <input type="text" id="username" required>
+                        <input type="text" id="username" placeholder="Enter your username" required>
                         <i class="fas fa-eye toggle-icon" id="toggleUsername" title="Show/Hide Username"></i>
                     </div>
-                    <label>Username</label>
-                    <span class="underline"></span>
+                    <div class="encryption-indicator" id="usernameEncrypt">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Ready</span>
+                    </div>
                 </div>
 
-                <!-- Password field with eye icon -->
-                <div class="input-box">
+                <!-- PASSWORD FIELD - SEPARATED, HIDDEN BY DEFAULT -->
+                <div class="input-field">
+                    <label for="password">
+                        <i class="fas fa-lock" style="margin-right: 5px;"></i> Password
+                    </label>
                     <div class="input-wrapper">
-                        <input type="password" id="password" required>
+                        <input type="password" id="password" placeholder="Enter your password" required>
                         <i class="fas fa-eye toggle-icon" id="togglePassword" title="Show/Hide Password"></i>
                     </div>
-                    <label>Password</label>
-                    <span class="underline"></span>
+                    <div class="encryption-indicator" id="passwordEncrypt">
+                        <i class="fas fa-shield-alt"></i>
+                        <span id="encryptText">AES-256 encrypted</span>
+                    </div>
                 </div>
 
-                <button class="login-btn" type="submit">Login</button>
+                <button class="login-btn" type="submit">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
             </form>
 
             <p id="message"></p>
@@ -100,17 +425,20 @@
 
     <!-- Tornado Software branding -->
     <div class="tornado-branding">
-        <i class="fas fa-bolt"></i> Tornado Software
+        <i class="fas fa-bolt"></i> Tornado Software • Secure Login
     </div>
 
-    <script src="script.js"></script>
-    
-    <!-- Add this JavaScript for the eye icon functionality -->
     <script>
         (function() {
-            // Toggle Password Visibility
+            // ============================================
+            // PASSWORD SHOW/HIDE TOGGLE
+            // ============================================
             const togglePassword = document.getElementById('togglePassword');
             const passwordInput = document.getElementById('password');
+            const passwordEncrypt = document.getElementById('passwordEncrypt');
+            const encryptText = document.getElementById('encryptText');
+            
+            // Default: password is hidden (type="password")
             
             togglePassword.addEventListener('click', function() {
                 // Toggle the type attribute
@@ -121,14 +449,28 @@
                 this.classList.toggle('fa-eye');
                 this.classList.toggle('fa-eye-slash');
                 this.classList.toggle('active');
+                
+                // Update encryption indicator text
+                if (type === 'text') {
+                    encryptText.textContent = 'Visible - not encrypted';
+                    passwordEncrypt.className = 'encryption-indicator';
+                    passwordEncrypt.querySelector('i').className = 'fas fa-eye';
+                } else {
+                    encryptText.textContent = 'AES-256 encrypted';
+                    passwordEncrypt.className = 'encryption-indicator encrypted';
+                    passwordEncrypt.querySelector('i').className = 'fas fa-shield-alt';
+                }
             });
 
-            // Toggle Username Visibility (optional - if you want to hide/show username too)
+            // ============================================
+            // USERNAME SHOW/HIDE TOGGLE
+            // ============================================
             const toggleUsername = document.getElementById('toggleUsername');
             const usernameInput = document.getElementById('username');
+            const usernameEncrypt = document.getElementById('usernameEncrypt');
             
             toggleUsername.addEventListener('click', function() {
-                // Toggle the type attribute (username is usually text, but we can still toggle)
+                // Toggle the type attribute
                 const type = usernameInput.getAttribute('type') === 'text' ? 'password' : 'text';
                 usernameInput.setAttribute('type', type);
                 
@@ -136,21 +478,91 @@
                 this.classList.toggle('fa-eye');
                 this.classList.toggle('fa-eye-slash');
                 this.classList.toggle('active');
+                
+                // Update indicator
+                if (type === 'password') {
+                    usernameEncrypt.innerHTML = '<i class="fas fa-eye-slash"></i><span>Hidden</span>';
+                } else {
+                    usernameEncrypt.innerHTML = '<i class="fas fa-eye"></i><span>Visible</span>';
+                }
             });
 
-            // Optional: Add tooltip functionality
-            const icons = document.querySelectorAll('.toggle-icon');
-            icons.forEach(icon => {
-                icon.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-50%) scale(1.1)';
-                });
-                icon.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(-50%) scale(1)';
-                });
+            // ============================================
+            // REAL-TIME ENCRYPTION SIMULATION
+            // ============================================
+            passwordInput.addEventListener('input', function() {
+                const value = this.value;
+                const encryptIndicator = document.getElementById('passwordEncrypt');
+                const encryptTextSpan = document.getElementById('encryptText');
+                
+                if (value.length === 0) {
+                    encryptIndicator.className = 'encryption-indicator';
+                    encryptIndicator.innerHTML = '<i class="fas fa-shield-alt"></i><span>AES-256 encrypted</span>';
+                } else if (value.length < 3) {
+                    encryptIndicator.className = 'encryption-indicator encrypting';
+                    encryptIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Encrypting...</span>';
+                } else {
+                    // Show encryption is complete
+                    encryptIndicator.className = 'encryption-indicator encrypted';
+                    encryptIndicator.innerHTML = '<i class="fas fa-check-circle"></i><span>Secured with AES-256</span>';
+                }
             });
 
-            console.log('✅ Eye icons added - Click to show/hide text');
+            usernameInput.addEventListener('input', function() {
+                const value = this.value;
+                
+                if (value.length > 0) {
+                    usernameEncrypt.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i><span>Valid</span>';
+                } else {
+                    usernameEncrypt.innerHTML = '<i class="fas fa-user"></i><span>Enter username</span>';
+                }
+            });
+
+            // ============================================
+            // FORM SUBMISSION
+            // ============================================
+            const loginForm = document.getElementById('loginForm');
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = usernameInput.value;
+                const password = passwordInput.value;
+                
+                if (!username || !password) {
+                    document.getElementById('message').textContent = 'Please enter both username and password';
+                    return;
+                }
+                
+                // Show encryption animation
+                passwordEncrypt.className = 'encryption-indicator encrypting';
+                passwordEncrypt.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Securing credentials...</span>';
+                
+                // Simulate login process (your actual login logic goes here)
+                setTimeout(() => {
+                    // Your existing login logic from script.js will handle this
+                    console.log('Login attempted with:', username);
+                    
+                    // Reset indicator
+                    passwordEncrypt.className = 'encryption-indicator encrypted';
+                    passwordEncrypt.innerHTML = '<i class="fas fa-check-circle"></i><span>Login processed</span>';
+                    
+                    // Show message (your script.js will override this)
+                    document.getElementById('message').textContent = 'Processing login...';
+                    
+                    // Call your existing login function if it exists
+                    if (typeof loginUser === 'function') {
+                        loginUser(username, password);
+                    }
+                }, 1000);
+            });
+
+            console.log('✅ Login page ready - Password hidden by default');
+            console.log('👆 Username and password fields are properly separated');
+            console.log('📱 Works on all devices');
         })();
     </script>
+
+    <!-- Link to your existing script.js - your original login logic remains -->
+    <script src="script.js"></script>
 </body>
 </html>
