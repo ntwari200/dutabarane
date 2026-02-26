@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Login - Internal System</title>
+    <title>Login - Internal System | Dutabarane</title>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Professional Loading System CSS -->
+    <link rel="stylesheet" href="loaders.css">
     <style>
         /* Reset and base styles */
         * {
@@ -94,6 +96,11 @@
             }
         }
 
+        .form-box:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px #3b82f6 inset;
+        }
+
         /* Title */
         .title {
             font-family: 'Space Grotesk', sans-serif;
@@ -126,14 +133,14 @@
             gap: 25px;
         }
 
-        /* Input field container - FIXED SEPARATION */
+        /* Input field container */
         .input-field {
             position: relative;
             width: 100%;
             margin-bottom: 5px;
         }
 
-        /* Label styling - ABOVE the input, not overlapping */
+        /* Label styling */
         .input-field label {
             display: block;
             color: #99bbee;
@@ -184,7 +191,12 @@
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
         }
 
-        /* Toggle icon - positioned inside input */
+        .input-wrapper input::placeholder {
+            color: #6688aa;
+            opacity: 0.5;
+        }
+
+        /* Toggle icon */
         .toggle-icon {
             position: absolute;
             right: 15px;
@@ -295,6 +307,12 @@
             transform: translateY(2px);
         }
 
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         /* Message area */
         #message {
             margin-top: 20px;
@@ -318,6 +336,9 @@
             padding: 6px 12px;
             border-radius: 30px;
             backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         @media (min-width: 768px) {
@@ -335,7 +356,12 @@
 
         .tornado-branding i {
             color: #3b82f6;
-            margin-right: 5px;
+            animation: gentleSpin 3s linear infinite;
+        }
+
+        @keyframes gentleSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Animations */
@@ -363,7 +389,7 @@
         /* Mobile optimizations */
         @media (max-width: 480px) {
             .input-wrapper input {
-                font-size: 16px; /* Prevents zoom on mobile */
+                font-size: 16px;
                 padding: 14px 45px 14px 12px;
             }
             
@@ -376,21 +402,46 @@
                 font-size: 1.1rem;
             }
         }
+
+        /* Add to existing style section */
+        .input-wrapper input.error {
+            border-color: #ff4444;
+            animation: shake 0.3s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
     </style>
 </head>
 <body>
+    <!-- Progress Bar (Top) -->
+    <div class="progress-bar">
+        <div class="progress-bar-fill"></div>
+    </div>
+
+    <!-- Page Loader (Initial) -->
+    <div class="page-loader">
+        <div class="page-loader-content">
+            <div class="page-loader-spinner"></div>
+            <div class="page-loader-text">Loading Secure Login...</div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="form-box">
             <h2 class="title"><u>INTERNAL SYSTEM</u></h2>
 
-            <form id="loginForm">
-                <!-- USERNAME FIELD - SEPARATED -->
+            <form id="loginForm" novalidate>
+                <!-- USERNAME FIELD -->
                 <div class="input-field">
                     <label for="username">
                         <i class="fas fa-user" style="margin-right: 5px;"></i> Username
                     </label>
                     <div class="input-wrapper">
-                        <input type="text" id="username" placeholder="Enter your username" required>
+                        <input type="text" id="username" placeholder="Enter your username" required autocomplete="off">
                         <i class="fas fa-eye toggle-icon" id="toggleUsername" title="Show/Hide Username"></i>
                     </div>
                     <div class="encryption-indicator" id="usernameEncrypt">
@@ -399,13 +450,13 @@
                     </div>
                 </div>
 
-                <!-- PASSWORD FIELD - SEPARATED, HIDDEN BY DEFAULT -->
+                <!-- PASSWORD FIELD -->
                 <div class="input-field">
                     <label for="password">
                         <i class="fas fa-lock" style="margin-right: 5px;"></i> Password
                     </label>
                     <div class="input-wrapper">
-                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <input type="password" id="password" placeholder="Enter your password" required autocomplete="off">
                         <i class="fas fa-eye toggle-icon" id="togglePassword" title="Show/Hide Password"></i>
                     </div>
                     <div class="encryption-indicator" id="passwordEncrypt">
@@ -414,8 +465,9 @@
                     </div>
                 </div>
 
-                <button class="login-btn" type="submit">
-                    <i class="fas fa-sign-in-alt"></i> Login
+                <button class="login-btn" type="submit" id="loginButton">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span class="btn-text">Login</span>
                 </button>
             </form>
 
@@ -428,141 +480,261 @@
         <i class="fas fa-bolt"></i> Tornado Software • Secure Login
     </div>
 
+    <!-- Professional Loading System JavaScript -->
+    <script src="loaders.js"></script>
+    
     <script>
         (function() {
             // ============================================
-            // PASSWORD SHOW/HIDE TOGGLE
+            // HIDE PAGE LOADER AFTER PAGE LOADS
+            // ============================================
+            window.addEventListener('load', function() {
+                setTimeout(() => {
+                    if (window.dutabaraneLoader) {
+                        window.dutabaraneLoader.hidePageLoader();
+                    }
+                }, 800);
+            });
+
+            // ============================================
+            // ELEMENTS
             // ============================================
             const togglePassword = document.getElementById('togglePassword');
             const passwordInput = document.getElementById('password');
             const passwordEncrypt = document.getElementById('passwordEncrypt');
             const encryptText = document.getElementById('encryptText');
             
-            // Default: password is hidden (type="password")
-            
-            togglePassword.addEventListener('click', function() {
-                // Toggle the type attribute
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                
-                // Toggle the eye icon
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
-                this.classList.toggle('active');
-                
-                // Update encryption indicator text
-                if (type === 'text') {
-                    encryptText.textContent = 'Visible - not encrypted';
-                    passwordEncrypt.className = 'encryption-indicator';
-                    passwordEncrypt.querySelector('i').className = 'fas fa-eye';
-                } else {
-                    encryptText.textContent = 'AES-256 encrypted';
-                    passwordEncrypt.className = 'encryption-indicator encrypted';
-                    passwordEncrypt.querySelector('i').className = 'fas fa-shield-alt';
-                }
-            });
-
-            // ============================================
-            // USERNAME SHOW/HIDE TOGGLE
-            // ============================================
             const toggleUsername = document.getElementById('toggleUsername');
             const usernameInput = document.getElementById('username');
             const usernameEncrypt = document.getElementById('usernameEncrypt');
             
-            toggleUsername.addEventListener('click', function() {
-                // Toggle the type attribute
-                const type = usernameInput.getAttribute('type') === 'text' ? 'password' : 'text';
-                usernameInput.setAttribute('type', type);
-                
-                // Toggle the eye icon
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
-                this.classList.toggle('active');
-                
-                // Update indicator
-                if (type === 'password') {
-                    usernameEncrypt.innerHTML = '<i class="fas fa-eye-slash"></i><span>Hidden</span>';
-                } else {
-                    usernameEncrypt.innerHTML = '<i class="fas fa-eye"></i><span>Visible</span>';
-                }
-            });
+            const loginForm = document.getElementById('loginForm');
+            const loginButton = document.getElementById('loginButton');
+            const messageEl = document.getElementById('message');
+
+            // ============================================
+            // PASSWORD SHOW/HIDE TOGGLE
+            // ============================================
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                    this.classList.toggle('active');
+                    
+                    if (type === 'text') {
+                        encryptText.textContent = 'Visible - not encrypted';
+                        passwordEncrypt.className = 'encryption-indicator';
+                        passwordEncrypt.querySelector('i').className = 'fas fa-eye';
+                    } else {
+                        encryptText.textContent = 'AES-256 encrypted';
+                        passwordEncrypt.className = 'encryption-indicator encrypted';
+                        passwordEncrypt.querySelector('i').className = 'fas fa-shield-alt';
+                    }
+                });
+            }
+
+            // ============================================
+            // USERNAME SHOW/HIDE TOGGLE
+            // ============================================
+            if (toggleUsername && usernameInput) {
+                toggleUsername.addEventListener('click', function() {
+                    const type = usernameInput.getAttribute('type') === 'text' ? 'password' : 'text';
+                    usernameInput.setAttribute('type', type);
+                    
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                    this.classList.toggle('active');
+                    
+                    if (type === 'password') {
+                        usernameEncrypt.innerHTML = '<i class="fas fa-eye-slash"></i><span>Hidden</span>';
+                    } else {
+                        usernameEncrypt.innerHTML = '<i class="fas fa-eye"></i><span>Visible</span>';
+                    }
+                });
+            }
 
             // ============================================
             // REAL-TIME ENCRYPTION SIMULATION
             // ============================================
-            passwordInput.addEventListener('input', function() {
-                const value = this.value;
-                const encryptIndicator = document.getElementById('passwordEncrypt');
-                const encryptTextSpan = document.getElementById('encryptText');
-                
-                if (value.length === 0) {
-                    encryptIndicator.className = 'encryption-indicator';
-                    encryptIndicator.innerHTML = '<i class="fas fa-shield-alt"></i><span>AES-256 encrypted</span>';
-                } else if (value.length < 3) {
-                    encryptIndicator.className = 'encryption-indicator encrypting';
-                    encryptIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Encrypting...</span>';
-                } else {
-                    // Show encryption is complete
-                    encryptIndicator.className = 'encryption-indicator encrypted';
-                    encryptIndicator.innerHTML = '<i class="fas fa-check-circle"></i><span>Secured with AES-256</span>';
-                }
-            });
-
-            usernameInput.addEventListener('input', function() {
-                const value = this.value;
-                
-                if (value.length > 0) {
-                    usernameEncrypt.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i><span>Valid</span>';
-                } else {
-                    usernameEncrypt.innerHTML = '<i class="fas fa-user"></i><span>Enter username</span>';
-                }
-            });
-
-            // ============================================
-            // FORM SUBMISSION
-            // ============================================
-            const loginForm = document.getElementById('loginForm');
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const username = usernameInput.value;
-                const password = passwordInput.value;
-                
-                if (!username || !password) {
-                    document.getElementById('message').textContent = 'Please enter both username and password';
-                    return;
-                }
-                
-                // Show encryption animation
-                passwordEncrypt.className = 'encryption-indicator encrypting';
-                passwordEncrypt.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Securing credentials...</span>';
-                
-                // Simulate login process (your actual login logic goes here)
-                setTimeout(() => {
-                    // Your existing login logic from script.js will handle this
-                    console.log('Login attempted with:', username);
+            if (passwordInput && passwordEncrypt) {
+                passwordInput.addEventListener('input', function() {
+                    const value = this.value;
                     
-                    // Reset indicator
-                    passwordEncrypt.className = 'encryption-indicator encrypted';
-                    passwordEncrypt.innerHTML = '<i class="fas fa-check-circle"></i><span>Login processed</span>';
-                    
-                    // Show message (your script.js will override this)
-                    document.getElementById('message').textContent = 'Processing login...';
-                    
-                    // Call your existing login function if it exists
-                    if (typeof loginUser === 'function') {
-                        loginUser(username, password);
+                    if (value.length === 0) {
+                        passwordEncrypt.className = 'encryption-indicator';
+                        passwordEncrypt.innerHTML = '<i class="fas fa-shield-alt"></i><span>AES-256 encrypted</span>';
+                    } else if (value.length < 3) {
+                        passwordEncrypt.className = 'encryption-indicator encrypting';
+                        passwordEncrypt.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Encrypting...</span>';
+                    } else {
+                        passwordEncrypt.className = 'encryption-indicator encrypted';
+                        passwordEncrypt.innerHTML = '<i class="fas fa-check-circle"></i><span>Secured with AES-256</span>';
                     }
-                }, 1000);
-            });
+                });
+            }
 
-            console.log('✅ Login page ready - Password hidden by default');
-            console.log('👆 Username and password fields are properly separated');
-            console.log('📱 Works on all devices');
+            if (usernameInput && usernameEncrypt) {
+                usernameInput.addEventListener('input', function() {
+                    const value = this.value;
+                    
+                    if (value.length > 0) {
+                        usernameEncrypt.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i><span>Valid</span>';
+                    } else {
+                        usernameEncrypt.innerHTML = '<i class="fas fa-user"></i><span>Enter username</span>';
+                    }
+                });
+            }
+
+            // ============================================
+            // FORM SUBMISSION WITH PROFESSIONAL LOADERS
+            // ============================================
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const username = usernameInput.value.trim();
+                    const password = passwordInput.value;
+                    
+                    // Remove any existing error classes
+                    usernameInput.classList.remove('error');
+                    passwordInput.classList.remove('error');
+                    
+                    // Validation
+                    if (!username || !password) {
+                        messageEl.textContent = 'Please enter both username and password';
+                        
+                        if (window.dutabaraneLoader) {
+                            window.dutabaraneLoader.showSuccess('Please fill all fields', 3000);
+                        }
+                        
+                        // Add error class to empty fields
+                        if (!username) usernameInput.classList.add('error');
+                        if (!password) passwordInput.classList.add('error');
+                        return;
+                    }
+
+                    // Clear any previous messages
+                    messageEl.textContent = '';
+
+                    // Show encryption animation
+                    if (passwordEncrypt) {
+                        passwordEncrypt.className = 'encryption-indicator encrypting';
+                        passwordEncrypt.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Securing credentials...</span>';
+                    }
+
+                    // Start progress bar
+                    if (window.dutabaraneLoader) {
+                        window.dutabaraneLoader.startProgress();
+                    }
+
+                    // Add loader to button
+                    let loader = { stop: () => {} };
+                    if (window.dutabaraneLoader && loginButton) {
+                        loader = window.dutabaraneLoader.addButtonLoader(loginButton, 'Authenticating...');
+                    }
+
+                    try {
+                        // Simulate login process (replace with your actual API call)
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+
+                        // FOR DEMO PURPOSES - Replace with actual authentication
+                        // This accepts any non-empty username/password for demo
+                        const isSuccess = username.length > 0 && password.length > 0;
+
+                        if (isSuccess) {
+                            // Update progress
+                            if (window.dutabaraneLoader) {
+                                window.dutabaraneLoader.updateProgress(80);
+                            }
+                            
+                            // Show success message
+                            messageEl.textContent = 'Login successful! Redirecting...';
+                            
+                            // Show green ellipse success animation
+                            if (window.dutabaraneLoader) {
+                                window.dutabaraneLoader.showLoginSuccess(() => {
+                                    // Redirect to dashboard after success animation
+                                    window.location.href = 'home.html';
+                                });
+                                
+                                // Show success toast as backup
+                                window.dutabaraneLoader.showSuccess('Login successful! Redirecting...', 2000);
+                                
+                                // Complete progress
+                                window.dutabaraneLoader.completeProgress();
+                            } else {
+                                // Fallback if loader not available
+                                setTimeout(() => {
+                                    window.location.href = 'home.html';
+                                }, 1500);
+                            }
+
+                        } else {
+                            throw new Error('Invalid credentials');
+                        }
+
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        
+                        // Reset encryption indicator
+                        if (passwordEncrypt) {
+                            passwordEncrypt.className = 'encryption-indicator encrypted';
+                            passwordEncrypt.innerHTML = '<i class="fas fa-shield-alt"></i><span>AES-256 encrypted</span>';
+                        }
+                        
+                        // Show error message
+                        messageEl.textContent = 'Invalid username or password';
+                        
+                        // Add error class to inputs for visual feedback
+                        usernameInput.classList.add('error');
+                        passwordInput.classList.add('error');
+                        
+                        if (window.dutabaraneLoader) {
+                            window.dutabaraneLoader.showSuccess('Login failed! Please try again', 3000);
+                            
+                            // Complete progress with error
+                            window.dutabaraneLoader.completeProgress();
+                        }
+
+                    } finally {
+                        // Stop button loader
+                        loader.stop();
+                    }
+                });
+            }
+
+            // ============================================
+            // REMOVE ERROR CLASS ON INPUT
+            // ============================================
+            if (usernameInput) {
+                usernameInput.addEventListener('input', function() {
+                    this.classList.remove('error');
+                });
+            }
+            
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    this.classList.remove('error');
+                });
+            }
+
+            // ============================================
+            // DEMO CREDENTIALS HELPER (Remove in production)
+            // ============================================
+            console.log('🔐 Dutabarane Login System Ready');
+            console.log('📱 Fully responsive with professional loaders');
+            console.log('✨ Green ellipse success animation on login');
+            
+            // For demo purposes - pre-fill with demo credentials (remove in production)
+            // usernameInput.value = 'admin';
+            // passwordInput.value = 'password';
         })();
     </script>
 
-    <!-- Link to your existing script.js - your original login logic remains -->
+    <!-- Your existing script.js (optional) -->
     <script src="script.js"></script>
 </body>
 </html>
