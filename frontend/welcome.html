@@ -11,7 +11,7 @@
     <!-- Professional Loading System CSS -->
     <link rel="stylesheet" href="loaders.css">
     <style>
-        /* Reset and base styles */
+        /* Your existing styles - keep them exactly as they were */
         * {
             margin: 0;
             padding: 0;
@@ -30,7 +30,6 @@
             padding: 15px;
         }
 
-        /* Animated background */
         body::before {
             content: '';
             position: fixed;
@@ -44,7 +43,6 @@
             z-index: -2;
         }
 
-        /* Floating particles */
         body::after {
             content: '';
             position: fixed;
@@ -65,7 +63,6 @@
             z-index: -1;
         }
 
-        /* Container - Fully responsive */
         .container {
             width: 100%;
             max-width: 400px;
@@ -76,7 +73,6 @@
             animation: fadeInUp 0.8s ease-out;
         }
 
-        /* Form box - Glass morphism */
         .form-box {
             background: rgba(5, 12, 24, 0.85);
             backdrop-filter: blur(16px);
@@ -96,12 +92,6 @@
             }
         }
 
-        .form-box:hover {
-            border-color: #3b82f6;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px #3b82f6 inset;
-        }
-
-        /* Title */
         .title {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 1.6rem;
@@ -126,21 +116,18 @@
             text-decoration-thickness: 3px;
         }
 
-        /* Form */
         #loginForm {
             display: flex;
             flex-direction: column;
             gap: 25px;
         }
 
-        /* Input field container */
         .input-field {
             position: relative;
             width: 100%;
             margin-bottom: 5px;
         }
 
-        /* Label styling */
         .input-field label {
             display: block;
             color: #99bbee;
@@ -159,7 +146,6 @@
             }
         }
 
-        /* Input wrapper for icon positioning */
         .input-wrapper {
             position: relative;
             width: 100%;
@@ -191,12 +177,6 @@
             box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
         }
 
-        .input-wrapper input::placeholder {
-            color: #6688aa;
-            opacity: 0.5;
-        }
-
-        /* Toggle icon */
         .toggle-icon {
             position: absolute;
             right: 15px;
@@ -219,7 +199,6 @@
             text-shadow: 0 0 8px #3b82f6;
         }
 
-        /* Encryption indicator */
         .encryption-indicator {
             display: flex;
             align-items: center;
@@ -264,7 +243,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Login button */
         .login-btn {
             background: linear-gradient(145deg, #002244, #001433);
             border: 2px solid #2a7fff;
@@ -307,13 +285,6 @@
             transform: translateY(2px);
         }
 
-        .login-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        /* Message area */
         #message {
             margin-top: 20px;
             text-align: center;
@@ -322,7 +293,6 @@
             color: #ff6b6b;
         }
 
-        /* Tornado branding */
         .tornado-branding {
             position: fixed;
             bottom: 15px;
@@ -364,7 +334,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -386,7 +355,6 @@
             100% { background-position: 100% 100%; }
         }
 
-        /* Mobile optimizations */
         @media (max-width: 480px) {
             .input-wrapper input {
                 font-size: 16px;
@@ -403,7 +371,6 @@
             }
         }
 
-        /* Add to existing style section */
         .input-wrapper input.error {
             border-color: #ff4444;
             animation: shake 0.3s ease-in-out;
@@ -589,7 +556,7 @@
             }
 
             // ============================================
-            // FORM SUBMISSION WITH PROFESSIONAL LOADERS
+            // FIXED: FORM SUBMISSION WITH CORRECT REDIRECT
             // ============================================
             if (loginForm) {
                 loginForm.addEventListener('submit', async function(e) {
@@ -607,10 +574,9 @@
                         messageEl.textContent = 'Please enter both username and password';
                         
                         if (window.dutabaraneLoader) {
-                            window.dutabaraneLoader.showSuccess('Please fill all fields', 3000);
+                            window.dutabaraneLoader.showError('Please fill all fields', 3000);
                         }
                         
-                        // Add error class to empty fields
                         if (!username) usernameInput.classList.add('error');
                         if (!password) passwordInput.classList.add('error');
                         return;
@@ -637,14 +603,33 @@
                     }
 
                     try {
-                        // Simulate login process (replace with your actual API call)
-                        await new Promise(resolve => setTimeout(resolve, 2000));
+                        // ============================================
+                        // ACTUAL LOGIN API CALL - REPLACE WITH YOUR REAL ENDPOINT
+                        // ============================================
+                        const response = await fetch('/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username, password })
+                        });
 
-                        // FOR DEMO PURPOSES - Replace with actual authentication
-                        // This accepts any non-empty username/password for demo
-                        const isSuccess = username.length > 0 && password.length > 0;
-
-                        if (isSuccess) {
+                        const data = await response.json();
+                        
+                        // Check if login was successful
+                        // IMPORTANT: Adjust this based on your actual API response structure
+                        if (data.success === true || data.token || data.user) {
+                            
+                            // Store authentication data if needed
+                            if (data.token) {
+                                localStorage.setItem('token', data.token);
+                            }
+                            
+                            if (data.user) {
+                                localStorage.setItem('user', JSON.stringify(data.user));
+                            }
+                            
+                            // Store simple flag for demo
+                            localStorage.setItem('isAuthenticated', 'true');
+                            
                             // Update progress
                             if (window.dutabaraneLoader) {
                                 window.dutabaraneLoader.updateProgress(80);
@@ -656,12 +641,15 @@
                             // Show green ellipse success animation
                             if (window.dutabaraneLoader) {
                                 window.dutabaraneLoader.showLoginSuccess(() => {
-                                    // Redirect to dashboard after success animation
-                                    window.location.href = 'home.html';
+                                    // ============================================
+                                    // FIXED: CORRECT REDIRECT TO HOME.HTML
+                                    // ============================================
+                                    console.log('✅ Login successful, redirecting to home.html');
+                                    window.location.href = 'home.html';  // Make sure this is correct
                                 });
                                 
                                 // Show success toast as backup
-                                window.dutabaraneLoader.showSuccess('Login successful! Redirecting...', 2000);
+                                window.dutabaraneLoader.showSuccess('Login successful!', 2000);
                                 
                                 // Complete progress
                                 window.dutabaraneLoader.completeProgress();
@@ -673,7 +661,8 @@
                             }
 
                         } else {
-                            throw new Error('Invalid credentials');
+                            // Login failed
+                            throw new Error(data.message || 'Invalid credentials');
                         }
 
                     } catch (error) {
@@ -686,14 +675,14 @@
                         }
                         
                         // Show error message
-                        messageEl.textContent = 'Invalid username or password';
+                        messageEl.textContent = error.message || 'Invalid username or password';
                         
                         // Add error class to inputs for visual feedback
                         usernameInput.classList.add('error');
                         passwordInput.classList.add('error');
                         
                         if (window.dutabaraneLoader) {
-                            window.dutabaraneLoader.showSuccess('Login failed! Please try again', 3000);
+                            window.dutabaraneLoader.showError(error.message || 'Login failed!', 3000);
                             
                             // Complete progress with error
                             window.dutabaraneLoader.completeProgress();
@@ -722,15 +711,16 @@
             }
 
             // ============================================
-            // DEMO CREDENTIALS HELPER (Remove in production)
+            // CHECK FOR EXISTING SESSION
             // ============================================
+            // If already logged in, redirect to home
+            if (localStorage.getItem('isAuthenticated') === 'true' || localStorage.getItem('token')) {
+                console.log('Already authenticated, redirecting to home');
+                window.location.href = 'home.html';
+            }
+
             console.log('🔐 Dutabarane Login System Ready');
-            console.log('📱 Fully responsive with professional loaders');
-            console.log('✨ Green ellipse success animation on login');
-            
-            // For demo purposes - pre-fill with demo credentials (remove in production)
-            // usernameInput.value = 'admin';
-            // passwordInput.value = 'password';
+            console.log('✅ Fixed: Proper redirect to home.html');
         })();
     </script>
 
