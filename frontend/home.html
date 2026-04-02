@@ -27,7 +27,6 @@
             overflow-x: hidden;
         }
 
-        /* Animated background with particles */
         body::before {
             content: '';
             position: fixed;
@@ -39,21 +38,14 @@
             z-index: -2;
         }
 
-        /* Floating particles */
         body::after {
             content: '';
             position: fixed;
             width: 100%;
             height: 100%;
-            background-image: 
-                radial-gradient(2px 2px at 5% 10%, #3b82f6, transparent),
-                radial-gradient(2px 2px at 15% 70%, #4a9eff, transparent),
-                radial-gradient(3px 3px at 25% 40%, #2a7fff, transparent),
-                radial-gradient(2px 2px at 45% 80%, #0066ff, transparent),
-                radial-gradient(3px 3px at 65% 20%, #7fabff, transparent),
-                radial-gradient(2px 2px at 75% 60%, #3b82f6, transparent),
-                radial-gradient(3px 3px at 85% 30%, #4a9eff, transparent),
-                radial-gradient(2px 2px at 95% 90%, #2a7fff, transparent);
+            background-image: radial-gradient(2px 2px at 5% 10%, #3b82f6, transparent),
+                        radial-gradient(2px 2px at 15% 70%, #4a9eff, transparent),
+                        radial-gradient(3px 3px at 25% 40%, #2a7fff, transparent);
             background-size: 200% 200%;
             opacity: 0.2;
             animation: floatParticles 25s linear infinite;
@@ -61,30 +53,7 @@
             z-index: -1;
         }
 
-        /* ================= LAYOUT ================= */
-        h1, h2 {
-            color: white;
-            text-align: center;
-            font-family: 'Space Grotesk', sans-serif;
-            text-shadow: 0 0 15px #0066ff99;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #4a9eff, #0066ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: white;
-        }
-
-        /* Logout button container */
+        /* Layout */
         .logout-container {
             display: flex;
             justify-content: flex-end;
@@ -107,7 +76,6 @@
         .logout-btn:hover {
             background: #ff4444 !important;
             color: white !important;
-            transform: translateY(-2px);
         }
 
         .container {
@@ -128,24 +96,36 @@
             gap: 25px;
         }
 
-        /* ================= CARDS ================= */
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #4a9eff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
         .card {
             background: rgba(5, 12, 24, 0.85);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(30, 100, 200, 0.3);
             border-radius: 24px;
             padding: 25px;
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 150, 255, 0.2) inset;
             transition: all 0.3s ease;
         }
 
         .card:hover {
             border-color: #3b82f6;
-            box-shadow: 0 25px 50px -12px #000000, 0 0 0 1px #2a7fff66 inset;
         }
 
-        /* ================= INPUTS ================= */
         input, .search {
             padding: 12px 15px;
             margin: 8px 0;
@@ -155,31 +135,13 @@
             border-radius: 12px;
             color: white;
             font-size: 1rem;
-            transition: all 0.3s ease;
         }
 
         input:focus, .search:focus {
             border-color: #3b82f6;
-            background: rgba(15, 35, 60, 0.8);
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
             outline: none;
         }
 
-        input::placeholder, .search::placeholder {
-            color: #6688aa;
-            opacity: 0.7;
-        }
-
-        /* Colored inputs for different data types */
-        .amount-input { border-color: #00c853; }
-        .loan-input { border-color: #ff9100; }
-        .interest-input { border-color: #2979ff; }
-
-        .amount-input:focus { box-shadow: 0 0 15px rgba(0, 200, 83, 0.3); }
-        .loan-input:focus { box-shadow: 0 0 15px rgba(255, 145, 0, 0.3); }
-        .interest-input:focus { box-shadow: 0 0 15px rgba(41, 121, 255, 0.3); }
-
-        /* ================= BUTTONS ================= */
         button {
             padding: 14px 20px;
             margin: 10px 0;
@@ -189,129 +151,27 @@
             border-radius: 12px;
             color: white;
             font-weight: 600;
-            font-size: 1rem;
             cursor: pointer;
             transition: all 0.25s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             font-family: 'Space Grotesk', sans-serif;
         }
 
-        button:hover {
+        button:hover:not(:disabled) {
             background: linear-gradient(145deg, #003366, #001f4d);
-            border-color: #4a9eff;
-            box-shadow: 0 10px 20px -5px #000000, 0 0 20px #2a7fff;
             transform: translateY(-2px);
         }
 
-        button:active {
-            transform: translateY(0);
-        }
-
         button:disabled {
-            opacity: 0.6;
+            opacity: 0.7;
             cursor: not-allowed;
-            pointer-events: none;
         }
 
-        /* Small action buttons (download, delete) */
-        .action-btn {
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            margin: 0;
-            background: rgba(59, 130, 246, 0.1);
-            border: 2px solid #3b82f6;
-            border-radius: 8px;
-            color: #3b82f6;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .action-btn:hover {
-            background: #3b82f6;
-            color: white;
-            transform: scale(1.1);
-            box-shadow: 0 0 15px #3b82f6;
-        }
-
-        .action-btn.delete-btn {
-            border-color: #ff4444;
-            color: #ff4444;
-            background: rgba(255, 68, 68, 0.1);
-        }
-
-        .action-btn.delete-btn:hover {
-            background: #ff4444;
-            color: white;
-            box-shadow: 0 0 15px #ff4444;
-        }
-
-        .action-btn.download-btn {
-            border-color: #10b981;
-            color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        .action-btn.download-btn:hover {
-            background: #10b981;
-            color: white;
-            box-shadow: 0 0 15px #10b981;
-        }
-
-        /* Small delete button (legacy) */
-        .btn-delete-small {
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            background: rgba(255, 68, 68, 0.1);
-            border: 2px solid #ff4444;
-            border-radius: 8px;
-            color: #ff4444;
-            font-weight: bold;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-        }
-
-        .btn-delete-small:hover {
-            background: #ff4444;
-            color: white;
-            border-color: #ff4444;
-            transform: scale(1.1);
-            box-shadow: 0 0 15px #ff4444;
-        }
-
-        /* ================= TABLES ================= */
-        .table-box, .table-scroll {
+        .table-scroll {
             overflow: auto;
             max-height: 350px;
             border-radius: 16px;
             background: rgba(0, 0, 0, 0.2);
             margin-top: 15px;
-            scrollbar-width: thin;
-            scrollbar-color: #3b82f6 #0a1424;
-        }
-
-        .table-scroll::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        .table-scroll::-webkit-scrollbar-track {
-            background: #0a1424;
-            border-radius: 10px;
-        }
-
-        .table-scroll::-webkit-scrollbar-thumb {
-            background: #3b82f6;
-            border-radius: 10px;
         }
 
         table {
@@ -329,23 +189,53 @@
         th {
             background: linear-gradient(145deg, #002244, #001433);
             color: white;
-            font-weight: 600;
             position: sticky;
             top: 0;
-            z-index: 5;
-            border-bottom: 2px solid #3b82f6;
-            font-family: 'Space Grotesk', sans-serif;
         }
 
-        td {
-            background: rgba(0, 0, 0, 0.3);
+        .btn-delete-small {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            background: rgba(255, 68, 68, 0.1);
+            border: 2px solid #ff4444;
+            border-radius: 8px;
+            color: #ff4444;
+            cursor: pointer;
+            margin: 0 auto;
         }
 
-        tr:hover td {
+        .btn-delete-small:hover:not(:disabled) {
+            background: #ff4444;
+            color: white;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            margin: 0;
             background: rgba(59, 130, 246, 0.1);
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            color: #3b82f6;
+            cursor: pointer;
         }
 
-        /* ================= FILE LIST ================= */
+        .action-btn.delete-btn {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .action-btn.download-btn {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            transform: scale(1.1);
+        }
+
         #fileList {
             list-style: none;
             padding: 0;
@@ -360,14 +250,6 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            transition: all 0.3s ease;
-        }
-
-        #fileList li:hover {
-            background: rgba(20, 40, 70, 0.8);
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-            border-color: #4a9eff;
         }
 
         .file-info {
@@ -378,27 +260,11 @@
             cursor: pointer;
         }
 
-        .file-info i {
-            font-size: 1.3rem;
-            color: #3b82f6;
-        }
-
-        .file-name {
-            font-weight: 500;
-            font-size: 1.1rem;
-        }
-
-        .file-name:hover {
-            color: #3b82f6;
-            text-shadow: 0 0 8px #3b82f6;
-        }
-
         .file-actions {
             display: flex;
             gap: 8px;
         }
 
-        /* ================= POPUP ================= */
         .popup {
             position: fixed;
             top: 60px;
@@ -412,7 +278,6 @@
             border-radius: 24px;
             display: none;
             z-index: 1000;
-            box-shadow: 0 30px 60px -15px #000000, 0 0 30px rgba(59, 130, 246, 0.3);
         }
 
         .popup.max {
@@ -435,16 +300,8 @@
 
         .popup-header span {
             cursor: pointer;
-            font-weight: bold;
             padding: 5px 10px;
             border-radius: 8px;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-        }
-
-        .popup-header span:hover {
-            background: rgba(59, 130, 246, 0.3);
-            color: #3b82f6;
         }
 
         .popup-body {
@@ -453,7 +310,16 @@
             overflow-y: auto;
         }
 
-        /* ================= UNDO ================= */
+        .amount-input { border-color: #00c853; }
+        .loan-input { border-color: #ff9100; }
+        .interest-input { border-color: #2979ff; }
+
+        .loading-row td {
+            padding: 20px;
+            text-align: center;
+            color: #6688aa;
+        }
+
         .undo-box {
             background: rgba(0, 40, 80, 0.9);
             border: 1px solid #3b82f6;
@@ -461,21 +327,12 @@
             padding: 12px;
             margin-top: 10px;
             text-align: center;
-            backdrop-filter: blur(5px);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
         }
 
-        .undo-box button {
-            width: auto;
-            padding: 8px 20px;
-            margin: 0;
-            background: linear-gradient(145deg, #002244, #001433);
-        }
-
-        /* ================= ANIMATIONS ================= */
         @keyframes backgroundPulse {
             0%, 100% { opacity: 0.4; }
             50% { opacity: 0.7; }
@@ -486,343 +343,185 @@
             100% { background-position: 100% 100%; }
         }
 
-        /* ================= MOBILE ================= */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .fa-spin {
+            animation: spin 1s linear infinite;
+        }
+
         @media (max-width: 768px) {
             .container {
+                flex-direction: column;
                 padding: 80px 15px 20px;
             }
-
-            .logout-container {
-                margin-bottom: 15px;
-            }
-
             .popup {
-                position: fixed;
                 top: 0;
                 left: 0;
                 transform: none;
                 width: 100%;
                 height: 100%;
                 border-radius: 0;
-                border: none;
             }
-
-            .popup.max {
-                top: 0;
-                height: 100%;
-            }
-
-            .popup-header {
-                border-radius: 0;
-                cursor: default;
-            }
-
-            .popup-body {
-                max-height: calc(100vh - 70px);
-                padding: 15px;
-            }
-
-            .container {
-                flex-direction: column;
-            }
-
-            table {
-                min-width: 100%;
-            }
-
-            h1 { font-size: 2rem; }
+            h1 { font-size: 1.8rem; }
             h2 { font-size: 1.5rem; }
-
-            .card { padding: 20px; }
-
-            .file-actions {
-                gap: 5px;
-            }
-            
-            .action-btn {
-                width: 40px;
-                height: 40px;
-            }
         }
 
-        /* Loading state for tables */
-        .loading-row td {
-            padding: 20px;
-            text-align: center;
-            color: #6688aa;
+        /* Page loader */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 12, 24, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
 
-        .loading-row i {
+        .page-loader.hidden {
+            display: none;
+        }
+
+        .page-loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-right: 10px;
+            margin: 0 auto 20px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: transparent;
+            z-index: 10000;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3b82f6, #7fabff);
+            transition: width 0.3s ease;
         }
     </style>
 </head>
 <body>
-    <!-- Progress Bar (Top) -->
     <div class="progress-bar">
         <div class="progress-bar-fill"></div>
     </div>
 
-    <!-- Page Loader (Initial) -->
-    <div class="page-loader">
-        <div class="page-loader-content">
+    <div class="page-loader" id="pageLoader">
+        <div style="text-align: center;">
             <div class="page-loader-spinner"></div>
-            <div class="page-loader-text">Loading Dashboard...</div>
+            <div style="color: white;">Loading Dashboard...</div>
         </div>
     </div>
 
     <div class="container">
-        <!-- Logout Button -->
         <div class="logout-container">
             <button id="logoutBtn" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </button>
         </div>
 
-        <h1 style="flex-basis:100%">ADMIN CONTROL PANEL</h1>
+        <h1>ADMIN CONTROL PANEL</h1>
 
-        <!-- ================= MEMBERS SECTION ================= -->
         <div class="left-section">
             <div class="card">
-                <h2><i class="fas fa-users" style="color: #3b82f6; margin-right: 10px;"></i>Members</h2>
+                <h2><i class="fas fa-users" style="color: #3b82f6;"></i> Members</h2>
                 <input class="search" id="memberSearch" placeholder="Search members..." onkeyup="searchMembers(this.value)">
                 <form id="memberForm">
                     <input id="mName" placeholder="Member name" required>
                     <input id="mPhone" placeholder="Phone number" required>
-                    <button type="submit" id="addMemberBtn">
-                        <i class="fas fa-user-plus"></i> Add Member
-                    </button>
+                    <button type="submit" id="addMemberBtn">Add Member</button>
                 </form>
                 <div id="undoArea"></div>
-            </div>
-
-            <div class="card">
-                <button id="toggleMembers" onclick="toggleMembersTable()" class="toggle-btn">
-                    <i class="fas fa-chevron-down"></i> Show Members ▼
-                </button>
-                <div class="table-scroll" id="membersScroll" style="display: none;">
-                    <table class="responsive-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="members">
-                            <tr class="loading-row">
-                                <td colspan="3">
-                                    <i class="fas fa-spinner fa-spin"></i> Loading members...
-                                </td>
-                            </tr>
-                        </tbody>
+                <div class="table-scroll" id="membersScroll">
+                    <table>
+                        <thead><tr><th>Name</th><th>Phone</th><th>Action</th></tr></thead>
+                        <tbody id="members"><tr class="loading-row"><td colspan="3">Loading members...<\/td><\/tr></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- ================= FILES SECTION ================= -->
         <div class="right-section">
             <div class="card">
-                <h2><i class="fas fa-folder" style="color: #3b82f6; margin-right: 10px;"></i>Files</h2>
+                <h2><i class="fas fa-folder" style="color: #3b82f6;"></i> Files</h2>
                 <input class="search" id="fileSearch" placeholder="Search files..." onkeyup="searchFiles(this.value)">
                 <form id="fileForm">
-                    <input id="fileName" placeholder="File name (e.g., January 2025)" required>
-                    <button type="submit" id="createFileBtn">
-                        <i class="fas fa-plus-circle"></i> Create File
-                    </button>
+                    <input id="fileName" placeholder="File name" required>
+                    <button type="submit" id="createFileBtn">Create File</button>
                 </form>
-                <button id="toggleFiles" onclick="toggleFilesList()" class="toggle-btn">
-                    <i class="fas fa-chevron-down"></i> Show Files ▼
-                </button>
-
-                <div class="table-scroll" id="filesScroll" style="display: none;">
-                    <ul id="fileList">
-                        <li class="loading-row">
-                            <i class="fas fa-spinner fa-spin"></i> Loading files...
-                        </li>
-                    </ul>
+                <div class="table-scroll" id="filesScroll">
+                    <ul id="fileList"><li class="loading-row">Loading files...<\/li></ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ================= FILE POPUP ================= -->
     <div class="popup" id="filePopup">
         <div class="popup-header" id="popupHeader">
-            <b id="currentFile"><i class="fas fa-file-alt" style="margin-right: 8px;"></i> Loading...</b>
-            <div>
-                <span onclick="minPopup()" title="Minimize">➖</span>
-                <span onclick="maxPopup()" title="Maximize">⬜</span>
-                <span onclick="closePopup()" title="Close">❌</span>
-            </div>
+            <b id="currentFile">File</b>
+            <div><span onclick="minPopup()">➖</span><span onclick="maxPopup()">⬜</span><span onclick="closePopup()">❌</span></div>
         </div>
-
         <div class="popup-body">
-            <input class="search" id="fileMemberSearch" placeholder="Search member in file..." onkeyup="searchFileMembers(this.value)">
-            <button id="toggleFileMembers" onclick="toggleFileTable()" class="toggle-btn">
-                <i class="fas fa-chevron-down"></i> Show Members ▼
-            </button>
-            
-            <div class="table-scroll" id="fileScroll" style="display: none;">
-                <table class="responsive-table">
-                    <thead>
-                        <tr>
-                            <th>Member</th>
-                            <th>Amount</th>
-                            <th>Loan</th>
-                            <th>Interest</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fileTable">
-                        <tr class="loading-row">
-                            <td colspan="4">
-                                <i class="fas fa-spinner fa-spin"></i> Loading file data...
-                            </td>
-                        </tr>
-                    </tbody>
+            <input class="search" id="fileMemberSearch" placeholder="Search member..." onkeyup="searchFileMembers(this.value)">
+            <div class="table-scroll" id="fileScroll">
+                <table>
+                    <thead><tr><th>Member</th><th>Amount</th><th>Loan</th><th>Interest</th></tr></thead>
+                    <tbody id="fileTable"><tr class="loading-row"><td colspan="4">Loading...<\/td><\/tr></tbody>
                 </table>
             </div>
-
             <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button onclick="saveFile()" id="saveFileBtn" style="flex: 2;">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-                <button onclick="deleteFile()" id="deleteFileBtn" style="flex: 1; background: rgba(255,68,68,0.1); border-color: #ff4444; color: #ff4444;">
-                    <i class="fas fa-trash"></i> Delete File
-                </button>
+                <button id="saveFileBtn">Save</button>
+                <button id="deleteFileBtn" style="background:rgba(255,68,68,0.1);border-color:#ff4444;color:#ff4444;">Delete</button>
             </div>
         </div>
     </div>
 
-    <!-- Professional Loading System JavaScript -->
     <script src="loaders.js"></script>
-    
     <script>
-        // ============================================
-        // SESSION PROTECTION - CHECK IF USER IS LOGGED IN
-        // ============================================
-        (function checkSession() {
-            const session = localStorage.getItem('dutabarane_session');
-            
-            if (!session) {
-                console.log('🔐 No session found - Redirecting to login');
-                window.location.href = 'welcome.html';
-                return;
-            }
-            
-            try {
-                const sessionData = JSON.parse(session);
-                
-                if (sessionData.expiresAt && new Date(sessionData.expiresAt) < new Date()) {
-                    console.log('⏰ Session expired - Redirecting to login');
-                    localStorage.removeItem('dutabarane_session');
-                    localStorage.removeItem('dutabarane_user');
-                    window.location.href = 'welcome.html';
-                    return;
-                }
-                
-                console.log('✅ Authenticated as:', sessionData.username);
-                
-            } catch (e) {
-                console.error('Session check error:', e);
-                window.location.href = 'welcome.html';
-            }
-        })();
-
-        // ============================================
-        // LOGOUT FUNCTIONALITY
-        // ============================================
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (confirm('Are you sure you want to logout?')) {
-                    localStorage.removeItem('dutabarane_session');
-                    localStorage.removeItem('dutabarane_user');
-                    localStorage.removeItem('dutabarane_token');
-                    
-                    if (window.dutaLoader) {
-                        dutaLoader.showSuccessToast('Logged out successfully!');
-                    }
-                    
-                    setTimeout(() => {
-                        window.location.href = 'welcome.html';
-                    }, 500);
-                }
-            });
+        // Session check
+        const session = localStorage.getItem('dutabarane_session');
+        if (!session) {
+            window.location.href = 'welcome.html';
         }
 
-        // ============================================
-        // PREVENT BACK BUTTON ACCESS AFTER LOGOUT
-        // ============================================
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                const session = localStorage.getItem('dutabarane_session');
-                if (!session) {
-                    window.location.href = 'welcome.html';
-                }
+        // Hide loader
+        setTimeout(() => {
+            const loader = document.getElementById('pageLoader');
+            if (loader) loader.classList.add('hidden');
+        }, 500);
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            if (confirm('Logout?')) {
+                localStorage.removeItem('dutabarane_session');
+                window.location.href = 'welcome.html';
             }
         });
 
-        // ============================================
-        // GLOBAL VARIABLES
-        // ============================================
         const BASE = "/api/";
         let members = [], files = [], currentFileId = null, lastDeleted = null;
-        let startY = 0;
-        const filePopup = document.getElementById('filePopup');
 
-        // ============================================
-        // HIDE PAGE LOADER AFTER PAGE LOADS
-        // ============================================
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                if (window.dutaLoader) {
-                    const loader = document.querySelector('.page-loader');
-                    if (loader) loader.style.display = 'none';
-                }
-            }, 800);
-        });
-
-        // ============================================
-        // TOUCH TO CLOSE POPUP (MOBILE)
-        // ============================================
-        if (filePopup) {
-            filePopup.addEventListener("touchstart", e => {
-                startY = e.touches[0].clientY;
-            });
-
-            filePopup.addEventListener("touchend", e => {
-                const endY = e.changedTouches[0].clientY;
-                if (endY - startY > 120) {
-                    closePopup();
-                }
-            });
-        }
-
-        // ============================================
-        // MEMBERS FUNCTIONS WITH SPINNERS
-        // ============================================
         async function loadMembers() {
-            const membersBody = document.getElementById("members");
-            membersBody.innerHTML = `<tr class="loading-row"><td colspan="3"><i class="fas fa-spinner fa-spin"></i> Loading members...<\/td><\/tr>`;
-
             try {
                 const r = await fetch(BASE + "members");
                 members = await r.json();
                 renderMembers(members);
-            } catch (error) {
-                console.error("Error loading members:", error);
-                membersBody.innerHTML = `<tr><td colspan="3" style="color: #ff4444;">Error loading members<\/td><\/tr>`;
-                if (window.dutaLoader) dutaLoader.showErrorToast('Failed to load members');
-            }
+            } catch(e) { console.error(e); }
         }
 
         function renderMembers(data) {
@@ -830,7 +529,7 @@
                 <tr>
                     <td>${escapeHtml(m.name)}<\/td>
                     <td>${escapeHtml(m.phone)}<\/td>
-                    <td><button class="btn-delete-small" onclick="deleteMember(${m.id}, this)" title="Delete member">✕<\/button><\/td>
+                    <td><button class="btn-delete-small" onclick="deleteMember(${m.id}, this)">✕<\/button><\/td>
                 <\/tr>
             `).join("");
         }
@@ -852,27 +551,23 @@
         // DELETE MEMBER WITH SPINNER
         async function deleteMember(id, button) {
             const memberName = members.find(m => m.id === id)?.name || 'Member';
-            
-            if (!confirm(`Are you sure you want to delete "${memberName}"?`)) return;
+            if (!confirm(`Delete "${memberName}"?`)) return;
             
             if (window.dutaLoader) {
                 const spinner = dutaLoader.showButtonSpinner(button, 'Deleting...');
-                
                 try {
                     lastDeleted = members.find(m => m.id === id);
                     await fetch(BASE + "members/" + id, { method: "DELETE" });
                     members = members.filter(m => m.id !== id);
                     renderMembers(members);
                     showUndo();
-                    dutaLoader.showSuccessToast(`${memberName} deleted successfully!`);
-                } catch (error) {
-                    console.error("Delete error:", error);
-                    dutaLoader.showErrorToast(`Failed to delete ${memberName}!`);
+                    dutaLoader.showSuccessToast(`${memberName} deleted!`);
+                } catch(e) {
+                    dutaLoader.showErrorToast('Delete failed!');
                 } finally {
                     spinner.stop();
                 }
             } else {
-                // Fallback if loader not available
                 lastDeleted = members.find(m => m.id === id);
                 await fetch(BASE + "members/" + id, { method: "DELETE" });
                 members = members.filter(m => m.id !== id);
@@ -883,65 +578,34 @@
 
         function showUndo() {
             const undoArea = document.getElementById("undoArea");
-            undoArea.innerHTML = `<div class="undo-box">
-                <span>Member deleted</span>
-                <button onclick="undoDelete()">UNDO</button>
-            </div>`;
-            setTimeout(() => undoArea.innerHTML = "", 7000);
+            undoArea.innerHTML = `<div class="undo-box">Member deleted <button onclick="undoDelete()">UNDO</button></div>`;
+            setTimeout(() => undoArea.innerHTML = "", 5000);
         }
 
         async function undoDelete() {
             if (!lastDeleted) return;
-            
-            try {
-                await fetch(BASE + "members", {
-                    method: "POST",
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(lastDeleted)
-                });
-                loadMembers();
-                document.getElementById("undoArea").innerHTML = "";
-                if (window.dutaLoader) dutaLoader.showSuccessToast('Member restored!');
-            } catch (error) {
-                console.error("Undo error:", error);
-                if (window.dutaLoader) dutaLoader.showErrorToast('Restore failed!');
-            }
+            await fetch(BASE + "members", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(lastDeleted) });
+            loadMembers();
+            document.getElementById("undoArea").innerHTML = "";
         }
 
-        // ============================================
-        // FILES FUNCTIONS WITH SPINNERS
-        // ============================================
         async function loadFiles() {
-            const fileList = document.getElementById("fileList");
-            fileList.innerHTML = `<li class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading files...<\/li>`;
-
             try {
                 const r = await fetch(BASE + "files");
                 files = await r.json();
                 renderFiles(files);
-            } catch (error) {
-                console.error("Error loading files:", error);
-                fileList.innerHTML = `<li style="color: #ff4444; text-align: center;">Error loading files<\/li>`;
-                if (window.dutaLoader) dutaLoader.showErrorToast('Failed to load files');
-            }
+            } catch(e) { console.error(e); }
         }
 
         function renderFiles(fileData) {
-            const fileList = document.getElementById("fileList");
-            
-            fileList.innerHTML = fileData.map(f => `
+            document.getElementById("fileList").innerHTML = fileData.map(f => `
                 <li>
                     <div class="file-info" onclick="openFile(${f.id},'${escapeHtml(f.name).replace(/'/g, "\\'")}')">
-                        <i class="fas fa-file-alt"></i>
-                        <span class="file-name">${escapeHtml(f.name)}</span>
+                        <i class="fas fa-file-alt"></i> ${escapeHtml(f.name)}
                     </div>
                     <div class="file-actions">
-                        <button class="action-btn download-btn" onclick="downloadFile(${f.id}, '${escapeHtml(f.name).replace(/'/g, "\\'")}', this)" title="Download file">
-                            <i class="fas fa-download"></i>
-                        </button>
-                        <button class="action-btn delete-btn" onclick="deleteFileList(event, ${f.id}, this)" title="Delete file">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <button class="action-btn download-btn" onclick="downloadFile(${f.id}, '${escapeHtml(f.name).replace(/'/g, "\\'")}', this)"><i class="fas fa-download"></i><\/button>
+                        <button class="action-btn delete-btn" onclick="deleteFileList(event, ${f.id}, this)"><i class="fas fa-trash"></i><\/button>
                     </div>
                 <\/li>
             `).join("");
@@ -950,50 +614,45 @@
         // DOWNLOAD FILE WITH SPINNER
         async function downloadFile(fileId, fileName, button) {
             if (!members.length) {
-                if (window.dutaLoader) dutaLoader.showErrorToast('No member data available');
+                if (window.dutaLoader) dutaLoader.showErrorToast('No member data');
                 return;
             }
-
+            
             if (window.dutaLoader) {
                 const spinner = dutaLoader.showButtonSpinner(button, 'Downloading...');
-                
                 try {
                     const r = await fetch(BASE + "files/" + fileId);
                     const fileData = await r.json();
-
-                    let csvContent = "Member Name,Amount,Loan,Interest\n";
-                    
+                    let csv = "Member Name,Amount,Loan,Interest\n";
                     members.forEach(m => {
                         const row = fileData[m.id] || {};
-                        csvContent += `"${m.name}",${row.amount || ''},${row.loan || ''},${row.interest || ''}\n`;
+                        csv += `"${m.name}",${row.amount || ''},${row.loan || ''},${row.interest || ''}\n`;
                     });
-
-                    const blob = new Blob([csvContent], { type: 'text/csv' });
-                    const url = window.URL.createObjectURL(blob);
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `${fileName.replace(/\s+/g, '_')}_export.csv`;
-                    document.body.appendChild(a);
+                    a.download = `${fileName.replace(/\s/g, '_')}_export.csv`;
                     a.click();
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-
-                    dutaLoader.showSuccessToast(`${fileName} downloaded successfully!`);
-                } catch (error) {
-                    console.error("Download error:", error);
+                    URL.revokeObjectURL(url);
+                    dutaLoader.showSuccessToast(`${fileName} downloaded!`);
+                } catch(e) {
                     dutaLoader.showErrorToast('Download failed!');
                 } finally {
                     spinner.stop();
                 }
             } else {
-                // Fallback
                 const r = await fetch(BASE + "files/" + fileId);
                 const fileData = await r.json();
                 let csv = "Member Name,Amount,Loan,Interest\n";
-                members.forEach(m => { const row = fileData[m.id] || {}; csv += `"${m.name}",${row.amount || ''},${row.loan || ''},${row.interest || ''}\n`; });
+                members.forEach(m => {
+                    const row = fileData[m.id] || {};
+                    csv += `"${m.name}",${row.amount || ''},${row.loan || ''},${row.interest || ''}\n`;
+                });
                 const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
+                a.href = url;
                 a.download = `${fileName.replace(/\s/g, '_')}_export.csv`;
                 a.click();
                 URL.revokeObjectURL(a.href);
@@ -1001,31 +660,25 @@
         }
 
         function searchFiles(v) {
-            const fileList = document.getElementById("fileList");
-            if (!fileList) return;
-            
-            [...fileList.children].forEach(li => {
-                if (li.classList.contains('loading-row')) return;
-                const text = li.querySelector('.file-name')?.innerText.toLowerCase() || '';
-                li.style.display = text.includes(v.toLowerCase()) ? "" : "none";
+            const items = document.querySelectorAll("#fileList li");
+            items.forEach(li => {
+                li.style.display = li.innerText.toLowerCase().includes(v.toLowerCase()) ? "" : "none";
             });
         }
 
         // DELETE FILE WITH SPINNER
         async function deleteFileList(e, id, button) {
             e.stopPropagation();
-            if (!confirm("Delete this file permanently?")) return;
+            if (!confirm("Delete file?")) return;
             
             if (window.dutaLoader) {
                 const spinner = dutaLoader.showButtonSpinner(button, 'Deleting...');
-                
                 try {
                     await fetch(BASE + "files/" + id, { method: "DELETE" });
                     files = files.filter(f => f.id !== id);
                     renderFiles(files);
-                    dutaLoader.showSuccessToast('File deleted successfully!');
-                } catch (error) {
-                    console.error("Delete file error:", error);
+                    dutaLoader.showSuccessToast('File deleted!');
+                } catch(e) {
                     dutaLoader.showErrorToast('Delete failed!');
                 } finally {
                     spinner.stop();
@@ -1037,71 +690,42 @@
             }
         }
 
-        // ============================================
-        // FILE POPUP FUNCTIONS WITH SPINNERS
-        // ============================================
         async function openFile(id, name) {
             currentFileId = id;
-            document.getElementById("currentFile").innerHTML = `<i class="fas fa-file-alt" style="margin-right: 8px;"></i>${escapeHtml(name)}`;
+            document.getElementById("currentFile").innerHTML = name;
             document.getElementById("filePopup").style.display = "block";
-            
-            const fileTable = document.getElementById("fileTable");
-            fileTable.innerHTML = `<tr class="loading-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> Loading file data...<\/td><\/tr>`;
-
-            try {
-                const r = await fetch(BASE + "files/" + id);
-                const data = await r.json();
-
-                fileTable.innerHTML = members.map(m => `
-                    <tr>
-                        <td>${escapeHtml(m.name)}<\/td>
-                        <td><input class="amount-input" value="${escapeHtml(data[m.id]?.amount || '')}" placeholder="Amount"><\/td>
-                        <td><input class="loan-input" value="${escapeHtml(data[m.id]?.loan || '')}" placeholder="Loan"><\/td>
-                        <td><input class="interest-input" value="${escapeHtml(data[m.id]?.interest || '')}" placeholder="Interest"><\/td>
-                    <\/tr>
-                `).join("");
-            } catch (error) {
-                console.error("Error opening file:", error);
-                fileTable.innerHTML = `<tr><td colspan="4" style="color: #ff4444;">Error loading file data<\/td><\/tr>`;
-            }
+            const r = await fetch(BASE + "files/" + id);
+            const data = await r.json();
+            document.getElementById("fileTable").innerHTML = members.map(m => `
+                <tr>
+                    <td>${escapeHtml(m.name)}<\/td>
+                    <td><input class="amount-input" value="${escapeHtml(data[m.id]?.amount || '')}" placeholder="Amount"><\/td>
+                    <td><input class="loan-input" value="${escapeHtml(data[m.id]?.loan || '')}" placeholder="Loan"><\/td>
+                    <td><input class="interest-input" value="${escapeHtml(data[m.id]?.interest || '')}" placeholder="Interest"><\/td>
+                <\/tr>
+            `).join("");
         }
 
-        function closePopup() {
-            document.getElementById("filePopup").style.display = "none";
-        }
-        
-        function minPopup() {
-            document.getElementById("filePopup").style.display = "none";
-        }
-        
-        function maxPopup() {
-            document.getElementById("filePopup").classList.toggle("max");
-        }
-
-        function searchFileMembers(value) {
-            value = value.toLowerCase();
+        function closePopup() { document.getElementById("filePopup").style.display = "none"; }
+        function minPopup() { document.getElementById("filePopup").style.display = "none"; }
+        function maxPopup() { document.getElementById("filePopup").classList.toggle("max"); }
+        function searchFileMembers(v) {
+            v = v.toLowerCase();
             document.querySelectorAll("#fileTable tr").forEach(row => {
-                if (row.classList.contains('loading-row')) return;
-                const memberName = row.children[0]?.innerText.toLowerCase() || '';
-                row.style.display = memberName.includes(value) ? "" : "none";
+                row.style.display = row.children[0].innerText.toLowerCase().includes(v) ? "" : "none";
             });
         }
 
         // SAVE FILE WITH SPINNER
         async function saveFile() {
             if (!currentFileId) return;
-            
             const saveBtn = document.getElementById('saveFileBtn');
             
             if (window.dutaLoader) {
                 const spinner = dutaLoader.showButtonSpinner(saveBtn, 'Saving...');
-                
                 try {
                     const payload = {};
-                    const rows = document.querySelectorAll("#fileTable tr");
-                    
-                    rows.forEach((tr, i) => {
-                        if (tr.classList.contains('loading-row')) return;
+                    document.querySelectorAll("#fileTable tr").forEach((tr, i) => {
                         if (members[i]) {
                             const inputs = tr.querySelectorAll("input");
                             payload[members[i].id] = {
@@ -1111,26 +735,20 @@
                             };
                         }
                     });
-
                     await fetch(BASE + "files/" + currentFileId, {
                         method: "PUT",
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
-                    
-                    dutaLoader.showSuccessToast('File saved successfully!');
-                } catch (error) {
-                    console.error("Save error:", error);
+                    dutaLoader.showSuccessToast('Saved!');
+                } catch(e) {
                     dutaLoader.showErrorToast('Save failed!');
                 } finally {
                     spinner.stop();
                 }
             } else {
-                // Fallback
                 const payload = {};
-                const rows = document.querySelectorAll("#fileTable tr");
-                rows.forEach((tr, i) => {
-                    if (tr.classList.contains('loading-row')) return;
+                document.querySelectorAll("#fileTable tr").forEach((tr, i) => {
                     if (members[i]) {
                         const inputs = tr.querySelectorAll("input");
                         payload[members[i].id] = {
@@ -1145,28 +763,25 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                alert('Saved!');
+                alert("Saved!");
             }
         }
 
-        // DELETE FILE WITH SPINNER
+        // DELETE FILE FROM POPUP WITH SPINNER
         async function deleteFile() {
             if (!currentFileId) return;
-            if (!confirm("Delete this file permanently?")) return;
-            
+            if (!confirm("Delete this file?")) return;
             const deleteBtn = document.getElementById('deleteFileBtn');
             
             if (window.dutaLoader) {
                 const spinner = dutaLoader.showButtonSpinner(deleteBtn, 'Deleting...');
-                
                 try {
                     await fetch(BASE + "files/" + currentFileId, { method: "DELETE" });
                     closePopup();
                     files = files.filter(f => f.id !== currentFileId);
                     renderFiles(files);
-                    dutaLoader.showSuccessToast('File deleted successfully!');
-                } catch (error) {
-                    console.error("Delete error:", error);
+                    dutaLoader.showSuccessToast('File deleted!');
+                } catch(e) {
                     dutaLoader.showErrorToast('Delete failed!');
                 } finally {
                     spinner.stop();
@@ -1176,183 +791,112 @@
                 closePopup();
                 files = files.filter(f => f.id !== currentFileId);
                 renderFiles(files);
-                alert('File deleted');
+                alert("Deleted!");
             }
         }
 
-        // ============================================
-        // DRAG FUNCTIONALITY (DESKTOP ONLY)
-        // ============================================
-        let drag = false, dx, dy;
-        const popupHeader = document.getElementById('popupHeader');
-        
-        if (window.innerWidth > 768 && popupHeader && filePopup) {
-            popupHeader.onmousedown = e => {
-                drag = true;
-                dx = e.clientX - filePopup.offsetLeft;
-                dy = e.clientY - filePopup.offsetTop;
-                filePopup.style.transition = 'none';
-            };
-            
-            document.onmousemove = e => {
-                if (drag && filePopup) {
-                    filePopup.style.left = (e.clientX - dx) + "px";
-                    filePopup.style.top = (e.clientY - dy) + "px";
-                }
-            };
-            
-            document.onmouseup = () => {
-                drag = false;
-                if (filePopup) filePopup.style.transition = 'all 0.3s ease';
-            };
-        }
-
-        // ============================================
-        // FORM SUBMISSIONS WITH SPINNERS
-        // ============================================
-        const memberForm = document.getElementById('memberForm');
-        if (memberForm) {
-            memberForm.onsubmit = async e => {
-                e.preventDefault();
-                
-                const name = document.getElementById('mName').value.trim();
-                const phone = document.getElementById('mPhone').value.trim();
-                
-                if (!name || !phone) {
-                    if (window.dutaLoader) dutaLoader.showErrorToast('Please fill all fields');
-                    return;
-                }
-
-                const submitBtn = document.getElementById('addMemberBtn');
-                
-                if (window.dutaLoader) {
-                    const spinner = dutaLoader.showButtonSpinner(submitBtn, 'Adding...');
-                    
-                    try {
-                        await fetch(BASE + "members", {
-                            method: "POST",
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name, phone })
-                        });
-                        
-                        memberForm.reset();
-                        await loadMembers();
-                        dutaLoader.showSuccessToast('Member added successfully!');
-                    } catch (error) {
-                        console.error("Add member error:", error);
-                        dutaLoader.showErrorToast('Failed to add member');
-                    } finally {
-                        spinner.stop();
-                    }
-                } else {
+        // Form submissions with spinners
+        document.getElementById('memberForm').onsubmit = async e => {
+            e.preventDefault();
+            const name = document.getElementById('mName').value.trim();
+            const phone = document.getElementById('mPhone').value.trim();
+            if (!name || !phone) {
+                if (window.dutaLoader) dutaLoader.showErrorToast('Fill all fields');
+                return;
+            }
+            const btn = document.getElementById('addMemberBtn');
+            if (window.dutaLoader) {
+                const spinner = dutaLoader.showButtonSpinner(btn, 'Adding...');
+                try {
                     await fetch(BASE + "members", {
                         method: "POST",
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name, phone })
                     });
-                    memberForm.reset();
+                    e.target.reset();
                     loadMembers();
+                    dutaLoader.showSuccessToast('Member added!');
+                } catch(e) {
+                    dutaLoader.showErrorToast('Add failed!');
+                } finally {
+                    spinner.stop();
                 }
-            };
-        }
+            } else {
+                await fetch(BASE + "members", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone })
+                });
+                e.target.reset();
+                loadMembers();
+            }
+        };
 
-        const fileForm = document.getElementById('fileForm');
-        if (fileForm) {
-            fileForm.onsubmit = async e => {
-                e.preventDefault();
-                
-                const name = document.getElementById('fileName').value.trim();
-                
-                if (!name) {
-                    if (window.dutaLoader) dutaLoader.showErrorToast('Please enter file name');
-                    return;
-                }
-
-                const submitBtn = document.getElementById('createFileBtn');
-                
-                if (window.dutaLoader) {
-                    const spinner = dutaLoader.showButtonSpinner(submitBtn, 'Creating...');
-                    
-                    try {
-                        await fetch(BASE + "files", {
-                            method: "POST",
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name })
-                        });
-                        
-                        fileForm.reset();
-                        await loadFiles();
-                        dutaLoader.showSuccessToast('File created successfully!');
-                    } catch (error) {
-                        console.error("Create file error:", error);
-                        dutaLoader.showErrorToast('Failed to create file');
-                    } finally {
-                        spinner.stop();
-                    }
-                } else {
+        document.getElementById('fileForm').onsubmit = async e => {
+            e.preventDefault();
+            const name = document.getElementById('fileName').value.trim();
+            if (!name) {
+                if (window.dutaLoader) dutaLoader.showErrorToast('Enter file name');
+                return;
+            }
+            const btn = document.getElementById('createFileBtn');
+            if (window.dutaLoader) {
+                const spinner = dutaLoader.showButtonSpinner(btn, 'Creating...');
+                try {
                     await fetch(BASE + "files", {
                         method: "POST",
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ name })
                     });
-                    fileForm.reset();
+                    e.target.reset();
                     loadFiles();
+                    dutaLoader.showSuccessToast('File created!');
+                } catch(e) {
+                    dutaLoader.showErrorToast('Create failed!');
+                } finally {
+                    spinner.stop();
                 }
+            } else {
+                await fetch(BASE + "files", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                e.target.reset();
+                loadFiles();
+            }
+        };
+
+        // Attach save and delete functions to buttons
+        document.getElementById('saveFileBtn').onclick = saveFile;
+        document.getElementById('deleteFileBtn').onclick = deleteFile;
+
+        // Drag functionality
+        let drag = false, dx, dy;
+        const popupHeader = document.getElementById('popupHeader');
+        const popup = document.getElementById('filePopup');
+        if (window.innerWidth > 768 && popupHeader) {
+            popupHeader.onmousedown = e => {
+                drag = true;
+                dx = e.clientX - popup.offsetLeft;
+                dy = e.clientY - popup.offsetTop;
+                popup.style.transition = 'none';
+            };
+            document.onmousemove = e => {
+                if (drag) {
+                    popup.style.left = (e.clientX - dx) + "px";
+                    popup.style.top = (e.clientY - dy) + "px";
+                }
+            };
+            document.onmouseup = () => {
+                drag = false;
+                popup.style.transition = '';
             };
         }
 
-        // ============================================
-        // TOGGLE FUNCTIONS
-        // ============================================
-        function toggleMembersTable() {
-            const tableDiv = document.getElementById("membersScroll");
-            const btn = document.getElementById("toggleMembers");
-            
-            if (tableDiv.style.display === "none" || tableDiv.style.display === "") {
-                tableDiv.style.display = "block";
-                btn.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Members ▲';
-            } else {
-                tableDiv.style.display = "none";
-                btn.innerHTML = '<i class="fas fa-chevron-down"></i> Show Members ▼';
-            }
-        }
-
-        function toggleFilesList() {
-            const listDiv = document.getElementById("filesScroll");
-            const btn = document.getElementById("toggleFiles");
-            
-            if (listDiv.style.display === "none" || listDiv.style.display === "") {
-                listDiv.style.display = "block";
-                btn.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Files ▲';
-            } else {
-                listDiv.style.display = "none";
-                btn.innerHTML = '<i class="fas fa-chevron-down"></i> Show Files ▼';
-            }
-        }
-
-        function toggleFileTable() {
-            const tableDiv = document.getElementById("fileScroll");
-            const btn = document.getElementById("toggleFileMembers");
-            
-            if (tableDiv.style.display === "none" || tableDiv.style.display === "") {
-                tableDiv.style.display = "block";
-                btn.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Members ▲';
-            } else {
-                tableDiv.style.display = "none";
-                btn.innerHTML = '<i class="fas fa-chevron-down"></i> Show Members ▼';
-            }
-        }
-
-        // ============================================
-        // INITIALIZE
-        // ============================================
         loadMembers();
         loadFiles();
-
-        console.log('✅ Dashboard loaded with professional spinners');
-        console.log('✅ Spinner loaders on: Delete, Save, Download, Add Member, Create File');
-        console.log('📱 Fully responsive on all devices');
-        console.log('🔐 Session protection active');
+        console.log('✅ Dashboard with SPINNERS ready!');
     </script>
 </body>
 </html>
