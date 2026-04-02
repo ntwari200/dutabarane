@@ -163,6 +163,10 @@
             transition: all 0.3s ease;
         }
 
+        .input-wrapper input.error {
+            border-color: #ff4444 !important;
+        }
+
         @media (min-width: 768px) {
             .input-wrapper input {
                 padding: 16px 55px 16px 18px;
@@ -247,6 +251,12 @@
             100% { transform: rotate(360deg); }
         }
 
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
         .login-btn {
             background: linear-gradient(145deg, #002244, #001433);
             border: 2px solid #2a7fff;
@@ -287,6 +297,11 @@
 
         .login-btn:active {
             transform: translateY(2px);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         #message {
@@ -523,40 +538,60 @@
         }
 
         // ============================================
-        // FORM SUBMISSION - CREATE SESSION ON SUCCESS
+        // ADD ERROR CLASS STYLING
+        // ============================================
+        function addErrorClass(input) {
+            input.classList.add('error');
+            input.style.animation = 'shake 0.3s ease-in-out';
+            setTimeout(() => {
+                input.style.animation = '';
+            }, 300);
+        }
+
+        function removeErrorClass(input) {
+            input.classList.remove('error');
+        }
+
+        // ============================================
+        // FIXED: FORM SUBMISSION - REAL VALIDATION
         // ============================================
         if (loginForm) {
-            loginForm.addEventListener('submit', async function(e) {
+            loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
                 const username = usernameInput.value.trim();
                 const password = passwordInput.value;
                 
-                // Validation
+                // Remove existing error classes
+                removeErrorClass(usernameInput);
+                removeErrorClass(passwordInput);
+                
+                // Check if fields are empty
                 if (!username || !password) {
                     messageEl.textContent = 'Please enter both username and password';
+                    messageEl.style.color = '#ff6b6b';
+                    if (!username) addErrorClass(usernameInput);
+                    if (!password) addErrorClass(passwordInput);
                     return;
                 }
 
-                messageEl.textContent = '';
-
+                // ============================================
+                // ONLY THESE CREDENTIALS WORK!
+                // Username: admin
+                // Password: 1234
+                // ============================================
+                const VALID_USERNAME = 'admin';
+                const VALID_PASSWORD = '1234';
+                
                 // Show loading state on button
                 const originalButtonText = loginButton.innerHTML;
                 loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
                 loginButton.disabled = true;
 
-                try {
-                    // ============================================
-                    // DEMO LOGIN - ACCEPTS ANY USERNAME/PASSWORD
-                    // REPLACE WITH YOUR ACTUAL API CALL
-                    // ============================================
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    
-                    // For demo purposes - any credentials work
-                    // In production, replace with your actual API call
-                    const isSuccess = username.length > 0 && password.length > 0;
-                    
-                    if (isSuccess) {
+                // Simulate network delay (remove in production)
+                setTimeout(() => {
+                    // STRICT CHECK - Only these exact credentials work
+                    if (username === VALID_USERNAME && password === VALID_PASSWORD) {
                         // ============================================
                         // CREATE SESSION ON SUCCESSFUL LOGIN
                         // ============================================
@@ -571,41 +606,74 @@
                         localStorage.setItem('dutabarane_session', JSON.stringify(sessionData));
                         localStorage.setItem('dutabarane_user', JSON.stringify({ id: 1, username: username }));
                         
-                        console.log('✅ Session created for:', username);
-                        console.log('📅 Session expires at:', sessionData.expiresAt);
+                        console.log('✅ Login successful for:', username);
                         
                         messageEl.textContent = 'Login successful! Redirecting...';
                         messageEl.style.color = '#10b981';
                         
-                        // Show success and redirect
+                        // Reset encryption indicator
+                        if (passwordEncrypt) {
+                            passwordEncrypt.className = 'encryption-indicator encrypted';
+                            passwordEncrypt.innerHTML = '<i class="fas fa-check-circle"></i><span>Login successful!</span>';
+                        }
+                        
+                        // Redirect to home.html (dashboard)
                         setTimeout(() => {
                             window.location.href = 'home.html';
                         }, 1000);
                         
                     } else {
-                        throw new Error('Invalid credentials');
+                        // ============================================
+                        // WRONG CREDENTIALS - ACCESS DENIED
+                        // ============================================
+                        messageEl.textContent = '❌ INVALID CREDENTIALS! Access Denied.';
+                        messageEl.style.color = '#ff6b6b';
+                        
+                        addErrorClass(usernameInput);
+                        addErrorClass(passwordInput);
+                        
+                        // Clear password field for security
+                        passwordInput.value = '';
+                        passwordInput.focus();
+                        
+                        // Reset encryption indicator
+                        if (passwordEncrypt) {
+                            passwordEncrypt.className = 'encryption-indicator';
+                            passwordEncrypt.innerHTML = '<i class="fas fa-shield-alt"></i><span>AES-256 encrypted</span>';
+                        }
+                        
+                        console.log('❌ Login failed for username:', username);
+                        console.log('❌ Invalid credentials - Access denied');
                     }
                     
-                } catch (error) {
-                    console.error('Login error:', error);
-                    messageEl.textContent = 'Invalid username or password';
-                    messageEl.style.color = '#ff6b6b';
-                    
-                    // Reset encryption indicator
-                    if (passwordEncrypt) {
-                        passwordEncrypt.className = 'encryption-indicator encrypted';
-                        passwordEncrypt.innerHTML = '<i class="fas fa-shield-alt"></i><span>AES-256 encrypted</span>';
-                    }
-                    
-                } finally {
+                    // Reset button
                     loginButton.innerHTML = originalButtonText;
                     loginButton.disabled = false;
-                }
+                    
+                }, 800);
             });
         }
 
-        console.log('✅ Login page ready - Enter any username/password for demo');
-        console.log('🔐 Session will be created on successful login');
+        // ============================================
+        // CLEAR ERROR ON INPUT
+        // ============================================
+        if (usernameInput) {
+            usernameInput.addEventListener('input', function() {
+                removeErrorClass(this);
+                messageEl.textContent = '';
+            });
+        }
+        
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                removeErrorClass(this);
+                messageEl.textContent = '';
+            });
+        }
+
+        console.log('✅ Login page ready');
+        console.log('🔐 ONLY these credentials work: username = "admin", password = "1234"');
+        console.log('⚠️ Any other username or password will be REJECTED!');
     </script>
 </body>
 </html>
