@@ -1,1 +1,271 @@
 
+/* ============================================
+   PROFESSIONAL LOADER SYSTEM - DUTABARANE
+   Tornado Software Solutions
+============================================ */
+
+/* --------------------------------------
+   BUTTON SPINNER LOADER
+-------------------------------------- */
+.btn-spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.btn-spinner-sm {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+}
+
+.btn-spinner-lg {
+    width: 24px;
+    height: 24px;
+    border-width: 3px;
+}
+
+/* Button loading state */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-loading .btn-text {
+    opacity: 0.7;
+}
+
+/* --------------------------------------
+   INLINE SPINNER (For tables, lists)
+-------------------------------------- */
+.inline-spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #3b82f6;
+}
+
+.inline-spinner i {
+    animation: spin 0.8s linear infinite;
+}
+
+.spinner-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.spinner-dots span {
+    width: 6px;
+    height: 6px;
+    background: #3b82f6;
+    border-radius: 50%;
+    animation: dotPulse 1.4s infinite;
+}
+
+.spinner-dots span:nth-child(2) { animation-delay: 0.2s; }
+.spinner-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* --------------------------------------
+   OVERLAY SPINNER (For saving, deleting)
+-------------------------------------- */
+.overlay-spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 12, 24, 0.8);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    border-radius: inherit;
+}
+
+.overlay-spinner-content {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px 30px;
+    border-radius: 50px;
+    border: 1px solid #3b82f6;
+}
+
+.overlay-spinner-content .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(59, 130, 246, 0.3);
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+}
+
+.overlay-spinner-content span {
+    color: white;
+    font-size: 0.9rem;
+}
+
+/* --------------------------------------
+   TABLE ROW SPINNER (While deleting row)
+-------------------------------------- */
+.row-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.row-spinner .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 68, 68, 0.3);
+    border-top: 2px solid #ff4444;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+/* --------------------------------------
+   DOWNLOAD SPINNER
+-------------------------------------- */
+.download-spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.download-spinner i {
+    animation: spin 0.8s linear infinite;
+}
+
+/* --------------------------------------
+   SAVE SPINNER
+-------------------------------------- */
+.save-spinner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.save-spinner i {
+    animation: spin 0.8s linear infinite;
+}
+
+/* --------------------------------------
+   PAGE TRANSITION SPINNER
+-------------------------------------- */
+.page-transition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 12, 24, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.3s ease;
+}
+
+.page-transition.hidden {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+}
+
+.page-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(59, 130, 246, 0.2);
+    border-top: 4px solid #3b82f6;
+    border-right: 4px solid #7fabff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.page-spinner-text {
+    color: white;
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+/* --------------------------------------
+   TOAST WITH SPINNER (For processing)
+-------------------------------------- */
+.toast-processing {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(145deg, #002244, #001433);
+    border: 1px solid #3b82f6;
+    border-radius: 50px;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 10001;
+    animation: slideInRight 0.3s ease;
+    box-shadow: 0 10px 25px -5px #000000;
+}
+
+.toast-processing i {
+    animation: spin 0.8s linear infinite;
+    color: #3b82f6;
+}
+
+.toast-processing span {
+    color: white;
+    font-size: 0.9rem;
+}
+
+/* --------------------------------------
+   ANIMATIONS
+-------------------------------------- */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes dotPulse {
+    0%, 60%, 100% { transform: scale(1); opacity: 0.6; }
+    30% { transform: scale(1.5); opacity: 1; }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* --------------------------------------
+   RESPONSIVE
+-------------------------------------- */
+@media (max-width: 768px) {
+    .btn-spinner {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .toast-processing {
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        justify-content: center;
+    }
+}
