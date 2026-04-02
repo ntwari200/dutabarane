@@ -8,7 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Professional Loading System CSS -->
+    <link rel="stylesheet" href="loaders.css">
     <style>
+        /* Reset and base styles */
         * {
             margin: 0;
             padding: 0;
@@ -62,6 +65,7 @@
             z-index: -1;
         }
 
+        /* Container - Fully responsive */
         .container {
             width: 100%;
             max-width: 400px;
@@ -72,6 +76,7 @@
             animation: fadeInUp 0.8s ease-out;
         }
 
+        /* Form box - Glass morphism */
         .form-box {
             background: rgba(5, 12, 24, 0.85);
             backdrop-filter: blur(16px);
@@ -91,6 +96,12 @@
             }
         }
 
+        .form-box:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px #3b82f6 inset;
+        }
+
+        /* Title */
         .title {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 1.6rem;
@@ -115,18 +126,21 @@
             text-decoration-thickness: 3px;
         }
 
+        /* Form */
         #loginForm {
             display: flex;
             flex-direction: column;
             gap: 25px;
         }
 
+        /* Input field container */
         .input-field {
             position: relative;
             width: 100%;
             margin-bottom: 5px;
         }
 
+        /* Label styling */
         .input-field label {
             display: block;
             color: #99bbee;
@@ -145,6 +159,7 @@
             }
         }
 
+        /* Input wrapper for icon positioning */
         .input-wrapper {
             position: relative;
             width: 100%;
@@ -163,10 +178,6 @@
             transition: all 0.3s ease;
         }
 
-        .input-wrapper input.error {
-            border-color: #ff4444 !important;
-        }
-
         @media (min-width: 768px) {
             .input-wrapper input {
                 padding: 16px 55px 16px 18px;
@@ -182,9 +193,10 @@
 
         .input-wrapper input::placeholder {
             color: #6688aa;
-            opacity: 0.7;
+            opacity: 0.5;
         }
 
+        /* Toggle icon */
         .toggle-icon {
             position: absolute;
             right: 15px;
@@ -207,6 +219,7 @@
             text-shadow: 0 0 8px #3b82f6;
         }
 
+        /* Encryption indicator */
         .encryption-indicator {
             display: flex;
             align-items: center;
@@ -251,12 +264,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
+        /* Login button */
         .login-btn {
             background: linear-gradient(145deg, #002244, #001433);
             border: 2px solid #2a7fff;
@@ -302,8 +310,10 @@
         .login-btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+            pointer-events: none;
         }
 
+        /* Message area */
         #message {
             margin-top: 20px;
             text-align: center;
@@ -312,6 +322,7 @@
             color: #ff6b6b;
         }
 
+        /* Tornado branding */
         .tornado-branding {
             position: fixed;
             bottom: 15px;
@@ -345,8 +356,15 @@
 
         .tornado-branding i {
             color: #3b82f6;
+            animation: gentleSpin 3s linear infinite;
         }
 
+        @keyframes gentleSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -368,6 +386,7 @@
             100% { background-position: 100% 100%; }
         }
 
+        /* Mobile optimizations */
         @media (max-width: 480px) {
             .input-wrapper input {
                 font-size: 16px;
@@ -383,14 +402,39 @@
                 font-size: 1.1rem;
             }
         }
+
+        /* Add to existing style section */
+        .input-wrapper input.error {
+            border-color: #ff4444;
+            animation: shake 0.3s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
     </style>
 </head>
 <body>
+    <!-- Progress Bar (Top) -->
+    <div class="progress-bar">
+        <div class="progress-bar-fill"></div>
+    </div>
+
+    <!-- Page Loader (Initial) -->
+    <div class="page-loader">
+        <div class="page-loader-content">
+            <div class="page-loader-spinner"></div>
+            <div class="page-loader-text">Loading Secure Login...</div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="form-box">
             <h2 class="title"><u>INTERNAL SYSTEM</u></h2>
 
-            <form id="loginForm">
+            <form id="loginForm" novalidate>
                 <!-- USERNAME FIELD -->
                 <div class="input-field">
                     <label for="username">
@@ -423,7 +467,7 @@
 
                 <button class="login-btn" type="submit" id="loginButton">
                     <i class="fas fa-sign-in-alt"></i>
-                    <span>Login</span>
+                    <span class="btn-text">Login</span>
                 </button>
             </form>
 
@@ -431,249 +475,335 @@
         </div>
     </div>
 
+    <!-- Tornado Software branding -->
     <div class="tornado-branding">
         <i class="fas fa-bolt"></i> Tornado Software • Secure Login
     </div>
 
+    <!-- Professional Loading System JavaScript -->
+    <script src="loaders.js"></script>
+    
     <script>
-        // ============================================
-        // CLEAR ANY EXISTING SESSION ON LOGIN PAGE
-        // ============================================
-        localStorage.removeItem('dutabarane_session');
-        localStorage.removeItem('dutabarane_user');
-        localStorage.removeItem('dutabarane_token');
-        
-        console.log('🔐 Login page ready - Session cleared');
-
-        // ============================================
-        // ELEMENTS
-        // ============================================
-        const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
-        const passwordEncrypt = document.getElementById('passwordEncrypt');
-        const encryptText = document.getElementById('encryptText');
-        
-        const toggleUsername = document.getElementById('toggleUsername');
-        const usernameInput = document.getElementById('username');
-        const usernameEncrypt = document.getElementById('usernameEncrypt');
-        
-        const loginForm = document.getElementById('loginForm');
-        const loginButton = document.getElementById('loginButton');
-        const messageEl = document.getElementById('message');
-
-        // ============================================
-        // PASSWORD SHOW/HIDE TOGGLE
-        // ============================================
-        if (togglePassword && passwordInput) {
-            togglePassword.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
-                this.classList.toggle('active');
-                
-                if (type === 'text') {
-                    encryptText.textContent = 'Visible - not encrypted';
-                    passwordEncrypt.className = 'encryption-indicator';
-                    passwordEncrypt.querySelector('i').className = 'fas fa-eye';
-                } else {
-                    encryptText.textContent = 'AES-256 encrypted';
-                    passwordEncrypt.className = 'encryption-indicator encrypted';
-                    passwordEncrypt.querySelector('i').className = 'fas fa-shield-alt';
-                }
-            });
-        }
-
-        // ============================================
-        // USERNAME SHOW/HIDE TOGGLE
-        // ============================================
-        if (toggleUsername && usernameInput) {
-            toggleUsername.addEventListener('click', function() {
-                const type = usernameInput.getAttribute('type') === 'text' ? 'password' : 'text';
-                usernameInput.setAttribute('type', type);
-                
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
-                this.classList.toggle('active');
-                
-                if (type === 'password') {
-                    usernameEncrypt.innerHTML = '<i class="fas fa-eye-slash"></i><span>Hidden</span>';
-                } else {
-                    usernameEncrypt.innerHTML = '<i class="fas fa-eye"></i><span>Visible</span>';
-                }
-            });
-        }
-
-        // ============================================
-        // REAL-TIME ENCRYPTION SIMULATION
-        // ============================================
-        if (passwordInput && passwordEncrypt) {
-            passwordInput.addEventListener('input', function() {
-                const value = this.value;
-                
-                if (value.length === 0) {
-                    passwordEncrypt.className = 'encryption-indicator';
-                    passwordEncrypt.innerHTML = '<i class="fas fa-shield-alt"></i><span>AES-256 encrypted</span>';
-                } else if (value.length < 3) {
-                    passwordEncrypt.className = 'encryption-indicator encrypting';
-                    passwordEncrypt.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Encrypting...</span>';
-                } else {
-                    passwordEncrypt.className = 'encryption-indicator encrypted';
-                    passwordEncrypt.innerHTML = '<i class="fas fa-check-circle"></i><span>Secured with AES-256</span>';
-                }
-            });
-        }
-
-        if (usernameInput && usernameEncrypt) {
-            usernameInput.addEventListener('input', function() {
-                const value = this.value;
-                
-                if (value.length > 0) {
-                    usernameEncrypt.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i><span>Valid</span>';
-                } else {
-                    usernameEncrypt.innerHTML = '<i class="fas fa-user"></i><span>Enter username</span>';
-                }
-            });
-        }
-
-        // ============================================
-        // ADD ERROR CLASS STYLING
-        // ============================================
-        function addErrorClass(input) {
-            input.classList.add('error');
-            input.style.animation = 'shake 0.3s ease-in-out';
-            setTimeout(() => {
-                input.style.animation = '';
-            }, 300);
-        }
-
-        function removeErrorClass(input) {
-            input.classList.remove('error');
-        }
-
-        // ============================================
-        // FIXED: FORM SUBMISSION - REAL VALIDATION
-        // ============================================
-        if (loginForm) {
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const username = usernameInput.value.trim();
-                const password = passwordInput.value;
-                
-                // Remove existing error classes
-                removeErrorClass(usernameInput);
-                removeErrorClass(passwordInput);
-                
-                // Check if fields are empty
-                if (!username || !password) {
-                    messageEl.textContent = 'Please enter both username and password';
-                    messageEl.style.color = '#ff6b6b';
-                    if (!username) addErrorClass(usernameInput);
-                    if (!password) addErrorClass(passwordInput);
-                    return;
-                }
-
-                // ============================================
-                // ONLY THESE CREDENTIALS WORK!
-                // Username: admin
-                // Password: 1234
-                // ============================================
-                const VALID_USERNAME = 'admin';
-                const VALID_PASSWORD = '1234';
-                
-                // Show loading state on button
-                const originalButtonText = loginButton.innerHTML;
-                loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
-                loginButton.disabled = true;
-
-                // Simulate network delay (remove in production)
+        (function() {
+            // ============================================
+            // HIDE PAGE LOADER AFTER PAGE LOADS
+            // ============================================
+            window.addEventListener('load', function() {
                 setTimeout(() => {
-                    // STRICT CHECK - Only these exact credentials work
-                    if (username === VALID_USERNAME && password === VALID_PASSWORD) {
-                        // ============================================
-                        // CREATE SESSION ON SUCCESSFUL LOGIN
-                        // ============================================
-                        const sessionData = {
-                            userId: 1,
-                            username: username,
-                            role: 'admin',
-                            loginTime: new Date().toISOString(),
-                            expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
-                        };
-                        
-                        localStorage.setItem('dutabarane_session', JSON.stringify(sessionData));
-                        localStorage.setItem('dutabarane_user', JSON.stringify({ id: 1, username: username }));
-                        
-                        console.log('✅ Login successful for:', username);
-                        
-                        messageEl.textContent = 'Login successful! Redirecting...';
-                        messageEl.style.color = '#10b981';
-                        
-                        // Reset encryption indicator
-                        if (passwordEncrypt) {
-                            passwordEncrypt.className = 'encryption-indicator encrypted';
-                            passwordEncrypt.innerHTML = '<i class="fas fa-check-circle"></i><span>Login successful!</span>';
-                        }
-                        
-                        // Redirect to home.html (dashboard)
-                        setTimeout(() => {
-                            window.location.href = 'home.html';
-                        }, 1000);
-                        
-                    } else {
-                        // ============================================
-                        // WRONG CREDENTIALS - ACCESS DENIED
-                        // ============================================
-                        messageEl.textContent = '❌ INVALID CREDENTIALS! Access Denied.';
-                        messageEl.style.color = '#ff6b6b';
-                        
-                        addErrorClass(usernameInput);
-                        addErrorClass(passwordInput);
-                        
-                        // Clear password field for security
-                        passwordInput.value = '';
-                        passwordInput.focus();
-                        
-                        // Reset encryption indicator
-                        if (passwordEncrypt) {
-                            passwordEncrypt.className = 'encryption-indicator';
-                            passwordEncrypt.innerHTML = '<i class="fas fa-shield-alt"></i><span>AES-256 encrypted</span>';
-                        }
-                        
-                        console.log('❌ Login failed for username:', username);
-                        console.log('❌ Invalid credentials - Access denied');
+                    if (window.dutabaraneLoader) {
+                        window.dutabaraneLoader.hidePageLoader();
                     }
-                    
-                    // Reset button
-                    loginButton.innerHTML = originalButtonText;
-                    loginButton.disabled = false;
-                    
                 }, 800);
             });
-        }
 
-        // ============================================
-        // CLEAR ERROR ON INPUT
-        // ============================================
-        if (usernameInput) {
-            usernameInput.addEventListener('input', function() {
-                removeErrorClass(this);
-                messageEl.textContent = '';
-            });
-        }
-        
-        if (passwordInput) {
-            passwordInput.addEventListener('input', function() {
-                removeErrorClass(this);
-                messageEl.textContent = '';
-            });
-        }
+            // ============================================
+            // CLEAR ANY EXISTING SESSION ON LOGIN PAGE
+            // ============================================
+            localStorage.removeItem('dutabarane_session');
+            localStorage.removeItem('dutabarane_user');
+            localStorage.removeItem('dutabarane_token');
+            
+            console.log('🔐 Login page ready - Session cleared');
 
-        console.log('✅ Login page ready');
-        console.log('🔐 ONLY these credentials work: username = "admin", password = "1234"');
-        console.log('⚠️ Any other username or password will be REJECTED!');
+            // ============================================
+            // ELEMENTS
+            // ============================================
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            const passwordEncrypt = document.getElementById('passwordEncrypt');
+            const encryptText = document.getElementById('encryptText');
+            
+            const toggleUsername = document.getElementById('toggleUsername');
+            const usernameInput = document.getElementById('username');
+            const usernameEncrypt = document.getElementById('usernameEncrypt');
+            
+            const loginForm = document.getElementById('loginForm');
+            const loginButton = document.getElementById('loginButton');
+            const messageEl = document.getElementById('message');
+
+            // ============================================
+            // PASSWORD SHOW/HIDE TOGGLE
+            // ============================================
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                    this.classList.toggle('active');
+                    
+                    if (type === 'text') {
+                        encryptText.textContent = 'Visible - not encrypted';
+                        passwordEncrypt.className = 'encryption-indicator';
+                        passwordEncrypt.querySelector('i').className = 'fas fa-eye';
+                    } else {
+                        encryptText.textContent = 'AES-256 encrypted';
+                        passwordEncrypt.className = 'encryption-indicator encrypted';
+                        passwordEncrypt.querySelector('i').className = 'fas fa-shield-alt';
+                    }
+                });
+            }
+
+            // ============================================
+            // USERNAME SHOW/HIDE TOGGLE
+            // ============================================
+            if (toggleUsername && usernameInput) {
+                toggleUsername.addEventListener('click', function() {
+                    const type = usernameInput.getAttribute('type') === 'text' ? 'password' : 'text';
+                    usernameInput.setAttribute('type', type);
+                    
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                    this.classList.toggle('active');
+                    
+                    if (type === 'password') {
+                        usernameEncrypt.innerHTML = '<i class="fas fa-eye-slash"></i><span>Hidden</span>';
+                    } else {
+                        usernameEncrypt.innerHTML = '<i class="fas fa-eye"></i><span>Visible</span>';
+                    }
+                });
+            }
+
+            // ============================================
+            // REAL-TIME ENCRYPTION SIMULATION
+            // ============================================
+            if (passwordInput && passwordEncrypt) {
+                passwordInput.addEventListener('input', function() {
+                    const value = this.value;
+                    
+                    if (value.length === 0) {
+                        passwordEncrypt.className = 'encryption-indicator';
+                        passwordEncrypt.innerHTML = '<i class="fas fa-shield-alt"></i><span>AES-256 encrypted</span>';
+                    } else if (value.length < 3) {
+                        passwordEncrypt.className = 'encryption-indicator encrypting';
+                        passwordEncrypt.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Encrypting...</span>';
+                    } else {
+                        passwordEncrypt.className = 'encryption-indicator encrypted';
+                        passwordEncrypt.innerHTML = '<i class="fas fa-check-circle"></i><span>Secured with AES-256</span>';
+                    }
+                });
+            }
+
+            if (usernameInput && usernameEncrypt) {
+                usernameInput.addEventListener('input', function() {
+                    const value = this.value;
+                    
+                    if (value.length > 0) {
+                        usernameEncrypt.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i><span>Valid</span>';
+                    } else {
+                        usernameEncrypt.innerHTML = '<i class="fas fa-user"></i><span>Enter username</span>';
+                    }
+                });
+            }
+
+            // ============================================
+            // ADD ERROR CLASS FUNCTION
+            // ============================================
+            function addErrorClass(input) {
+                input.classList.add('error');
+                input.style.animation = 'shake 0.3s ease-in-out';
+                setTimeout(() => {
+                    input.style.animation = '';
+                }, 300);
+            }
+
+            function removeErrorClass(input) {
+                input.classList.remove('error');
+            }
+
+            // ============================================
+            // FIXED: FORM SUBMISSION - REAL VALIDATION
+            // ONLY accepts admin / 1234
+            // Redirects to dashboard.html
+            // ============================================
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const username = usernameInput.value.trim();
+                    const password = passwordInput.value;
+                    
+                    // Remove existing error classes
+                    removeErrorClass(usernameInput);
+                    removeErrorClass(passwordInput);
+                    
+                    // Validation - Check if fields are empty
+                    if (!username || !password) {
+                        messageEl.textContent = 'Please enter both username and password';
+                        messageEl.style.color = '#ff6b6b';
+                        
+                        if (window.dutabaraneLoader) {
+                            window.dutabaraneLoader.showError('Please fill all fields', 3000);
+                        }
+                        
+                        if (!username) addErrorClass(usernameInput);
+                        if (!password) addErrorClass(passwordInput);
+                        return;
+                    }
+
+                    // Clear any previous messages
+                    messageEl.textContent = '';
+
+                    // Show encryption animation
+                    if (passwordEncrypt) {
+                        passwordEncrypt.className = 'encryption-indicator encrypting';
+                        passwordEncrypt.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Securing credentials...</span>';
+                    }
+
+                    // Start progress bar
+                    if (window.dutabaraneLoader) {
+                        window.dutabaraneLoader.startProgress();
+                    }
+
+                    // Add loader to button
+                    let loader = { stop: () => {} };
+                    if (window.dutabaraneLoader && loginButton) {
+                        loader = window.dutabaraneLoader.addButtonLoader(loginButton, 'Authenticating...');
+                    }
+
+                    // Simulate network delay for realism
+                    setTimeout(() => {
+                        // ============================================
+                        // ONLY THESE CREDENTIALS WORK!
+                        // Username: admin
+                        // Password: 1234
+                        // ============================================
+                        const VALID_USERNAME = 'admin';
+                        const VALID_PASSWORD = '1234';
+                        
+                        // STRICT CHECK - Only these exact credentials work
+                        if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+                            // ============================================
+                            // CREATE SESSION ON SUCCESSFUL LOGIN
+                            // ============================================
+                            const sessionData = {
+                                userId: 1,
+                                username: username,
+                                role: 'admin',
+                                loginTime: new Date().toISOString(),
+                                expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
+                            };
+                            
+                            localStorage.setItem('dutabarane_session', JSON.stringify(sessionData));
+                            localStorage.setItem('dutabarane_user', JSON.stringify({ id: 1, username: username }));
+                            
+                            console.log('✅ Login successful for:', username);
+                            
+                            // Update progress
+                            if (window.dutabaraneLoader) {
+                                window.dutabaraneLoader.updateProgress(80);
+                            }
+                            
+                            messageEl.textContent = 'Login successful! Redirecting to dashboard...';
+                            messageEl.style.color = '#10b981';
+                            
+                            // Reset encryption indicator
+                            if (passwordEncrypt) {
+                                passwordEncrypt.className = 'encryption-indicator encrypted';
+                                passwordEncrypt.innerHTML = '<i class="fas fa-check-circle"></i><span>Login successful!</span>';
+                            }
+                            
+                            // Show green ellipse success animation
+                            if (window.dutabaraneLoader) {
+                                window.dutabaraneLoader.showLoginSuccess(() => {
+                                    // ============================================
+                                    // REDIRECT TO DASHBOARD.HTML (NOT home.html)
+                                    // ============================================
+                                    window.location.href = 'dashboard.html';
+                                });
+                                
+                                // Show success toast as backup
+                                window.dutabaraneLoader.showSuccess('Login successful! Redirecting...', 2000);
+                                
+                                // Complete progress
+                                window.dutabaraneLoader.completeProgress();
+                            } else {
+                                // Fallback if loader not available
+                                setTimeout(() => {
+                                    window.location.href = 'dashboard.html';
+                                }, 1500);
+                            }
+
+                        } else {
+                            // ============================================
+                            // WRONG CREDENTIALS - ACCESS DENIED
+                            // ============================================
+                            console.log('❌ Login failed for username:', username);
+                            console.log('❌ Invalid credentials - Access denied');
+                            
+                            // Reset encryption indicator
+                            if (passwordEncrypt) {
+                                passwordEncrypt.className = 'encryption-indicator';
+                                passwordEncrypt.innerHTML = '<i class="fas fa-shield-alt"></i><span>AES-256 encrypted</span>';
+                            }
+                            
+                            // Show error message
+                            messageEl.textContent = '❌ INVALID CREDENTIALS! Access Denied.';
+                            messageEl.style.color = '#ff6b6b';
+                            
+                            // Add error class to inputs for visual feedback
+                            addErrorClass(usernameInput);
+                            addErrorClass(passwordInput);
+                            
+                            // Clear password field for security
+                            passwordInput.value = '';
+                            passwordInput.focus();
+                            
+                            if (window.dutabaraneLoader) {
+                                window.dutabaraneLoader.showError('Invalid username or password!', 3000);
+                                window.dutabaraneLoader.completeProgress();
+                            }
+                        }
+                        
+                        // Stop button loader
+                        loader.stop();
+                        
+                    }, 800);
+                });
+            }
+
+            // ============================================
+            // REMOVE ERROR CLASS ON INPUT
+            // ============================================
+            if (usernameInput) {
+                usernameInput.addEventListener('input', function() {
+                    removeErrorClass(this);
+                    messageEl.textContent = '';
+                });
+            }
+            
+            if (passwordInput) {
+                passwordInput.addEventListener('input', function() {
+                    removeErrorClass(this);
+                    messageEl.textContent = '';
+                });
+            }
+
+            // ============================================
+            // CHECK FOR EXISTING SESSION (Redirect if already logged in)
+            // ============================================
+            const existingSession = localStorage.getItem('dutabarane_session');
+            if (existingSession) {
+                try {
+                    const sessionData = JSON.parse(existingSession);
+                    if (sessionData.expiresAt && new Date(sessionData.expiresAt) > new Date()) {
+                        console.log('✅ Existing session found, redirecting to dashboard');
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        localStorage.removeItem('dutabarane_session');
+                    }
+                } catch(e) {}
+            }
+
+            console.log('🔐 Dutabarane Login System Ready');
+            console.log('🔐 ONLY these credentials work: username = "admin", password = "1234"');
+            console.log('🚀 Redirects to dashboard.html on success');
+            console.log('⚠️ Any other username or password will be REJECTED!');
+        })();
     </script>
+
+    <!-- Your existing script.js (optional) -->
+    <script src="script.js"></script>
 </body>
 </html>
