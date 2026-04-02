@@ -2,31 +2,823 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Internal System</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Dashboard | Dutabarane</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Professional Loading System CSS -->
+    <link rel="stylesheet" href="loaders.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0f17;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(74, 158, 255, 0.1) 0%, transparent 50%);
+            animation: backgroundPulse 8s ease-in-out infinite;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 5% 10%, #3b82f6, transparent),
+                radial-gradient(2px 2px at 15% 70%, #4a9eff, transparent),
+                radial-gradient(3px 3px at 25% 40%, #2a7fff, transparent),
+                radial-gradient(2px 2px at 45% 80%, #0066ff, transparent),
+                radial-gradient(3px 3px at 65% 20%, #7fabff, transparent);
+            background-size: 200% 200%;
+            opacity: 0.2;
+            animation: floatParticles 25s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(5, 12, 24, 0.95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid #3b82f6;
+            padding: 15px 30px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4a9eff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #b8d1ff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: white;
+        }
+
+        .nav-links a.active {
+            background: linear-gradient(145deg, #002244, #001433);
+            border: 1px solid #3b82f6;
+            color: white;
+        }
+
+        .logout-nav-btn {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid #ff4444;
+            color: #ff4444 !important;
+        }
+
+        .logout-nav-btn:hover {
+            background: #ff4444;
+            color: white !important;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #4a9eff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            color: #99bbee;
+            font-size: 1.1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(5, 12, 24, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(30, 100, 200, 0.3);
+            border-radius: 24px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .stat-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: #3b82f6;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #99bbee;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-loading {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: rgba(5, 12, 24, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(30, 100, 200, 0.3);
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .quick-actions h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            background: linear-gradient(145deg, #002244, #001433);
+            border: 2px solid #2a7fff;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(145deg, #003366, #001f4d);
+            transform: translateY(-2px);
+        }
+
+        /* Recent Activity */
+        .recent-activity {
+            background: rgba(5, 12, 24, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(30, 100, 200, 0.3);
+            border-radius: 24px;
+            padding: 25px;
+        }
+
+        .recent-activity h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .activity-list {
+            list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+        }
+
+        .activity-text {
+            flex: 1;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: #6688aa;
+        }
+
+        /* Refresh Button */
+        .refresh-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #002244, #001433);
+            border: 2px solid #3b82f6;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .refresh-btn:hover {
+            transform: rotate(180deg);
+            background: #003366;
+        }
+
+        /* Last Updated */
+        .last-updated {
+            text-align: center;
+            margin-top: 20px;
+            color: #6688aa;
+            font-size: 0.8rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes floatParticles {
+            0% { background-position: 0 0; }
+            100% { background-position: 100% 100%; }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-links {
+                justify-content: center;
+            }
+            .dashboard-container {
+                padding: 140px 15px 30px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+
+        /* Page Loader */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 12, 24, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .page-loader.hidden {
+            display: none;
+        }
+
+        .page-loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: transparent;
+            z-index: 10000;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3b82f6, #7fabff);
+            transition: width 0.3s ease;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar">
-        <ul>
-            <li><a href="home.html">Home</a></li>
-            <li><a href="aboutus.html">About Us</a></li>
-            <li><a href="contactus.html">Contact Us</a></li>
-            <li><a href="#" onclick="logout()">Logout</a></li>
-        </ul>
-    </nav>
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress-bar-fill"></div>
+    </div>
 
-    <div class="dashboard-container">
-        <h1 class="animated-text">Welcome, <span id="usernameDisplay">Admin</span>!</h1>
-        <p>This is your internal system dashboard.</p>
-
-        <div class="cards">
-            <div class="card">Analytics</div>
-            <div class="card">Users</div>
-            <div class="card">Settings</div>
+    <!-- Page Loader -->
+    <div class="page-loader" id="pageLoader">
+        <div style="text-align: center;">
+            <div class="page-loader-spinner"></div>
+            <div style="color: white;">Loading Dashboard...</div>
         </div>
     </div>
 
-    <script src="dashboard.js"></script>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-bolt"></i> Dutabarane
+        </div>
+        <div class="nav-links">
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="home.html">Control Panel</a>
+            <a href="aboutus.html">About Us</a>
+            <a href="contactus.html">Contact</a>
+            <a href="#" id="logoutBtn" class="logout-nav-btn">Logout</a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1>Welcome, <span id="usernameDisplay">Admin</span>!</h1>
+            <p>Here's an overview of your cooperative's performance</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value" id="totalMembers">
+                    <span class="stat-loading"></span>
+                </div>
+                <div class="stat-label">Total Members</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-value" id="totalAmount">
+                    <span class="stat-loading"></span>
+                </div>
+                <div class="stat-label">Total Amount (RWF)</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <div class="stat-value" id="totalLoan">
+                    <span class="stat-loading"></span>
+                </div>
+                <div class="stat-label">Total Loan (RWF)</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-percent"></i>
+                </div>
+                <div class="stat-value" id="totalInterest">
+                    <span class="stat-loading"></span>
+                </div>
+                <div class="stat-label">Total Interest (RWF)</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+            <div class="action-buttons">
+                <button class="action-btn" id="quickAddMember">
+                    <i class="fas fa-user-plus"></i> Add Member
+                </button>
+                <button class="action-btn" id="quickCreateFile">
+                    <i class="fas fa-folder-plus"></i> Create File
+                </button>
+                <button class="action-btn" id="quickRefresh">
+                    <i class="fas fa-sync-alt"></i> Refresh Data
+                </button>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+            <h2><i class="fas fa-history"></i> Recent Activity</h2>
+            <div class="activity-list" id="activityList">
+                <div style="text-align: center; padding: 20px; color: #6688aa;">
+                    <i class="fas fa-spinner fa-spin"></i> Loading activity...
+                </div>
+            </div>
+        </div>
+
+        <div class="last-updated" id="lastUpdated">
+            Last updated: --:--:--
+        </div>
+    </div>
+
+    <!-- Floating Refresh Button -->
+    <button class="refresh-btn" id="floatingRefresh" title="Refresh Data">
+        <i class="fas fa-sync-alt"></i>
+    </button>
+
+    <!-- Loaders -->
+    <script src="loaders.js"></script>
+    
+    <script>
+        // ============================================
+        // SESSION PROTECTION
+        // ============================================
+        (function checkSession() {
+            const session = localStorage.getItem('dutabarane_session');
+            
+            if (!session) {
+                console.log('🔐 No session found - Redirecting to login');
+                window.location.href = 'welcome.html';
+                return;
+            }
+            
+            try {
+                const sessionData = JSON.parse(session);
+                
+                if (sessionData.expiresAt && new Date(sessionData.expiresAt) < new Date()) {
+                    console.log('⏰ Session expired - Redirecting to login');
+                    localStorage.removeItem('dutabarane_session');
+                    localStorage.removeItem('dutabarane_user');
+                    window.location.href = 'welcome.html';
+                    return;
+                }
+                
+                console.log('✅ Authenticated as:', sessionData.username);
+                document.getElementById('usernameDisplay').textContent = sessionData.username;
+                
+            } catch (e) {
+                console.error('Session check error:', e);
+                window.location.href = 'welcome.html';
+            }
+        })();
+
+        // ============================================
+        // LOGOUT FUNCTION
+        // ============================================
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('dutabarane_session');
+                localStorage.removeItem('dutabarane_user');
+                if (window.dutaLoader) {
+                    window.dutaLoader.showSuccessToast('Logged out successfully!');
+                }
+                setTimeout(() => {
+                    window.location.href = 'welcome.html';
+                }, 500);
+            }
+        });
+
+        // ============================================
+        // GLOBAL VARIABLES
+        // ============================================
+        const BASE = "/api/";
+        let members = [];
+        let files = [];
+        let allFileData = {};
+
+        // ============================================
+        // HIDE PAGE LOADER
+        // ============================================
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const loader = document.getElementById('pageLoader');
+                if (loader) loader.classList.add('hidden');
+            }, 500);
+        });
+
+        // ============================================
+        // FETCH ALL DATA WITH SPINNER
+        // ============================================
+        async function fetchAllData() {
+            if (window.dutaLoader) {
+                window.dutaLoader.startProgress();
+            }
+            
+            try {
+                // Fetch members
+                const membersRes = await fetch(BASE + "members");
+                members = await membersRes.json();
+                
+                // Fetch files
+                const filesRes = await fetch(BASE + "files");
+                files = await filesRes.json();
+                
+                // Fetch data for each file
+                allFileData = {};
+                let totalAmount = 0;
+                let totalLoan = 0;
+                let totalInterest = 0;
+                
+                for (const file of files) {
+                    const fileRes = await fetch(BASE + "files/" + file.id);
+                    const fileData = await fileRes.json();
+                    allFileData[file.id] = fileData;
+                    
+                    // Calculate totals
+                    for (const memberId in fileData) {
+                        const data = fileData[memberId];
+                        totalAmount += parseFloat(data.amount) || 0;
+                        totalLoan += parseFloat(data.loan) || 0;
+                        totalInterest += parseFloat(data.interest) || 0;
+                    }
+                }
+                
+                // Update UI
+                updateStats(members.length, totalAmount, totalLoan, totalInterest);
+                updateActivityLog();
+                updateLastUpdated();
+                
+                if (window.dutaLoader) {
+                    window.dutaLoader.completeProgress();
+                }
+                
+                return { members, files, totalAmount, totalLoan, totalInterest };
+                
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                if (window.dutaLoader) {
+                    window.dutaLoader.completeProgress();
+                    window.dutaLoader.showErrorToast('Failed to load dashboard data');
+                }
+                return null;
+            }
+        }
+
+        // ============================================
+        // UPDATE STATISTICS DISPLAY
+        // ============================================
+        function updateStats(memberCount, totalAmount, totalLoan, totalInterest) {
+            const totalMembersEl = document.getElementById('totalMembers');
+            const totalAmountEl = document.getElementById('totalAmount');
+            const totalLoanEl = document.getElementById('totalLoan');
+            const totalInterestEl = document.getElementById('totalInterest');
+            
+            if (totalMembersEl) {
+                totalMembersEl.innerHTML = memberCount.toLocaleString();
+            }
+            
+            if (totalAmountEl) {
+                totalAmountEl.innerHTML = totalAmount.toLocaleString();
+            }
+            
+            if (totalLoanEl) {
+                totalLoanEl.innerHTML = totalLoan.toLocaleString();
+            }
+            
+            if (totalInterestEl) {
+                totalInterestEl.innerHTML = totalInterest.toLocaleString();
+            }
+        }
+
+        // ============================================
+        // UPDATE ACTIVITY LOG
+        // ============================================
+        function updateActivityLog() {
+            const activityList = document.getElementById('activityList');
+            const activities = [];
+            
+            // Add member activities
+            if (members && members.length > 0) {
+                const recentMembers = [...members].reverse().slice(0, 5);
+                recentMembers.forEach(m => {
+                    activities.push({
+                        type: 'member',
+                        text: `New member added: ${m.name}`,
+                        time: 'Just now',
+                        icon: 'fa-user-plus'
+                    });
+                });
+            }
+            
+            // Add file activities
+            if (files && files.length > 0) {
+                const recentFiles = [...files].reverse().slice(0, 5);
+                recentFiles.forEach(f => {
+                    activities.push({
+                        type: 'file',
+                        text: `File created: ${f.name}`,
+                        time: 'Just now',
+                        icon: 'fa-file-alt'
+                    });
+                });
+            }
+            
+            if (activities.length === 0) {
+                activityList.innerHTML = '<div style="text-align: center; padding: 20px; color: #6688aa;">No recent activity</div>';
+                return;
+            }
+            
+            activityList.innerHTML = activities.map(a => `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas ${a.icon}"></i>
+                    </div>
+                    <div class="activity-text">
+                        <div>${a.text}</div>
+                    </div>
+                    <div class="activity-time">${a.time}</div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // UPDATE LAST UPDATED TIME
+        // ============================================
+        function updateLastUpdated() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString();
+            document.getElementById('lastUpdated').innerHTML = `Last updated: ${dateString} ${timeString}`;
+        }
+
+        // ============================================
+        // REFRESH DASHBOARD WITH SPINNER
+        // ============================================
+        async function refreshDashboard() {
+            const refreshBtn = document.getElementById('floatingRefresh');
+            
+            if (window.dutaLoader && refreshBtn) {
+                const spinner = window.dutaLoader.showButtonSpinner(refreshBtn, '');
+                await fetchAllData();
+                spinner.stop();
+            } else {
+                await fetchAllData();
+            }
+            
+            if (window.dutaLoader) {
+                window.dutaLoader.showSuccessToast('Dashboard refreshed!');
+            }
+        }
+
+        // ============================================
+        // QUICK ACTIONS
+        // ============================================
+        document.getElementById('quickAddMember').addEventListener('click', function() {
+            if (window.dutaLoader) {
+                window.dutaLoader.showSuccessToast('Redirecting to Control Panel...');
+            }
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 500);
+        });
+
+        document.getElementById('quickCreateFile').addEventListener('click', function() {
+            if (window.dutaLoader) {
+                window.dutaLoader.showSuccessToast('Redirecting to Control Panel...');
+            }
+            setTimeout(() => {
+                window.location.href = 'home.html';
+            }, 500);
+        });
+
+        document.getElementById('quickRefresh').addEventListener('click', function() {
+            refreshDashboard();
+        });
+
+        document.getElementById('floatingRefresh').addEventListener('click', function() {
+            refreshDashboard();
+        });
+
+        // ============================================
+        // AUTO-REFRESH EVERY 30 SECONDS
+        // ============================================
+        let autoRefreshInterval;
+        
+        function startAutoRefresh() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => {
+                console.log('🔄 Auto-refreshing dashboard...');
+                fetchAllData();
+            }, 30000); // Refresh every 30 seconds
+        }
+
+        // ============================================
+        // INITIALIZE DASHBOARD
+        // ============================================
+        async function initDashboard() {
+            await fetchAllData();
+            startAutoRefresh();
+            console.log('✅ Dashboard initialized with real-time statistics');
+            console.log('📊 Auto-refresh every 30 seconds');
+        }
+
+        initDashboard();
+    </script>
 </body>
 </html>
+
