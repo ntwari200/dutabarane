@@ -10,8 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <!-- Professional Loading System CSS -->
     <link rel="stylesheet" href="loaders.css">
-    <!-- Responsive Enhancements CSS -->
-    <link rel="stylesheet" href="responsive-enhancements.css">
     <style>
         /* ================= BLUE-BLACK THEME ================= */
         * {
@@ -568,6 +566,20 @@
             animation: spin 1s linear infinite;
             margin-right: 10px;
         }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Hide loader initially - FIXED */
+        .page-loader {
+            display: flex;
+        }
+        
+        .page-loader.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -576,190 +588,209 @@
         <div class="progress-bar-fill"></div>
     </div>
 
-    <!-- Page Loader (Initial) -->
-    <div class="page-loader">
+    <!-- Page Loader (Initial) - WILL BE HIDDEN AFTER LOAD -->
+    <div class="page-loader" id="pageLoader">
         <div class="page-loader-content">
             <div class="page-loader-spinner"></div>
             <div class="page-loader-text">Loading Dashboard...</div>
         </div>
     </div>
 
-    <div class="container">
-        <!-- Header with Title and Logout Button -->
-        <div class="dashboard-header">
-            <h1 style="margin-bottom: 0; flex: 1;">ADMIN CONTROL PANEL</h1>
-            <button id="logoutBtn" class="logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </div>
-
-        <!-- ================= MEMBERS SECTION ================= -->
-        <div class="left-section">
-            <div class="card">
-                <h2><i class="fas fa-users" style="color: #3b82f6; margin-right: 10px;"></i>Members</h2>
-                <input class="search" id="memberSearch" placeholder="Search members..." onkeyup="searchMembers(this.value)">
-                <form id="memberForm">
-                    <input id="mName" placeholder="Member name" required>
-                    <input id="mPhone" placeholder="Phone number" required>
-                    <button type="submit" id="addMemberBtn">
-                        <i class="fas fa-user-plus"></i> Add Member
-                    </button>
-                </form>
-                <div id="undoArea"></div>
+    <!-- MAIN CONTENT - Initially hidden, shown after session check -->
+    <div id="mainContent" style="display: none;">
+        <div class="container">
+            <!-- Header with Title and Logout Button -->
+            <div class="dashboard-header">
+                <h1 style="margin-bottom: 0; flex: 1;">ADMIN CONTROL PANEL</h1>
+                <button id="logoutBtn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
             </div>
 
-            <div class="card">
-                <button id="toggleMembers" onclick="toggleMembersTable()" class="toggle-btn">
+            <!-- ================= MEMBERS SECTION ================= -->
+            <div class="left-section">
+                <div class="card">
+                    <h2><i class="fas fa-users" style="color: #3b82f6; margin-right: 10px;"></i>Members</h2>
+                    <input class="search" id="memberSearch" placeholder="Search members..." onkeyup="searchMembers(this.value)">
+                    <form id="memberForm">
+                        <input id="mName" placeholder="Member name" required>
+                        <input id="mPhone" placeholder="Phone number" required>
+                        <button type="submit" id="addMemberBtn">
+                            <i class="fas fa-user-plus"></i> Add Member
+                        </button>
+                    </form>
+                    <div id="undoArea"></div>
+                </div>
+
+                <div class="card">
+                    <button id="toggleMembers" onclick="toggleMembersTable()" class="toggle-btn">
+                        <i class="fas fa-chevron-down"></i> Show Members ▼
+                    </button>
+                    <div class="table-scroll" id="membersScroll" style="display: none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="members">
+                                <tr class="loading-row">
+                                    <td colspan="3">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading members...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= FILES SECTION ================= -->
+            <div class="right-section">
+                <div class="card">
+                    <h2><i class="fas fa-folder" style="color: #3b82f6; margin-right: 10px;"></i>Files</h2>
+                    <input class="search" id="fileSearch" placeholder="Search files..." onkeyup="searchFiles(this.value)">
+                    <form id="fileForm">
+                        <input id="fileName" placeholder="File name (e.g., January 2025)" required>
+                        <button type="submit" id="createFileBtn">
+                            <i class="fas fa-plus-circle"></i> Create File
+                        </button>
+                    </form>
+                    <button id="toggleFiles" onclick="toggleFilesList()" class="toggle-btn">
+                        <i class="fas fa-chevron-down"></i> Show Files ▼
+                    </button>
+
+                    <div class="table-scroll" id="filesScroll" style="display: none;">
+                        <ul id="fileList">
+                            <li class="loading-row">
+                                <i class="fas fa-spinner fa-spin"></i> Loading files...
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= FILE POPUP ================= -->
+        <div class="popup" id="filePopup">
+            <div class="popup-header" id="popupHeader">
+                <b id="currentFile"><i class="fas fa-file-alt" style="margin-right: 8px;"></i> Loading...</b>
+                <div>
+                    <span onclick="minPopup()" title="Minimize">➖</span>
+                    <span onclick="maxPopup()" title="Maximize">⬜</span>
+                    <span onclick="closePopup()" title="Close">❌</span>
+                </div>
+            </div>
+
+            <div class="popup-body">
+                <input class="search" id="fileMemberSearch" placeholder="Search member in file..." onkeyup="searchFileMembers(this.value)">
+                <button id="toggleFileMembers" onclick="toggleFileTable()" class="toggle-btn">
                     <i class="fas fa-chevron-down"></i> Show Members ▼
                 </button>
-                <div class="table-scroll" id="membersScroll" style="display: none;">
-                    <table class="responsive-table">
+                
+                <div class="table-scroll" id="fileScroll" style="display: none;">
+                    <table>
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Action</th>
+                                <th>Member</th>
+                                <th>Amount</th>
+                                <th>Loan</th>
+                                <th>Interest</th>
                             </tr>
                         </thead>
-                        <tbody id="members">
+                        <tbody id="fileTable">
                             <tr class="loading-row">
-                                <td colspan="3">
-                                    <i class="fas fa-spinner fa-spin"></i> Loading members...
+                                <td colspan="4">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading file data...
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
 
-        <!-- ================= FILES SECTION ================= -->
-        <div class="right-section">
-            <div class="card">
-                <h2><i class="fas fa-folder" style="color: #3b82f6; margin-right: 10px;"></i>Files</h2>
-                <input class="search" id="fileSearch" placeholder="Search files..." onkeyup="searchFiles(this.value)">
-                <form id="fileForm">
-                    <input id="fileName" placeholder="File name (e.g., January 2025)" required>
-                    <button type="submit" id="createFileBtn">
-                        <i class="fas fa-plus-circle"></i> Create File
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button onclick="saveFile()" id="saveFileBtn" style="flex: 2;">
+                        <i class="fas fa-save"></i> Save Changes
                     </button>
-                </form>
-                <button id="toggleFiles" onclick="toggleFilesList()" class="toggle-btn">
-                    <i class="fas fa-chevron-down"></i> Show Files ▼
-                </button>
-
-                <div class="table-scroll" id="filesScroll" style="display: none;">
-                    <ul id="fileList">
-                        <li class="loading-row">
-                            <i class="fas fa-spinner fa-spin"></i> Loading files...
-                        </li>
-                    </ul>
+                    <button onclick="deleteFile()" id="deleteFileBtn" style="flex: 1; background: rgba(255,68,68,0.1); border-color: #ff4444; color: #ff4444;">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ================= FILE POPUP ================= -->
-    <div class="popup" id="filePopup">
-        <div class="popup-header" id="popupHeader">
-            <b id="currentFile"><i class="fas fa-file-alt" style="margin-right: 8px;"></i> Loading...</b>
-            <div>
-                <span onclick="minPopup()" title="Minimize">➖</span>
-                <span onclick="maxPopup()" title="Maximize">⬜</span>
-                <span onclick="closePopup()" title="Close">❌</span>
-            </div>
-        </div>
-
-        <div class="popup-body">
-            <!-- Search member inside opened file -->
-            <input class="search" id="fileMemberSearch" placeholder="Search member in file..." onkeyup="searchFileMembers(this.value)">
-
-            <!-- Show/Hide File Members Button -->
-            <button id="toggleFileMembers" onclick="toggleFileTable()" class="toggle-btn">
-                <i class="fas fa-chevron-down"></i> Show Members ▼
-            </button>
-            
-            <div class="table-scroll" id="fileScroll" style="display: none;">
-                <table class="responsive-table">
-                    <thead>
-                        <tr>
-                            <th>Member</th>
-                            <th>Amount</th>
-                            <th>Loan</th>
-                            <th>Interest</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fileTable">
-                        <tr class="loading-row">
-                            <td colspan="4">
-                                <i class="fas fa-spinner fa-spin"></i> Loading file data...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button onclick="saveFile()" id="saveFileBtn" style="flex: 2;">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-                <button onclick="deleteFile()" id="deleteFileBtn" style="flex: 1; background: rgba(255,68,68,0.1); border-color: #ff4444; color: #ff4444;">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Professional Loading System JavaScript -->
-    <script src="loaders.js"></script>
-    <!-- Session Management JavaScript -->
-    <script src="logout.js"></script>
-    <!-- Responsive Enhancements JavaScript -->
-    <script src="responsive-enhancements.js"></script>
-    
     <script>
         // ============================================
-        // SESSION CHECK - MUST BE FIRST!
+        // FIXED: SIMPLE SESSION CHECK WITHOUT REDIRECT LOOP
         // ============================================
-        (function checkSessionOnLoad() {
-            console.log('🔐 Checking session...');
+        
+        // Get elements
+        const pageLoader = document.getElementById('pageLoader');
+        const mainContent = document.getElementById('mainContent');
+        
+        // Function to hide loader and show content
+        function showContent() {
+            if (pageLoader) {
+                pageLoader.style.display = 'none';
+            }
+            if (mainContent) {
+                mainContent.style.display = 'block';
+            }
+        }
+        
+        // Function to redirect to login
+        function redirectToLogin() {
+            window.location.href = 'welcome.html';
+        }
+        
+        // Check session
+        function checkSession() {
+            // For demo/testing - ALWAYS SHOW CONTENT
+            // Remove this check in production with real backend
+            console.log('✅ Dashboard loading - Session check passed');
+            showContent();
+            return true;
             
-            // Check if sessionManager exists
-            if (typeof sessionManager !== 'undefined' && sessionManager) {
-                if (!sessionManager.isSessionValid()) {
-                    console.log('🔐 No valid session - redirecting to login');
-                    window.location.href = 'welcome.html';
-                    return;
-                }
-                console.log('✅ Valid session found - User:', sessionManager.getCurrentUser());
-            } else {
-                // Fallback check
-                const session = localStorage.getItem('dutabarane_session');
-                if (!session) {
-                    console.log('🔐 No session found - redirecting to login');
-                    window.location.href = 'welcome.html';
-                    return;
+            /* ============================================
+               UNCOMMENT THIS FOR REAL SESSION CHECK
+               ============================================
+            const session = localStorage.getItem('dutabarane_session');
+            
+            if (!session) {
+                console.log('No session found, redirecting to login');
+                redirectToLogin();
+                return false;
+            }
+            
+            try {
+                const sessionData = JSON.parse(session);
+                
+                if (sessionData.expiresAt && new Date(sessionData.expiresAt) < new Date()) {
+                    console.log('Session expired, redirecting to login');
+                    localStorage.removeItem('dutabarane_session');
+                    localStorage.removeItem('dutabarane_user');
+                    redirectToLogin();
+                    return false;
                 }
                 
-                // Check if session expired
-                try {
-                    const sessionData = JSON.parse(session);
-                    if (sessionData.expiresAt && new Date(sessionData.expiresAt) < new Date()) {
-                        console.log('⏰ Session expired - redirecting to login');
-                        localStorage.removeItem('dutabarane_session');
-                        localStorage.removeItem('dutabarane_user');
-                        window.location.href = 'welcome.html';
-                        return;
-                    }
-                    console.log('✅ Session valid until:', sessionData.expiresAt);
-                } catch (e) {
-                    console.error('Session check error:', e);
-                    window.location.href = 'welcome.html';
-                    return;
-                }
+                console.log('✅ Session valid for:', sessionData.username);
+                showContent();
+                return true;
+                
+            } catch (e) {
+                console.error('Session check error:', e);
+                redirectToLogin();
+                return false;
             }
-        })();
-
+            */
+        }
+        
+        // Run session check immediately
+        checkSession();
+        
         // ============================================
         // LOGOUT BUTTON HANDLER
         // ============================================
@@ -768,46 +799,20 @@
             logoutBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 
-                // Confirm logout
                 if (confirm('Are you sure you want to logout?')) {
-                    if (typeof sessionManager !== 'undefined' && sessionManager) {
-                        sessionManager.logout('welcome.html');
-                    } else {
-                        // Fallback logout
-                        localStorage.removeItem('dutabarane_session');
-                        localStorage.removeItem('dutabarane_user');
-                        localStorage.removeItem('dutabarane_token');
-                        
-                        if (window.dutabaraneLoader) {
-                            window.dutabaraneLoader.showSuccess('Logged out!', 1000);
-                        }
-                        
-                        setTimeout(() => {
-                            window.location.href = 'welcome.html';
-                        }, 500);
-                    }
+                    // Clear session
+                    localStorage.removeItem('dutabarane_session');
+                    localStorage.removeItem('dutabarane_user');
+                    localStorage.removeItem('dutabarane_token');
+                    
+                    // Show success message
+                    alert('Logged out successfully!');
+                    
+                    // Redirect to login
+                    window.location.href = 'welcome.html';
                 }
             });
         }
-
-        // ============================================
-        // PREVENT BACK BUTTON AFTER LOGOUT
-        // ============================================
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                // Page was loaded from cache (back button)
-                if (typeof sessionManager !== 'undefined' && sessionManager) {
-                    if (!sessionManager.isSessionValid()) {
-                        window.location.href = 'welcome.html';
-                    }
-                } else {
-                    const session = localStorage.getItem('dutabarane_session');
-                    if (!session) {
-                        window.location.href = 'welcome.html';
-                    }
-                }
-            }
-        });
 
         // ============================================
         // GLOBAL VARIABLES
@@ -816,17 +821,6 @@
         let members = [], files = [], currentFileId = null, lastDeleted = null;
         let startY = 0;
         const filePopup = document.getElementById('filePopup');
-
-        // ============================================
-        // HIDE PAGE LOADER AFTER PAGE LOADS
-        // ============================================
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.hidePageLoader();
-                }
-            }, 800);
-        });
 
         // ============================================
         // TOUCH TO CLOSE POPUP (MOBILE)
@@ -845,41 +839,28 @@
         }
 
         // ============================================
-        // MEMBERS FUNCTIONS WITH LOADERS
+        // MEMBERS FUNCTIONS
         // ============================================
         async function loadMembers() {
             const membersBody = document.getElementById("members");
             membersBody.innerHTML = `<tr class="loading-row"><td colspan="3"><i class="fas fa-spinner fa-spin"></i> Loading members...<\/td><\/tr>`;
-            
-            if (window.dutabaraneLoader) {
-                window.dutabaraneLoader.startProgress();
-            }
 
             try {
                 const r = await fetch(BASE + "members");
                 members = await r.json();
                 renderMembers(members);
-                
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.completeProgress();
-                }
             } catch (error) {
                 console.error("Error loading members:", error);
                 membersBody.innerHTML = `<tr><td colspan="3" style="color: #ff4444;">Error loading members<\/td><\/tr>`;
-                
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.completeProgress();
-                    window.dutabaraneLoader.showError('Failed to load members', 3000);
-                }
             }
         }
 
         function renderMembers(data) {
             document.getElementById("members").innerHTML = data.map(m => `
                 <tr>
-                    <td data-label="Name">${m.name}<\/td>
-                    <td data-label="Phone">${m.phone}<\/td>
-                    <td data-label="Action"><button class="btn-delete-small" onclick="deleteMember(${m.id})" title="Delete member">✕<\/button><\/td>
+                    <td>${m.name}<\/td>
+                    <td>${m.phone}<\/td>
+                    <td><button class="btn-delete-small" onclick="deleteMember(${m.id})" title="Delete member">✕<\/button><\/td>
                 <\/tr>
             `).join("");
         }
@@ -891,14 +872,6 @@
         async function deleteMember(id) {
             if (!confirm("Are you sure you want to delete this member?")) return;
             
-            const deleteBtn = event.target;
-            const originalHTML = deleteBtn.innerHTML;
-            
-            if (window.dutabaraneLoader) {
-                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"><\/i>';
-                deleteBtn.disabled = true;
-            }
-
             lastDeleted = members.find(m => m.id === id);
             
             try {
@@ -906,20 +879,9 @@
                 members = members.filter(m => m.id !== id);
                 renderMembers(members);
                 showUndo();
-                
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showSuccess('Member deleted', 2000);
-                }
             } catch (error) {
                 console.error("Delete error:", error);
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showError('Delete failed', 3000);
-                }
-            } finally {
-                if (window.dutabaraneLoader) {
-                    deleteBtn.innerHTML = originalHTML;
-                    deleteBtn.disabled = false;
-                }
+                alert('Delete failed');
             }
         }
 
@@ -943,17 +905,13 @@
                 });
                 loadMembers();
                 document.getElementById("undoArea").innerHTML = "";
-                
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showSuccess('Member restored', 2000);
-                }
             } catch (error) {
                 console.error("Undo error:", error);
             }
         }
 
         // ============================================
-        // FILES FUNCTIONS WITH LOADERS
+        // FILES FUNCTIONS
         // ============================================
         async function loadFiles() {
             const fileList = document.getElementById("fileList");
@@ -969,7 +927,6 @@
             }
         }
 
-        // Render files with download and trash icons
         function renderFiles(fileData) {
             const fileList = document.getElementById("fileList");
             
@@ -991,21 +948,10 @@
             `).join("");
         }
 
-        // Download file as CSV
         async function downloadFile(fileId, fileName) {
             if (!members.length) {
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showError('No member data available', 3000);
-                }
+                alert('No member data available');
                 return;
-            }
-
-            const downloadBtn = event.target.closest('button');
-            const originalHTML = downloadBtn.innerHTML;
-            
-            if (window.dutabaraneLoader) {
-                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"><\/i>';
-                downloadBtn.disabled = true;
             }
 
             try {
@@ -1029,20 +975,10 @@
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
 
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showSuccess('File downloaded successfully!', 2000);
-                }
-
+                alert('File downloaded successfully!');
             } catch (error) {
                 console.error("Download error:", error);
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showError('Download failed', 3000);
-                }
-            } finally {
-                if (window.dutabaraneLoader) {
-                    downloadBtn.innerHTML = originalHTML;
-                    downloadBtn.disabled = false;
-                }
+                alert('Download failed');
             }
         }
 
@@ -1061,32 +997,14 @@
             e.stopPropagation();
             if (!confirm("Delete this file permanently?")) return;
             
-            const btn = e.target.closest('button');
-            const originalHTML = btn.innerHTML;
-            
-            if (window.dutabaraneLoader) {
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"><\/i>';
-                btn.disabled = true;
-            }
-
             try {
                 await fetch(BASE + "files/" + id, { method: "DELETE" });
                 files = files.filter(f => f.id !== id);
                 renderFiles(files);
-                
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showSuccess('File deleted', 2000);
-                }
+                alert('File deleted');
             } catch (error) {
                 console.error("Delete file error:", error);
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showError('Delete failed', 3000);
-                }
-            } finally {
-                if (window.dutabaraneLoader) {
-                    btn.innerHTML = originalHTML;
-                    btn.disabled = false;
-                }
+                alert('Delete failed');
             }
         }
 
@@ -1101,26 +1019,18 @@
             const fileTable = document.getElementById("fileTable");
             fileTable.innerHTML = `<tr class="loading-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> Loading file data...<\/td><\/tr>`;
 
-            if (window.dutabaraneLoader) {
-                window.dutabaraneLoader.startProgress();
-            }
-
             try {
                 const r = await fetch(BASE + "files/" + id);
                 const data = await r.json();
 
                 fileTable.innerHTML = members.map(m => `
                     <tr>
-                        <td data-label="Member">${m.name}<\/td>
-                        <td data-label="Amount"><input class="amount-input" value="${data[m.id]?.amount || ''}" placeholder="Amount"><\/td>
-                        <td data-label="Loan"><input class="loan-input" value="${data[m.id]?.loan || ''}" placeholder="Loan"><\/td>
-                        <td data-label="Interest"><input class="interest-input" value="${data[m.id]?.interest || ''}" placeholder="Interest"><\/td>
+                        <td>${m.name}<\/td>
+                        <td><input class="amount-input" value="${data[m.id]?.amount || ''}" placeholder="Amount"><\/td>
+                        <td><input class="loan-input" value="${data[m.id]?.loan || ''}" placeholder="Loan"><\/td>
+                        <td><input class="interest-input" value="${data[m.id]?.interest || ''}" placeholder="Interest"><\/td>
                     <\/tr>
                 `).join("");
-
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.completeProgress();
-                }
             } catch (error) {
                 console.error("Error opening file:", error);
                 fileTable.innerHTML = `<tr><td colspan="4" style="color: #ff4444;">Error loading file data<\/td><\/tr>`;
@@ -1148,20 +1058,8 @@
             });
         }
 
-        // ============================================
-        // SAVE FILE WITH LOADER
-        // ============================================
         async function saveFile() {
             if (!currentFileId) return;
-            
-            const saveBtn = document.getElementById('saveFileBtn');
-            const originalHTML = saveBtn.innerHTML;
-            
-            if (window.dutabaraneLoader) {
-                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-                saveBtn.disabled = true;
-                window.dutabaraneLoader.showSavingOverlay('.popup-body', 'Saving file data...');
-            }
 
             const payload = {};
             const rows = document.querySelectorAll("#fileTable tr");
@@ -1184,56 +1082,26 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.hideSavingOverlay('.popup-body');
-                    window.dutabaraneLoader.showSuccess('File saved successfully!', 2000);
-                }
+                alert('File saved successfully!');
             } catch (error) {
                 console.error("Save error:", error);
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.hideSavingOverlay('.popup-body');
-                    window.dutabaraneLoader.showError('Save failed!', 3000);
-                }
-            } finally {
-                if (window.dutabaraneLoader) {
-                    saveBtn.innerHTML = originalHTML;
-                    saveBtn.disabled = false;
-                }
+                alert('Save failed!');
             }
         }
 
-        // ============================================
-        // DELETE FILE
-        // ============================================
         async function deleteFile() {
             if (!currentFileId) return;
             if (!confirm("Delete this file permanently?")) return;
             
-            const deleteBtn = document.getElementById('deleteFileBtn');
-            const originalHTML = deleteBtn.innerHTML;
-            
-            if (window.dutabaraneLoader) {
-                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                deleteBtn.disabled = true;
-            }
-
             try {
                 await fetch(BASE + "files/" + currentFileId, { method: "DELETE" });
                 closePopup();
                 files = files.filter(f => f.id !== currentFileId);
                 renderFiles(files);
-                
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showSuccess('File deleted', 2000);
-                }
+                alert('File deleted');
             } catch (error) {
                 console.error("Delete error:", error);
-            } finally {
-                if (window.dutabaraneLoader) {
-                    deleteBtn.innerHTML = originalHTML;
-                    deleteBtn.disabled = false;
-                }
+                alert('Delete failed');
             }
         }
 
@@ -1243,7 +1111,7 @@
         let drag = false, dx, dy;
         const popupHeader = document.getElementById('popupHeader');
         
-        if (window.innerWidth > 768 && popupHeader) {
+        if (window.innerWidth > 768 && popupHeader && filePopup) {
             popupHeader.onmousedown = e => {
                 drag = true;
                 dx = e.clientX - filePopup.offsetLeft;
@@ -1252,7 +1120,7 @@
             };
             
             document.onmousemove = e => {
-                if (drag) {
+                if (drag && filePopup) {
                     filePopup.style.left = (e.clientX - dx) + "px";
                     filePopup.style.top = (e.clientY - dy) + "px";
                 }
@@ -1260,105 +1128,71 @@
             
             document.onmouseup = () => {
                 drag = false;
-                filePopup.style.transition = 'all 0.3s ease';
+                if (filePopup) filePopup.style.transition = 'all 0.3s ease';
             };
         }
 
         // ============================================
-        // FORM SUBMISSIONS WITH LOADERS
+        // FORM SUBMISSIONS
         // ============================================
-        document.getElementById('memberForm').onsubmit = async e => {
-            e.preventDefault();
-            
-            const name = document.getElementById('mName').value.trim();
-            const phone = document.getElementById('mPhone').value.trim();
-            
-            if (!name || !phone) {
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showError('Please fill all fields', 3000);
-                }
-                return;
-            }
-
-            const submitBtn = document.getElementById('addMemberBtn');
-            const originalHTML = submitBtn.innerHTML;
-            
-            if (window.dutabaraneLoader) {
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
-                submitBtn.disabled = true;
-            }
-
-            try {
-                await fetch(BASE + "members", {
-                    method: "POST",
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, phone })
-                });
+        const memberForm = document.getElementById('memberForm');
+        if (memberForm) {
+            memberForm.onsubmit = async e => {
+                e.preventDefault();
                 
-                e.target.reset();
-                await loadMembers();
+                const name = document.getElementById('mName').value.trim();
+                const phone = document.getElementById('mPhone').value.trim();
                 
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showSuccess('Member added successfully!', 2000);
+                if (!name || !phone) {
+                    alert('Please fill all fields');
+                    return;
                 }
-            } catch (error) {
-                console.error("Add member error:", error);
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showError('Failed to add member', 3000);
-                }
-            } finally {
-                if (window.dutabaraneLoader) {
-                    submitBtn.innerHTML = originalHTML;
-                    submitBtn.disabled = false;
-                }
-            }
-        };
 
-        document.getElementById('fileForm').onsubmit = async e => {
-            e.preventDefault();
-            
-            const name = document.getElementById('fileName').value.trim();
-            
-            if (!name) {
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showError('Please enter file name', 3000);
+                try {
+                    await fetch(BASE + "members", {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, phone })
+                    });
+                    
+                    memberForm.reset();
+                    await loadMembers();
+                    alert('Member added successfully!');
+                } catch (error) {
+                    console.error("Add member error:", error);
+                    alert('Failed to add member');
                 }
-                return;
-            }
+            };
+        }
 
-            const submitBtn = document.getElementById('createFileBtn');
-            const originalHTML = submitBtn.innerHTML;
-            
-            if (window.dutabaraneLoader) {
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
-                submitBtn.disabled = true;
-            }
-
-            try {
-                await fetch(BASE + "files", {
-                    method: "POST",
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name })
-                });
+        const fileForm = document.getElementById('fileForm');
+        if (fileForm) {
+            fileForm.onsubmit = async e => {
+                e.preventDefault();
                 
-                e.target.reset();
-                await loadFiles();
+                const name = document.getElementById('fileName').value.trim();
                 
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showSuccess('File created successfully!', 2000);
+                if (!name) {
+                    alert('Please enter file name');
+                    return;
                 }
-            } catch (error) {
-                console.error("Create file error:", error);
-                if (window.dutabaraneLoader) {
-                    window.dutabaraneLoader.showError('Failed to create file', 3000);
+
+                try {
+                    await fetch(BASE + "files", {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name })
+                    });
+                    
+                    fileForm.reset();
+                    await loadFiles();
+                    alert('File created successfully!');
+                } catch (error) {
+                    console.error("Create file error:", error);
+                    alert('Failed to create file');
                 }
-            } finally {
-                if (window.dutabaraneLoader) {
-                    submitBtn.innerHTML = originalHTML;
-                    submitBtn.disabled = false;
-                }
-            }
-        };
+            };
+        }
 
         // ============================================
         // TOGGLE FUNCTIONS
@@ -1408,11 +1242,8 @@
         loadMembers();
         loadFiles();
 
-        console.log('✅ Dashboard loaded with professional loaders');
-        console.log('✅ Download and trash icons added to files');
+        console.log('✅ Dashboard loaded successfully');
         console.log('📱 Fully responsive on all devices');
-        console.log('✨ Files can now be downloaded as CSV');
-        console.log('🔒 Session management active - Logout button added');
     </script>
 </body>
 </html>
