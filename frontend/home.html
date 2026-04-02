@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Login - Internal System | Dutabarane</title>
+    <title>Admin Dashboard | Dutabarane</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -16,13 +16,10 @@
         body {
             font-family: 'Inter', sans-serif;
             background: #0b0f17;
+            color: white;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             position: relative;
             overflow-x: hidden;
-            padding: 15px;
         }
 
         body::before {
@@ -51,167 +48,319 @@
             z-index: -1;
         }
 
-        .container {
+        /* Navigation Bar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 10px;
-            position: relative;
-            z-index: 10;
-            animation: fadeInUp 0.8s ease-out;
+            background: rgba(5, 12, 24, 0.95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid #3b82f6;
+            padding: 15px 30px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .form-box {
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4a9eff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #b8d1ff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: white;
+        }
+
+        .nav-links a.active {
+            background: linear-gradient(145deg, #002244, #001433);
+            border: 1px solid #3b82f6;
+            color: white;
+        }
+
+        .logout-nav-btn {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid #ff4444;
+            color: #ff4444 !important;
+        }
+
+        .logout-nav-btn:hover {
+            background: #ff4444;
+            color: white !important;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 20px 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .left-section, .right-section {
+            flex: 1 1 40%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #4a9eff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .card {
             background: rgba(5, 12, 24, 0.85);
             backdrop-filter: blur(16px);
-            border-radius: 32px;
-            padding: 30px 25px;
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 150, 255, 0.2) inset;
             border: 1px solid rgba(30, 100, 200, 0.3);
+            border-radius: 24px;
+            padding: 25px;
+            transition: all 0.3s ease;
         }
 
-        @media (min-width: 768px) {
-            .form-box {
-                border-radius: 48px;
-                padding: 40px 35px;
-            }
+        .card:hover {
+            border-color: #3b82f6;
         }
 
-        .title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: white;
-            text-align: center;
-            margin-bottom: 35px;
-            text-shadow: 0 0 15px #0066ff99;
-        }
-
-        @media (min-width: 768px) {
-            .title {
-                font-size: 2rem;
-                margin-bottom: 45px;
-            }
-        }
-
-        .title u {
-            text-decoration-color: #3b82f6;
-            text-underline-offset: 8px;
-            text-decoration-thickness: 3px;
-        }
-
-        .input-field {
-            position: relative;
+        input, .search {
+            padding: 12px 15px;
+            margin: 8px 0;
             width: 100%;
-            margin-bottom: 5px;
-        }
-
-        .input-field label {
-            display: block;
-            color: #99bbee;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 8px;
-            padding-left: 5px;
-        }
-
-        .input-wrapper {
-            position: relative;
-            width: 100%;
-        }
-
-        .input-wrapper input {
-            width: 100%;
-            padding: 14px 50px 14px 15px;
-            font-size: 1rem;
-            color: white;
             background: rgba(10, 25, 45, 0.6);
             border: 2px solid rgba(59, 130, 246, 0.3);
-            border-radius: 16px;
-            outline: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
             transition: all 0.3s ease;
         }
 
-        .input-wrapper input:focus {
+        input:focus, .search:focus {
             border-color: #3b82f6;
-            background: rgba(15, 35, 60, 0.8);
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            outline: none;
         }
 
-        .input-wrapper input.error {
-            border-color: #ff4444;
-            animation: shake 0.3s ease-in-out;
-        }
-
-        .toggle-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #99bbee;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-            padding: 5px;
-        }
-
-        .toggle-icon:hover {
-            color: #3b82f6;
-        }
-
-        .login-btn {
+        button {
+            padding: 14px 20px;
+            margin: 10px 0;
+            width: 100%;
             background: linear-gradient(145deg, #002244, #001433);
             border: 2px solid #2a7fff;
-            border-radius: 50px;
+            border-radius: 12px;
             color: white;
-            font-weight: 700;
-            font-size: 1rem;
-            font-family: 'Space Grotesk', sans-serif;
-            padding: 14px 12px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.25s ease;
-            text-transform: uppercase;
-            margin-top: 15px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
-        .login-btn:hover {
+        button:hover {
             background: linear-gradient(145deg, #003366, #001f4d);
-            border-color: #4a9eff;
             transform: translateY(-2px);
         }
 
-        .login-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
+        .table-scroll {
+            overflow: auto;
+            max-height: 350px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 15px;
         }
 
-        #message {
-            margin-top: 20px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px;
+        }
+
+        th, td {
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 12px 10px;
             text-align: center;
-            font-size: 0.9rem;
-            color: #ff6b6b;
         }
 
-        .tornado-branding {
+        th {
+            background: linear-gradient(145deg, #002244, #001433);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .btn-delete-small {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            background: rgba(255, 68, 68, 0.1);
+            border: 2px solid #ff4444;
+            border-radius: 8px;
+            color: #ff4444;
+            cursor: pointer;
+        }
+
+        .btn-delete-small:hover {
+            background: #ff4444;
+            color: white;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            margin: 0;
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid #3b82f6;
+            border-radius: 8px;
+            color: #3b82f6;
+            cursor: pointer;
+        }
+
+        .action-btn.delete-btn {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .action-btn.download-btn {
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        #fileList {
+            list-style: none;
+            padding: 0;
+        }
+
+        #fileList li {
+            padding: 15px;
+            margin: 8px 0;
+            background: rgba(10, 25, 45, 0.6);
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .popup {
             position: fixed;
-            bottom: 15px;
-            right: 15px;
-            color: #6688aa;
-            font-size: 0.7rem;
-            background: rgba(0,0,0,0.3);
-            padding: 6px 12px;
-            border-radius: 30px;
-            backdrop-filter: blur(5px);
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            max-width: 95%;
+            background: rgba(5, 12, 24, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid #3b82f6;
+            border-radius: 24px;
+            display: none;
+            z-index: 1000;
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .popup.max {
+            width: 95%;
+            height: 95%;
+            top: 2.5%;
+        }
+
+        .popup-header {
+            background: linear-gradient(145deg, #002244, #001433);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 22px 22px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3b82f6;
+            cursor: move;
+        }
+
+        .popup-header span {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+
+        .popup-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .amount-input { border-color: #00c853; }
+        .loan-input { border-color: #ff9100; }
+        .interest-input { border-color: #2979ff; }
+
+        .loading-row td {
+            padding: 20px;
+            text-align: center;
+            color: #6688aa;
+        }
+
+        .undo-box {
+            background: rgba(0, 40, 80, 0.9);
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
 
         @keyframes backgroundPulse {
@@ -224,211 +373,303 @@
             100% { background-position: 100% 100%; }
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 120px 15px 20px;
+            }
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-links {
+                justify-content: center;
+            }
+            .popup {
+                top: 0;
+                left: 0;
+                transform: none;
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+            }
+            h1 { font-size: 1.8rem; }
+            h2 { font-size: 1.5rem; }
         }
 
-        @media (max-width: 480px) {
-            .input-wrapper input { font-size: 16px; }
-            .login-btn { min-height: 50px; }
+        .simple-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 12, 24, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .simple-loader.hidden {
+            display: none;
+        }
+
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="form-box">
-            <h2 class="title"><u>INTERNAL SYSTEM</u></h2>
-
-            <form id="loginForm">
-                <div class="input-field">
-                    <label for="username">
-                        <i class="fas fa-user" style="margin-right: 5px;"></i> Username
-                    </label>
-                    <div class="input-wrapper">
-                        <input type="text" id="username" placeholder="Enter your username" required autocomplete="off">
-                        <i class="fas fa-eye toggle-icon" id="toggleUsername" title="Show/Hide Username"></i>
-                    </div>
-                </div>
-
-                <div class="input-field">
-                    <label for="password">
-                        <i class="fas fa-lock" style="margin-right: 5px;"></i> Password
-                    </label>
-                    <div class="input-wrapper">
-                        <input type="password" id="password" placeholder="Enter your password" required autocomplete="off">
-                        <i class="fas fa-eye toggle-icon" id="togglePassword" title="Show/Hide Password"></i>
-                    </div>
-                </div>
-
-                <button class="login-btn" type="submit" id="loginButton">
-                    <i class="fas fa-sign-in-alt"></i>
-                    <span>Login</span>
-                </button>
-            </form>
-
-            <p id="message"></p>
+    <div class="simple-loader" id="pageLoader">
+        <div style="text-align: center;">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Loading Dashboard...</div>
         </div>
     </div>
 
-    <div class="tornado-branding">
-        <i class="fas fa-bolt"></i> Tornado Software • Secure Login
+    <div class="navbar">
+        <div class="logo">
+            <i class="fas fa-bolt"></i> Dutabarane
+        </div>
+        <div class="nav-links">
+            <a href="home.html" class="active">Dashboard</a>
+            <a href="index.html">Home</a>
+            <a href="#" id="logoutNavBtn" class="logout-nav-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="container" id="mainContent" style="display: none;">
+        <h1>ADMIN CONTROL PANEL</h1>
+
+        <div class="left-section">
+            <div class="card">
+                <h2><i class="fas fa-users" style="color: #3b82f6;"></i> Members</h2>
+                <input class="search" id="memberSearch" placeholder="Search members..." onkeyup="searchMembers(this.value)">
+                <form id="memberForm">
+                    <input id="mName" placeholder="Member name" required>
+                    <input id="mPhone" placeholder="Phone number" required>
+                    <button type="submit">Add Member</button>
+                </form>
+                <div id="undoArea"></div>
+                <div class="table-scroll" id="membersScroll">
+                    <table>
+                        <thead><tr><th>Name</th><th>Phone</th><th>Action</th></tr></thead>
+                        <tbody id="members"><tr class="loading-row"><td colspan="3">Loading members...<\/td><\/tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="card">
+                <h2><i class="fas fa-folder" style="color: #3b82f6;"></i> Files</h2>
+                <input class="search" id="fileSearch" placeholder="Search files..." onkeyup="searchFiles(this.value)">
+                <form id="fileForm">
+                    <input id="fileName" placeholder="File name" required>
+                    <button type="submit">Create File</button>
+                </form>
+                <div class="table-scroll" id="filesScroll">
+                    <ul id="fileList"><li class="loading-row">Loading files...<\/li></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup" id="filePopup">
+        <div class="popup-header" id="popupHeader">
+            <b id="currentFile">File</b>
+            <div><span onclick="minPopup()">➖</span><span onclick="maxPopup()">⬜</span><span onclick="closePopup()">❌</span></div>
+        </div>
+        <div class="popup-body">
+            <input class="search" id="fileMemberSearch" placeholder="Search member..." onkeyup="searchFileMembers(this.value)">
+            <div class="table-scroll" id="fileScroll">
+                <table>
+                    <thead><tr><th>Member</th><th>Amount</th><th>Loan</th><th>Interest</th></tr></thead>
+                    <tbody id="fileTable"><tr class="loading-row"><td colspan="4">Loading...<\/td><\/tr></tbody>
+                </table>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="saveFile()">Save</button>
+                <button onclick="deleteFile()" style="background:rgba(255,68,68,0.1);border-color:#ff4444;color:#ff4444;">Delete</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // ============================================
-        // CLEAR ANY EXISTING SESSION ON LOGIN PAGE
-        // ============================================
-        localStorage.removeItem('dutabarane_session');
-        localStorage.removeItem('dutabarane_user');
-        
-        console.log('🔐 Login page ready');
+        // Session check
+        const session = localStorage.getItem('dutabarane_session');
+        if (!session) {
+            window.location.href = 'welcome.html';
+        }
 
-        // ============================================
-        // ELEMENTS
-        // ============================================
-        const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
-        const toggleUsername = document.getElementById('toggleUsername');
-        const usernameInput = document.getElementById('username');
-        const loginForm = document.getElementById('loginForm');
-        const loginButton = document.getElementById('loginButton');
-        const messageEl = document.getElementById('message');
+        // Hide loader and show content
+        setTimeout(() => {
+            document.getElementById('pageLoader').classList.add('hidden');
+            document.getElementById('mainContent').style.display = 'flex';
+        }, 500);
 
-        // ============================================
-        // PASSWORD SHOW/HIDE TOGGLE
-        // ============================================
-        if (togglePassword && passwordInput) {
-            togglePassword.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
+        // Logout
+        document.getElementById('logoutNavBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Logout?')) {
+                localStorage.removeItem('dutabarane_session');
+                window.location.href = 'welcome.html';
+            }
+        });
+
+        const BASE = "/api/";
+        let members = [], files = [], currentFileId = null, lastDeleted = null;
+
+        async function loadMembers() {
+            try {
+                const r = await fetch(BASE + "members");
+                members = await r.json();
+                document.getElementById("members").innerHTML = members.map(m => `
+                    <tr><td>${m.name}<\/td><td>${m.phone}<\/td><td><button class="btn-delete-small" onclick="deleteMember(${m.id})">✕<\/button><\/td><\/tr>
+                `).join("");
+            } catch(e) { console.error(e); }
+        }
+
+        async function deleteMember(id) {
+            if (!confirm("Delete member?")) return;
+            lastDeleted = members.find(m => m.id === id);
+            await fetch(BASE + "members/" + id, { method: "DELETE" });
+            loadMembers();
+            document.getElementById("undoArea").innerHTML = `<div class="undo-box">Member deleted <button onclick="undoDelete()">UNDO</button></div>`;
+            setTimeout(() => document.getElementById("undoArea").innerHTML = "", 5000);
+        }
+
+        async function undoDelete() {
+            if (!lastDeleted) return;
+            await fetch(BASE + "members", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(lastDeleted) });
+            loadMembers();
+            document.getElementById("undoArea").innerHTML = "";
+        }
+
+        function searchMembers(v) {
+            const filtered = members.filter(m => m.name.toLowerCase().includes(v.toLowerCase()));
+            document.getElementById("members").innerHTML = filtered.map(m => `<tr><td>${m.name}<\/td><td>${m.phone}<\/td><td><button class="btn-delete-small" onclick="deleteMember(${m.id})">✕<\/button><\/td><\/tr>`).join("");
+        }
+
+        async function loadFiles() {
+            try {
+                const r = await fetch(BASE + "files");
+                files = await r.json();
+                document.getElementById("fileList").innerHTML = files.map(f => `
+                    <li>
+                        <div class="file-info" onclick="openFile(${f.id},'${f.name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-file-alt"></i> ${f.name}
+                        </div>
+                        <div class="file-actions">
+                            <button class="action-btn download-btn" onclick="downloadFile(${f.id}, '${f.name.replace(/'/g, "\\'")}')"><i class="fas fa-download"></i><\/button>
+                            <button class="action-btn delete-btn" onclick="deleteFileList(event, ${f.id})"><i class="fas fa-trash"></i><\/button>
+                        </div>
+                    <\/li>
+                `).join("");
+            } catch(e) { console.error(e); }
+        }
+
+        async function deleteFileList(e, id) {
+            e.stopPropagation();
+            if (!confirm("Delete file?")) return;
+            await fetch(BASE + "files/" + id, { method: "DELETE" });
+            loadFiles();
+        }
+
+        function searchFiles(v) {
+            const items = document.querySelectorAll("#fileList li");
+            items.forEach(li => {
+                li.style.display = li.innerText.toLowerCase().includes(v.toLowerCase()) ? "" : "none";
             });
         }
 
-        // ============================================
-        // USERNAME SHOW/HIDE TOGGLE
-        // ============================================
-        if (toggleUsername && usernameInput) {
-            toggleUsername.addEventListener('click', function() {
-                const type = usernameInput.getAttribute('type') === 'text' ? 'password' : 'text';
-                usernameInput.setAttribute('type', type);
-                this.classList.toggle('fa-eye');
-                this.classList.toggle('fa-eye-slash');
+        async function openFile(id, name) {
+            currentFileId = id;
+            document.getElementById("currentFile").innerHTML = name;
+            document.getElementById("filePopup").style.display = "block";
+            const r = await fetch(BASE + "files/" + id);
+            const data = await r.json();
+            document.getElementById("fileTable").innerHTML = members.map(m => `
+                <tr>
+                    <td>${m.name}<\/td>
+                    <td><input class="amount-input" value="${data[m.id]?.amount || ''}"><\/td>
+                    <td><input class="loan-input" value="${data[m.id]?.loan || ''}"><\/td>
+                    <td><input class="interest-input" value="${data[m.id]?.interest || ''}"><\/td>
+                <\/tr>
+            `).join("");
+        }
+
+        function closePopup() { document.getElementById("filePopup").style.display = "none"; }
+        function minPopup() { document.getElementById("filePopup").style.display = "none"; }
+        function maxPopup() { document.getElementById("filePopup").classList.toggle("max"); }
+        function searchFileMembers(v) {
+            v = v.toLowerCase();
+            document.querySelectorAll("#fileTable tr").forEach(row => {
+                row.style.display = row.children[0].innerText.toLowerCase().includes(v) ? "" : "none";
             });
         }
 
-        // ============================================
-        // REMOVE ERROR CLASS ON INPUT
-        // ============================================
-        if (usernameInput) {
-            usernameInput.addEventListener('input', function() {
-                this.classList.remove('error');
-                messageEl.textContent = '';
+        async function saveFile() {
+            const payload = {};
+            document.querySelectorAll("#fileTable tr").forEach((tr, i) => {
+                if (members[i]) payload[members[i].id] = {
+                    amount: tr.querySelectorAll("input")[0]?.value || '',
+                    loan: tr.querySelectorAll("input")[1]?.value || '',
+                    interest: tr.querySelectorAll("input")[2]?.value || ''
+                };
             });
-        }
-        
-        if (passwordInput) {
-            passwordInput.addEventListener('input', function() {
-                this.classList.remove('error');
-                messageEl.textContent = '';
-            });
+            await fetch(BASE + "files/" + currentFileId, { method: "PUT", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            alert("Saved!");
         }
 
-        // ============================================
-        // FORM SUBMISSION - REAL PASSWORD VALIDATION
-        // ============================================
-        if (loginForm) {
-            loginForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const username = usernameInput.value.trim();
-                const password = passwordInput.value;
-                
-                // Remove existing error classes
-                usernameInput.classList.remove('error');
-                passwordInput.classList.remove('error');
-                
-                // Validation
-                if (!username || !password) {
-                    messageEl.textContent = 'Please enter both username and password';
-                    if (!username) usernameInput.classList.add('error');
-                    if (!password) passwordInput.classList.add('error');
-                    return;
-                }
-
-                messageEl.textContent = '';
-
-                // Show loading state on button
-                const originalButtonText = loginButton.innerHTML;
-                loginButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
-                loginButton.disabled = true;
-
-                try {
-                    // ============================================
-                    // YOUR CORRECT LOGIN CREDENTIALS
-                    // Username: admin
-                    // Password: 1234
-                    // ============================================
-                    const VALID_USERNAME = 'admin';
-                    const VALID_PASSWORD = '1234';
-                    
-                    // Check credentials
-                    if (username === VALID_USERNAME && password === VALID_PASSWORD) {
-                        
-                        // ============================================
-                        // CREATE SESSION ON SUCCESSFUL LOGIN
-                        // ============================================
-                        const sessionData = {
-                            userId: 1,
-                            username: username,
-                            role: 'admin',
-                            loginTime: new Date().toISOString(),
-                            expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
-                        };
-                        
-                        localStorage.setItem('dutabarane_session', JSON.stringify(sessionData));
-                        localStorage.setItem('dutabarane_user', JSON.stringify({ id: 1, username: username }));
-                        
-                        console.log('✅ Login successful for:', username);
-                        console.log('🚀 Redirecting to dashboard.html...');
-                        
-                        messageEl.textContent = 'Login successful! Redirecting to dashboard...';
-                        messageEl.style.color = '#10b981';
-                        
-                        // Redirect to DASHBOARD.html (FIRST PAGE)
-                        setTimeout(() => {
-                            window.location.href = 'dashboard.html';
-                        }, 1000);
-                        
-                    } else {
-                        // WRONG PASSWORD - Access denied
-                        messageEl.textContent = 'Invalid username or password. Access denied!';
-                        messageEl.style.color = '#ff6b6b';
-                        usernameInput.classList.add('error');
-                        passwordInput.classList.add('error');
-                        
-                        console.log('❌ Login failed for:', username);
-                        console.log('❌ Wrong password entered');
-                    }
-                    
-                } catch (error) {
-                    console.error('Login error:', error);
-                    messageEl.textContent = 'Login failed. Please try again.';
-                    messageEl.style.color = '#ff6b6b';
-                    
-                } finally {
-                    loginButton.innerHTML = originalButtonText;
-                    loginButton.disabled = false;
-                }
-            });
+        async function deleteFile() {
+            if (!confirm("Delete file?")) return;
+            await fetch(BASE + "files/" + currentFileId, { method: "DELETE" });
+            closePopup();
+            loadFiles();
         }
 
-        console.log('✅ Login page ready');
-        console.log('🔐 Credentials: username = "admin", password = "1234"');
-        console.log('⚠️ Wrong password will be rejected!');
+        async function downloadFile(fileId, fileName) {
+            const r = await fetch(BASE + "files/" + fileId);
+            const fileData = await r.json();
+            let csv = "Member Name,Amount,Loan,Interest\n";
+            members.forEach(m => { const row = fileData[m.id] || {}; csv += `"${m.name}",${row.amount || ''},${row.loan || ''},${row.interest || ''}\n`; });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${fileName.replace(/\s/g, '_')}_export.csv`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        document.getElementById('memberForm').onsubmit = async e => {
+            e.preventDefault();
+            await fetch(BASE + "members", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: mName.value, phone: mPhone.value }) });
+            e.target.reset();
+            loadMembers();
+        };
+
+        document.getElementById('fileForm').onsubmit = async e => {
+            e.preventDefault();
+            await fetch(BASE + "files", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: fileName.value }) });
+            e.target.reset();
+            loadFiles();
+        };
+
+        loadMembers();
+        loadFiles();
     </script>
 </body>
 </html>
