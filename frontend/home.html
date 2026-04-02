@@ -84,6 +84,32 @@
             color: white;
         }
 
+        /* Logout button container */
+        .logout-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .logout-btn {
+            width: auto !important;
+            padding: 10px 24px !important;
+            background: rgba(255, 68, 68, 0.1) !important;
+            border: 2px solid #ff4444 !important;
+            color: #ff4444 !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: #ff4444 !important;
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -466,6 +492,10 @@
                 padding: 80px 15px 20px;
             }
 
+            .logout-container {
+                margin-bottom: 15px;
+            }
+
             .popup {
                 position: fixed;
                 top: 0;
@@ -526,6 +556,11 @@
             animation: spin 1s linear infinite;
             margin-right: 10px;
         }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -543,6 +578,13 @@
     </div>
 
     <div class="container">
+        <!-- Logout Button - NEW but structure preserved -->
+        <div class="logout-container">
+            <button id="logoutBtn" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
         <h1 style="flex-basis:100%">ADMIN CONTROL PANEL</h1>
 
         <!-- ================= MEMBERS SECTION ================= -->
@@ -565,7 +607,7 @@
                     <i class="fas fa-chevron-down"></i> Show Members ▼
                 </button>
                 <div class="table-scroll" id="membersScroll" style="display: none;">
-                    <table>
+                    </table>
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -577,8 +619,8 @@
                             <tr class="loading-row">
                                 <td colspan="3">
                                     <i class="fas fa-spinner fa-spin"></i> Loading members...
-                                </td>
-                            </tr>
+                                 </td>
+                             </tr>
                         </tbody>
                     </table>
                 </div>
@@ -645,8 +687,8 @@
                         <tr class="loading-row">
                             <td colspan="4">
                                 <i class="fas fa-spinner fa-spin"></i> Loading file data...
-                            </td>
-                        </tr>
+                             </td>
+                         </tr>
                     </tbody>
                 </table>
             </div>
@@ -666,6 +708,73 @@
     <script src="loaders.js"></script>
     
     <script>
+        // ============================================
+        // SESSION PROTECTION - CHECK IF USER IS LOGGED IN
+        // ============================================
+        (function checkSession() {
+            const session = localStorage.getItem('dutabarane_session');
+            
+            if (!session) {
+                console.log('🔐 No session found - Redirecting to login');
+                window.location.href = 'welcome.html';
+                return;
+            }
+            
+            try {
+                const sessionData = JSON.parse(session);
+                
+                // Check if session has expired
+                if (sessionData.expiresAt && new Date(sessionData.expiresAt) < new Date()) {
+                    console.log('⏰ Session expired - Redirecting to login');
+                    localStorage.removeItem('dutabarane_session');
+                    localStorage.removeItem('dutabarane_user');
+                    window.location.href = 'welcome.html';
+                    return;
+                }
+                
+                console.log('✅ Authenticated as:', sessionData.username);
+                
+            } catch (e) {
+                console.error('Session check error:', e);
+                window.location.href = 'welcome.html';
+            }
+        })();
+
+        // ============================================
+        // LOGOUT FUNCTIONALITY
+        // ============================================
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Are you sure you want to logout?')) {
+                    localStorage.removeItem('dutabarane_session');
+                    localStorage.removeItem('dutabarane_user');
+                    localStorage.removeItem('dutabarane_token');
+                    
+                    if (window.dutabaraneLoader) {
+                        window.dutabaraneLoader.showSuccess('Logged out successfully!', 1500);
+                    }
+                    
+                    setTimeout(() => {
+                        window.location.href = 'welcome.html';
+                    }, 500);
+                }
+            });
+        }
+
+        // ============================================
+        // PREVENT BACK BUTTON ACCESS AFTER LOGOUT
+        // ============================================
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                const session = localStorage.getItem('dutabarane_session');
+                if (!session) {
+                    window.location.href = 'welcome.html';
+                }
+            }
+        });
+
         // ============================================
         // GLOBAL VARIABLES
         // ============================================
@@ -706,7 +815,7 @@
         // ============================================
         async function loadMembers() {
             const membersBody = document.getElementById("members");
-            membersBody.innerHTML = `<tr class="loading-row"><td colspan="3"><i class="fas fa-spinner fa-spin"></i> Loading members...</td></tr>`;
+            membersBody.innerHTML = `<tr class="loading-row"><td colspan="3"><i class="fas fa-spinner fa-spin"></i> Loading members...<\/td><\/tr>`;
             
             if (window.dutabaraneLoader) {
                 window.dutabaraneLoader.startProgress();
@@ -722,7 +831,7 @@
                 }
             } catch (error) {
                 console.error("Error loading members:", error);
-                membersBody.innerHTML = `<tr><td colspan="3" style="color: #ff4444;">Error loading members</td></tr>`;
+                membersBody.innerHTML = `<tr><td colspan="3" style="color: #ff4444;">Error loading members<\/td><\/tr>`;
                 
                 if (window.dutabaraneLoader) {
                     window.dutabaraneLoader.completeProgress();
@@ -734,10 +843,10 @@
         function renderMembers(data) {
             document.getElementById("members").innerHTML = data.map(m => `
                 <tr>
-                    <td>${m.name}</td>
-                    <td>${m.phone}</td>
-                    <td><button class="btn-delete-small" onclick="deleteMember(${m.id})" title="Delete member">✕</button></td>
-                </tr>
+                    <td>${m.name}<\/td>
+                    <td>${m.phone}<\/td>
+                    <td><button class="btn-delete-small" onclick="deleteMember(${m.id})" title="Delete member">✕<\/button><\/td>
+                <\/tr>
             `).join("");
         }
 
@@ -752,7 +861,7 @@
             const originalHTML = deleteBtn.innerHTML;
             
             if (window.dutabaraneLoader) {
-                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"><\/i>';
                 deleteBtn.disabled = true;
             }
 
@@ -814,7 +923,7 @@
         // ============================================
         async function loadFiles() {
             const fileList = document.getElementById("fileList");
-            fileList.innerHTML = `<li class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading files...</li>`;
+            fileList.innerHTML = `<li class="loading-row"><i class="fas fa-spinner fa-spin"></i> Loading files...<\/li>`;
 
             try {
                 const r = await fetch(BASE + "files");
@@ -822,11 +931,11 @@
                 renderFiles(files);
             } catch (error) {
                 console.error("Error loading files:", error);
-                fileList.innerHTML = `<li style="color: #ff4444; text-align: center;">Error loading files</li>`;
+                fileList.innerHTML = `<li style="color: #ff4444; text-align: center;">Error loading files<\/li>`;
             }
         }
 
-        // NEW: Render files with download and trash icons
+        // Render files with download and trash icons
         function renderFiles(fileData) {
             const fileList = document.getElementById("fileList");
             
@@ -844,11 +953,11 @@
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
-                </li>
+                <\/li>
             `).join("");
         }
 
-        // NEW: Download file as CSV
+        // Download file as CSV
         async function downloadFile(fileId, fileName) {
             if (!members.length) {
                 if (window.dutabaraneLoader) {
@@ -861,16 +970,14 @@
             const originalHTML = downloadBtn.innerHTML;
             
             if (window.dutabaraneLoader) {
-                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"><\/i>';
                 downloadBtn.disabled = true;
             }
 
             try {
-                // Fetch file data
                 const r = await fetch(BASE + "files/" + fileId);
                 const fileData = await r.json();
 
-                // Create CSV content
                 let csvContent = "Member Name,Amount,Loan,Interest\n";
                 
                 members.forEach(m => {
@@ -878,7 +985,6 @@
                     csvContent += `"${m.name}",${row.amount || ''},${row.loan || ''},${row.interest || ''}\n`;
                 });
 
-                // Create download link
                 const blob = new Blob([csvContent], { type: 'text/csv' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -925,7 +1031,7 @@
             const originalHTML = btn.innerHTML;
             
             if (window.dutabaraneLoader) {
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"><\/i>';
                 btn.disabled = true;
             }
 
@@ -959,7 +1065,7 @@
             document.getElementById("filePopup").style.display = "block";
             
             const fileTable = document.getElementById("fileTable");
-            fileTable.innerHTML = `<tr class="loading-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> Loading file data...</td></tr>`;
+            fileTable.innerHTML = `<tr class="loading-row"><td colspan="4"><i class="fas fa-spinner fa-spin"></i> Loading file data...<\/td><\/tr>`;
 
             if (window.dutabaraneLoader) {
                 window.dutabaraneLoader.startProgress();
@@ -971,11 +1077,11 @@
 
                 fileTable.innerHTML = members.map(m => `
                     <tr>
-                        <td>${m.name}</td>
-                        <td><input class="amount-input" value="${data[m.id]?.amount || ''}" placeholder="Amount"></td>
-                        <td><input class="loan-input" value="${data[m.id]?.loan || ''}" placeholder="Loan"></td>
-                        <td><input class="interest-input" value="${data[m.id]?.interest || ''}" placeholder="Interest"></td>
-                    </tr>
+                        <td>${m.name}<\/td>
+                        <td><input class="amount-input" value="${data[m.id]?.amount || ''}" placeholder="Amount"><\/td>
+                        <td><input class="loan-input" value="${data[m.id]?.loan || ''}" placeholder="Loan"><\/td>
+                        <td><input class="interest-input" value="${data[m.id]?.interest || ''}" placeholder="Interest"><\/td>
+                    <\/tr>
                 `).join("");
 
                 if (window.dutabaraneLoader) {
@@ -983,7 +1089,7 @@
                 }
             } catch (error) {
                 console.error("Error opening file:", error);
-                fileTable.innerHTML = `<tr><td colspan="4" style="color: #ff4444;">Error loading file data</td></tr>`;
+                fileTable.innerHTML = `<tr><td colspan="4" style="color: #ff4444;">Error loading file data<\/td><\/tr>`;
             }
         }
 
@@ -1272,6 +1378,7 @@
         console.log('✅ Download and trash icons added to files');
         console.log('📱 Fully responsive on all devices');
         console.log('✨ Files can now be downloaded as CSV');
+        console.log('🔐 Session protection active - Logout button added');
     </script>
 </body>
 </html>
