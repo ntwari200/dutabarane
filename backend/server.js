@@ -3,7 +3,6 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import cors from "cors";
-import bcrypt from "bcrypt";
 import rateLimit from "express-rate-limit";
 import { pool, initDB } from "./database.js";
 
@@ -52,29 +51,46 @@ app.get("/", (req, res) => {
 });
 
 /* =======================
-   LOGIN (SECURE)
+   LOGIN (FIXED - Plain text comparison for now)
 ======================= */
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
+  
+  console.log("📝 Login attempt for:", username);
 
   try {
+    // Query user from database using plain text comparison
     const result = await pool.query(
-      "SELECT id, password FROM users WHERE username=$1",
-      [username]
+      "SELECT id, username FROM users WHERE username=$1 AND password=$2",
+      [username, password]
     );
 
-    if (result.rowCount === 0) {
-      return res.json({ success: false });
+    if (result.rowCount > 0) {
+      const user = result.rows[0];
+      console.log("✅ Login successful for:", username);
+      
+      res.json({
+        success: true,
+        user: {
+          id: user.id,
+          username: user.username
+        },
+        message: "Login successful"
+      });
+    } else {
+      console.log("❌ Login failed for:", username);
+      
+      res.json({
+        success: false,
+        message: "Invalid username or password"
+      });
     }
-
-    const user = result.rows[0];
-    const match = await bcrypt.compare(password, user.password);
-
-    res.json({ success: match });
-
   } catch (err) {
     console.error("LOGIN ERROR:", err);
-    res.status(500).json({ error: "Login failed" });
+    res.status(500).json({ 
+      success: false, 
+      error: "Server error. Please try again." 
+    });
   }
 });
 
@@ -103,7 +119,6 @@ app.post("/api/members", async (req, res) => {
 
     const files = await client.query("SELECT id FROM files");
 
-    // BULK INSERT (optimized)
     if (files.rows.length > 0) {
       const values = files.rows
         .map(f => `(${f.id}, ${memberId}, NULL, NULL, NULL)`)
@@ -161,7 +176,6 @@ app.get("/api/files", async (req, res) => {
     const result = await pool.query(
       "SELECT id, name FROM files ORDER BY id"
     );
-
     res.json(result.rows);
   } catch (err) {
     console.error("FETCH FILES ERROR:", err);
@@ -190,7 +204,6 @@ app.post("/api/files", async (req, res) => {
 
     const members = await client.query("SELECT id FROM members");
 
-    // BULK INSERT
     if (members.rows.length > 0) {
       const values = members.rows
         .map(m => `(${fileId}, ${m.id}, NULL, NULL, NULL)`)
