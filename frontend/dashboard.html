@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -469,6 +470,11 @@
     
     <script>
         // ============================================
+        // DEFINE BASE API URL
+        // ============================================
+        const BASE = "/api/";
+        
+        // ============================================
         // SESSION PROTECTION
         // ============================================
         (function checkSession() {
@@ -492,7 +498,10 @@
                 }
                 
                 console.log('✅ Authenticated as:', sessionData.username);
-                document.getElementById('usernameDisplay').textContent = sessionData.username;
+                const usernameDisplay = document.getElementById('usernameDisplay');
+                if (usernameDisplay) {
+                    usernameDisplay.textContent = sessionData.username;
+                }
                 
             } catch (e) {
                 console.error('Session check error:', e);
@@ -503,19 +512,22 @@
         // ============================================
         // LOGOUT FUNCTION
         // ============================================
-        document.getElementById('logoutBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('dutabarane_session');
-                localStorage.removeItem('dutabarane_user');
-                if (window.dutaLoader) {
-                    window.dutaLoader.showSuccessToast('Logged out successfully!');
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Are you sure you want to logout?')) {
+                    localStorage.removeItem('dutabarane_session');
+                    localStorage.removeItem('dutabarane_user');
+                    if (window.dutaLoader) {
+                        window.dutaLoader.showSuccessToast('Logged out successfully!');
+                    }
+                    setTimeout(() => {
+                        window.location.href = 'welcome.html';
+                    }, 500);
                 }
-                setTimeout(() => {
-                    window.location.href = 'welcome.html';
-                }, 500);
-            }
-        });
+            });
+        }
 
         // ============================================
         // HIDE PAGE LOADER
@@ -528,79 +540,70 @@
         });
 
         // ============================================
-        // FETCH DASHBOARD STATS - FAST SINGLE API CALL
+        // FETCH DASHBOARD STATS - USING EXISTING ENDPOINTS
         // ============================================
         async function fetchDashboardStats() {
+            console.log('📊 Fetching dashboard statistics...');
+            
             if (window.dutaLoader) {
                 window.dutaLoader.startProgress();
             }
             
             try {
-                // SINGLE API CALL instead of multiple!
-                const response = await fetch(BASE + "dashboard/stats");
-                const stats = await response.json();
-                
-                // Update UI with fetched stats
-                updateStats(stats.totalMembers, stats.totalAmount, stats.totalLoan, stats.totalInterest);
-                updateLastUpdated();
-                
-                if (window.dutaLoader) {
-                    window.dutaLoader.completeProgress();
-                }
-                
-                return stats;
-                
-            } catch (error) {
-                console.error("Error fetching dashboard stats:", error);
-                
-                // Fallback: try to calculate from individual calls
-                console.log("⚠️ Using fallback method...");
-                await fetchStatsFallback();
-                
-                if (window.dutaLoader) {
-                    window.dutaLoader.completeProgress();
-                    window.dutaLoader.showErrorToast('Using fallback data mode');
-                }
-            }
-        }
-
-        // ============================================
-        // FALLBACK METHOD (if dedicated endpoint doesn't exist)
-        // ============================================
-        async function fetchStatsFallback() {
-            try {
-                // Get members
+                // First, try to get members count
                 const membersRes = await fetch(BASE + "members");
+                if (!membersRes.ok) throw new Error('Members API failed');
                 const members = await membersRes.json();
                 const totalMembers = members.length;
                 
-                // Get files
+                // Get files list
                 const filesRes = await fetch(BASE + "files");
+                if (!filesRes.ok) throw new Error('Files API failed');
                 const files = await filesRes.json();
                 
                 let totalAmount = 0;
                 let totalLoan = 0;
                 let totalInterest = 0;
                 
-                // Fetch each file's data
+                // Calculate totals from all files
                 for (const file of files) {
                     const fileRes = await fetch(BASE + "files/" + file.id);
-                    const fileData = await fileRes.json();
-                    
-                    for (const memberId in fileData) {
-                        const data = fileData[memberId];
-                        totalAmount += parseFloat(data.amount) || 0;
-                        totalLoan += parseFloat(data.loan) || 0;
-                        totalInterest += parseFloat(data.interest) || 0;
+                    if (fileRes.ok) {
+                        const fileData = await fileRes.json();
+                        
+                        for (const memberId in fileData) {
+                            const data = fileData[memberId];
+                            totalAmount += parseFloat(data.amount) || 0;
+                            totalLoan += parseFloat(data.loan) || 0;
+                            totalInterest += parseFloat(data.interest) || 0;
+                        }
                     }
                 }
                 
+                // Update UI with fetched stats
                 updateStats(totalMembers, totalAmount, totalLoan, totalInterest);
                 updateLastUpdated();
                 
+                console.log('✅ Dashboard stats loaded:', { totalMembers, totalAmount, totalLoan, totalInterest });
+                
+                if (window.dutaLoader) {
+                    window.dutaLoader.completeProgress();
+                }
+                
+                return { totalMembers, totalAmount, totalLoan, totalInterest };
+                
             } catch (error) {
-                console.error("Fallback method also failed:", error);
+                console.error("Error fetching dashboard stats:", error);
+                
+                // Show error in UI
                 showErrorStats();
+                
+                if (window.dutaLoader) {
+                    window.dutaLoader.completeProgress();
+                    window.dutaLoader.showErrorToast('Failed to load dashboard data');
+                }
+                
+                return null;
             }
         }
 
@@ -634,10 +637,15 @@
         // SHOW ERROR STATE
         // ============================================
         function showErrorStats() {
-            document.getElementById('totalMembers').innerHTML = 'Error';
-            document.getElementById('totalAmount').innerHTML = 'Error';
-            document.getElementById('totalLoan').innerHTML = 'Error';
-            document.getElementById('totalInterest').innerHTML = 'Error';
+            const totalMembersEl = document.getElementById('totalMembers');
+            const totalAmountEl = document.getElementById('totalAmount');
+            const totalLoanEl = document.getElementById('totalLoan');
+            const totalInterestEl = document.getElementById('totalInterest');
+            
+            if (totalMembersEl) totalMembersEl.innerHTML = '⚠️ Error';
+            if (totalAmountEl) totalAmountEl.innerHTML = '⚠️ Error';
+            if (totalLoanEl) totalLoanEl.innerHTML = '⚠️ Error';
+            if (totalInterestEl) totalInterestEl.innerHTML = '⚠️ Error';
         }
 
         // ============================================
@@ -647,7 +655,10 @@
             const now = new Date();
             const timeString = now.toLocaleTimeString();
             const dateString = now.toLocaleDateString();
-            document.getElementById('lastUpdated').innerHTML = `Last updated: ${dateString} ${timeString}`;
+            const lastUpdatedEl = document.getElementById('lastUpdated');
+            if (lastUpdatedEl) {
+                lastUpdatedEl.innerHTML = `Last updated: ${dateString} ${timeString}`;
+            }
         }
 
         // ============================================
@@ -669,31 +680,43 @@
         // ============================================
         // QUICK ACTIONS
         // ============================================
-        document.getElementById('quickAddMember').addEventListener('click', function() {
-            if (window.dutaLoader) {
-                window.dutaLoader.showSuccessToast('Redirecting to Control Panel...');
-            }
-            setTimeout(() => {
-                window.location.href = 'home.html';
-            }, 500);
-        });
+        const quickAddMember = document.getElementById('quickAddMember');
+        if (quickAddMember) {
+            quickAddMember.addEventListener('click', function() {
+                if (window.dutaLoader) {
+                    window.dutaLoader.showSuccessToast('Redirecting to Control Panel...');
+                }
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 500);
+            });
+        }
 
-        document.getElementById('quickCreateFile').addEventListener('click', function() {
-            if (window.dutaLoader) {
-                window.dutaLoader.showSuccessToast('Redirecting to Control Panel...');
-            }
-            setTimeout(() => {
-                window.location.href = 'home.html';
-            }, 500);
-        });
+        const quickCreateFile = document.getElementById('quickCreateFile');
+        if (quickCreateFile) {
+            quickCreateFile.addEventListener('click', function() {
+                if (window.dutaLoader) {
+                    window.dutaLoader.showSuccessToast('Redirecting to Control Panel...');
+                }
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 500);
+            });
+        }
 
-        document.getElementById('quickRefresh').addEventListener('click', function() {
-            refreshDashboard();
-        });
+        const quickRefresh = document.getElementById('quickRefresh');
+        if (quickRefresh) {
+            quickRefresh.addEventListener('click', function() {
+                refreshDashboard();
+            });
+        }
 
-        document.getElementById('floatingRefresh').addEventListener('click', function() {
-            refreshDashboard();
-        });
+        const floatingRefresh = document.getElementById('floatingRefresh');
+        if (floatingRefresh) {
+            floatingRefresh.addEventListener('click', function() {
+                refreshDashboard();
+            });
+        }
 
         // ============================================
         // AUTO-REFRESH EVERY 30 SECONDS
@@ -712,12 +735,14 @@
         // INITIALIZE DASHBOARD
         // ============================================
         async function initDashboard() {
+            console.log('🚀 Initializing Dashboard...');
             await fetchDashboardStats();
             startAutoRefresh();
             console.log('✅ Dashboard initialized');
             console.log('📊 Auto-refresh every 30 seconds');
         }
 
+        // Start the dashboard
         initDashboard();
     </script>
 </body>
