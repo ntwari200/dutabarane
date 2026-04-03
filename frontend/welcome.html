@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -616,6 +617,7 @@
             // FIXED: FORM SUBMISSION - REAL VALIDATION
             // ONLY accepts admin / 1234
             // Redirects to dashboard.html
+            // NO FALSE ERROR MESSAGE!
             // ============================================
             if (loginForm) {
                 loginForm.addEventListener('submit', function(e) {
@@ -627,6 +629,9 @@
                     // Remove existing error classes
                     removeErrorClass(usernameInput);
                     removeErrorClass(passwordInput);
+                    
+                    // Clear any previous messages
+                    messageEl.textContent = '';
                     
                     // Validation - Check if fields are empty
                     if (!username || !password) {
@@ -641,9 +646,6 @@
                         if (!password) addErrorClass(passwordInput);
                         return;
                     }
-
-                    // Clear any previous messages
-                    messageEl.textContent = '';
 
                     // Show encryption animation
                     if (passwordEncrypt) {
@@ -695,6 +697,7 @@
                                 window.dutabaraneLoader.updateProgress(80);
                             }
                             
+                            // Show success message (NOT error!)
                             messageEl.textContent = 'Login successful! Redirecting to dashboard...';
                             messageEl.style.color = '#10b981';
                             
@@ -707,9 +710,7 @@
                             // Show green ellipse success animation
                             if (window.dutabaraneLoader) {
                                 window.dutabaraneLoader.showLoginSuccess(() => {
-                                    // ============================================
-                                    // REDIRECT TO DASHBOARD.HTML (NOT home.html)
-                                    // ============================================
+                                    // Redirect to DASHBOARD.HTML
                                     window.location.href = 'dashboard.html';
                                 });
                                 
@@ -730,7 +731,6 @@
                             // WRONG CREDENTIALS - ACCESS DENIED
                             // ============================================
                             console.log('❌ Login failed for username:', username);
-                            console.log('❌ Invalid credentials - Access denied');
                             
                             // Reset encryption indicator
                             if (passwordEncrypt) {
@@ -738,7 +738,7 @@
                                 passwordEncrypt.innerHTML = '<i class="fas fa-shield-alt"></i><span>AES-256 encrypted</span>';
                             }
                             
-                            // Show error message
+                            // Show error message (ONLY for wrong credentials)
                             messageEl.textContent = '❌ INVALID CREDENTIALS! Access Denied.';
                             messageEl.style.color = '#ff6b6b';
                             
