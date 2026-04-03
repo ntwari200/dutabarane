@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,7 @@
     <title>Dashboard | Dutabarane</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="loaders.css">
     <style>
         * {
             margin: 0;
@@ -20,7 +22,6 @@
             min-height: 100vh;
         }
 
-        /* Navigation Bar */
         .navbar {
             position: fixed;
             top: 0;
@@ -63,14 +64,8 @@
             transition: all 0.3s ease;
         }
 
-        .nav-links a:hover {
+        .nav-links a:hover, .nav-links a.active {
             background: rgba(59, 130, 246, 0.2);
-            color: white;
-        }
-
-        .nav-links a.active {
-            background: linear-gradient(145deg, #002244, #001433);
-            border: 1px solid #3b82f6;
             color: white;
         }
 
@@ -85,7 +80,6 @@
             color: white !important;
         }
 
-        /* Dashboard Container */
         .dashboard-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -241,10 +235,54 @@
                 font-size: 2rem;
             }
         }
+
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 12, 24, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .page-loader.hidden {
+            display: none;
+        }
+
+        .page-loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .stat-loading {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
+    <div class="page-loader" id="pageLoader">
+        <div style="text-align: center;">
+            <div class="page-loader-spinner"></div>
+            <div style="color: white;">Loading Dashboard...</div>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="logo">
             <i class="fas fa-bolt"></i> Dutabarane
@@ -303,37 +341,73 @@
         <i class="fas fa-sync-alt"></i>
     </button>
 
+    <script src="loaders.js"></script>
     <script>
         // ============================================
-        // SESSION CHECK
+        // SESSION CHECK - MATCHING WELCOME.HTML
         // ============================================
-        const username = localStorage.getItem("username");
-        const isLoggedIn = localStorage.getItem("loggedIn");
-
-        if (!isLoggedIn) {
-            window.location.href = "index.html";
+        
+        // Check for session from welcome.html
+        const session = localStorage.getItem('dutabarane_session');
+        
+        // If no session, redirect to login
+        if (!session) {
+            console.log('🔐 No session found - Redirecting to login');
+            window.location.href = 'welcome.html';
         }
-
-        document.getElementById("usernameDisplay").textContent = username || "Admin";
-
+        
+        // Get username from session
+        let username = "Admin";
+        try {
+            const sessionData = JSON.parse(session);
+            if (sessionData.expiresAt && new Date(sessionData.expiresAt) > new Date()) {
+                username = sessionData.username;
+                console.log('✅ Authenticated as:', username);
+            } else {
+                console.log('⏰ Session expired - Redirecting to login');
+                localStorage.removeItem('dutabarane_session');
+                window.location.href = 'welcome.html';
+            }
+        } catch(e) {
+            console.error('Session error:', e);
+        }
+        
+        // Display username
+        const usernameDisplay = document.getElementById("usernameDisplay");
+        if (usernameDisplay) {
+            usernameDisplay.textContent = username;
+        }
+        
+        // ============================================
+        // LOGOUT FUNCTION
+        // ============================================
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem("loggedIn");
-                localStorage.removeItem("username");
-                window.location.href = "index.html";
+                localStorage.removeItem('dutabarane_session');
+                localStorage.removeItem('dutabarane_user');
+                if (window.dutaLoader) {
+                    window.dutaLoader.showSuccessToast('Logged out successfully!');
+                }
+                setTimeout(() => {
+                    window.location.href = 'welcome.html';
+                }, 500);
             }
         }
-
-        document.getElementById('logoutBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            logout();
-        });
-
+        
+        // Setup logout button
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                logout();
+            });
+        }
+        
         // ============================================
         // API CONFIGURATION
         // ============================================
         const BASE = "/api/";
-
+        
         // ============================================
         // FETCH AND UPDATE DASHBOARD
         // ============================================
@@ -341,10 +415,10 @@
             console.log('🔄 Updating dashboard...');
             
             // Show loading
-            document.getElementById('totalMembers').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            document.getElementById('totalAmount').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            document.getElementById('totalLoan').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            document.getElementById('totalInterest').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            document.getElementById('totalMembers').innerHTML = '<span class="stat-loading"></span>';
+            document.getElementById('totalAmount').innerHTML = '<span class="stat-loading"></span>';
+            document.getElementById('totalLoan').innerHTML = '<span class="stat-loading"></span>';
+            document.getElementById('totalInterest').innerHTML = '<span class="stat-loading"></span>';
             
             try {
                 // Get members count
@@ -393,39 +467,64 @@
                 document.getElementById('totalInterest').innerHTML = 'Error';
             }
         }
-
+        
         // ============================================
         // REFRESH FUNCTION
         // ============================================
         async function refreshDashboard() {
             await updateDashboard();
-            alert('Dashboard refreshed!');
+            if (window.dutaLoader) {
+                window.dutaLoader.showSuccessToast('Dashboard refreshed!');
+            }
         }
-
+        
         // ============================================
         // QUICK ACTIONS
         // ============================================
-        document.getElementById('quickAddMember').addEventListener('click', function() {
-            window.location.href = 'home.html';
-        });
+        const quickAddMember = document.getElementById('quickAddMember');
+        if (quickAddMember) {
+            quickAddMember.addEventListener('click', function() {
+                window.location.href = 'home.html';
+            });
+        }
         
-        document.getElementById('quickCreateFile').addEventListener('click', function() {
-            window.location.href = 'home.html';
-        });
+        const quickCreateFile = document.getElementById('quickCreateFile');
+        if (quickCreateFile) {
+            quickCreateFile.addEventListener('click', function() {
+                window.location.href = 'home.html';
+            });
+        }
         
-        document.getElementById('quickRefresh').addEventListener('click', function() {
-            refreshDashboard();
-        });
+        const quickRefresh = document.getElementById('quickRefresh');
+        if (quickRefresh) {
+            quickRefresh.addEventListener('click', function() {
+                refreshDashboard();
+            });
+        }
         
-        document.getElementById('floatingRefresh').addEventListener('click', function() {
-            refreshDashboard();
-        });
-
+        const floatingRefresh = document.getElementById('floatingRefresh');
+        if (floatingRefresh) {
+            floatingRefresh.addEventListener('click', function() {
+                refreshDashboard();
+            });
+        }
+        
         // ============================================
-        // AUTO-REFRESH EVERY 30 SECONDS
+        // HIDE PAGE LOADER
+        // ============================================
+        function hidePageLoader() {
+            const loader = document.getElementById('pageLoader');
+            if (loader) {
+                loader.classList.add('hidden');
+            }
+        }
+        
+        // ============================================
+        // INITIALIZE
         // ============================================
         updateDashboard();
         setInterval(updateDashboard, 30000);
+        setTimeout(hidePageLoader, 800);
         
         console.log('✅ Dashboard ready - Auto-refresh every 30 seconds');
     </script>
