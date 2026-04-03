@@ -26,7 +26,6 @@
             overflow-x: hidden;
         }
 
-        /* Animated background */
         body::before {
             content: '';
             position: fixed;
@@ -247,61 +246,6 @@
             transform: translateY(-2px);
         }
 
-        /* Recent Activity */
-        .recent-activity {
-            background: rgba(5, 12, 24, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(30, 100, 200, 0.3);
-            border-radius: 24px;
-            padding: 25px;
-        }
-
-        .recent-activity h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: white;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-        .activity-list {
-            list-style: none;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .activity-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: background 0.3s ease;
-        }
-
-        .activity-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-        }
-
-        .activity-icon {
-            width: 36px;
-            height: 36px;
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #3b82f6;
-        }
-
-        .activity-text {
-            flex: 1;
-        }
-
-        .activity-time {
-            font-size: 0.75rem;
-            color: #6688aa;
-        }
-
         /* Refresh Button */
         .refresh-btn {
             position: fixed;
@@ -510,16 +454,6 @@
             </div>
         </div>
 
-        <!-- Recent Activity -->
-        <div class="recent-activity">
-            <h2><i class="fas fa-history"></i> Recent Activity</h2>
-            <div class="activity-list" id="activityList">
-                <div style="text-align: center; padding: 20px; color: #6688aa;">
-                    <i class="fas fa-spinner fa-spin"></i> Loading activity...
-                </div>
-            </div>
-        </div>
-
         <div class="last-updated" id="lastUpdated">
             Last updated: --:--:--
         </div>
@@ -584,14 +518,6 @@
         });
 
         // ============================================
-        // GLOBAL VARIABLES
-        // ============================================
-        const BASE = "/api/";
-        let members = [];
-        let files = [];
-        let allFileData = {};
-
-        // ============================================
         // HIDE PAGE LOADER
         // ============================================
         window.addEventListener('load', function() {
@@ -602,34 +528,65 @@
         });
 
         // ============================================
-        // FETCH ALL DATA WITH SPINNER
+        // FETCH DASHBOARD STATS - FAST SINGLE API CALL
         // ============================================
-        async function fetchAllData() {
+        async function fetchDashboardStats() {
             if (window.dutaLoader) {
                 window.dutaLoader.startProgress();
             }
             
             try {
-                // Fetch members
+                // SINGLE API CALL instead of multiple!
+                const response = await fetch(BASE + "dashboard/stats");
+                const stats = await response.json();
+                
+                // Update UI with fetched stats
+                updateStats(stats.totalMembers, stats.totalAmount, stats.totalLoan, stats.totalInterest);
+                updateLastUpdated();
+                
+                if (window.dutaLoader) {
+                    window.dutaLoader.completeProgress();
+                }
+                
+                return stats;
+                
+            } catch (error) {
+                console.error("Error fetching dashboard stats:", error);
+                
+                // Fallback: try to calculate from individual calls
+                console.log("⚠️ Using fallback method...");
+                await fetchStatsFallback();
+                
+                if (window.dutaLoader) {
+                    window.dutaLoader.completeProgress();
+                    window.dutaLoader.showErrorToast('Using fallback data mode');
+                }
+            }
+        }
+
+        // ============================================
+        // FALLBACK METHOD (if dedicated endpoint doesn't exist)
+        // ============================================
+        async function fetchStatsFallback() {
+            try {
+                // Get members
                 const membersRes = await fetch(BASE + "members");
-                members = await membersRes.json();
+                const members = await membersRes.json();
+                const totalMembers = members.length;
                 
-                // Fetch files
+                // Get files
                 const filesRes = await fetch(BASE + "files");
-                files = await filesRes.json();
+                const files = await filesRes.json();
                 
-                // Fetch data for each file
-                allFileData = {};
                 let totalAmount = 0;
                 let totalLoan = 0;
                 let totalInterest = 0;
                 
+                // Fetch each file's data
                 for (const file of files) {
                     const fileRes = await fetch(BASE + "files/" + file.id);
                     const fileData = await fileRes.json();
-                    allFileData[file.id] = fileData;
                     
-                    // Calculate totals
                     for (const memberId in fileData) {
                         const data = fileData[memberId];
                         totalAmount += parseFloat(data.amount) || 0;
@@ -638,24 +595,12 @@
                     }
                 }
                 
-                // Update UI
-                updateStats(members.length, totalAmount, totalLoan, totalInterest);
-                updateActivityLog();
+                updateStats(totalMembers, totalAmount, totalLoan, totalInterest);
                 updateLastUpdated();
                 
-                if (window.dutaLoader) {
-                    window.dutaLoader.completeProgress();
-                }
-                
-                return { members, files, totalAmount, totalLoan, totalInterest };
-                
             } catch (error) {
-                console.error("Error fetching data:", error);
-                if (window.dutaLoader) {
-                    window.dutaLoader.completeProgress();
-                    window.dutaLoader.showErrorToast('Failed to load dashboard data');
-                }
-                return null;
+                console.error("Fallback method also failed:", error);
+                showErrorStats();
             }
         }
 
@@ -686,54 +631,13 @@
         }
 
         // ============================================
-        // UPDATE ACTIVITY LOG
+        // SHOW ERROR STATE
         // ============================================
-        function updateActivityLog() {
-            const activityList = document.getElementById('activityList');
-            const activities = [];
-            
-            // Add member activities
-            if (members && members.length > 0) {
-                const recentMembers = [...members].reverse().slice(0, 5);
-                recentMembers.forEach(m => {
-                    activities.push({
-                        type: 'member',
-                        text: `New member added: ${m.name}`,
-                        time: 'Just now',
-                        icon: 'fa-user-plus'
-                    });
-                });
-            }
-            
-            // Add file activities
-            if (files && files.length > 0) {
-                const recentFiles = [...files].reverse().slice(0, 5);
-                recentFiles.forEach(f => {
-                    activities.push({
-                        type: 'file',
-                        text: `File created: ${f.name}`,
-                        time: 'Just now',
-                        icon: 'fa-file-alt'
-                    });
-                });
-            }
-            
-            if (activities.length === 0) {
-                activityList.innerHTML = '<div style="text-align: center; padding: 20px; color: #6688aa;">No recent activity</div>';
-                return;
-            }
-            
-            activityList.innerHTML = activities.map(a => `
-                <div class="activity-item">
-                    <div class="activity-icon">
-                        <i class="fas ${a.icon}"></i>
-                    </div>
-                    <div class="activity-text">
-                        <div>${a.text}</div>
-                    </div>
-                    <div class="activity-time">${a.time}</div>
-                </div>
-            `).join('');
+        function showErrorStats() {
+            document.getElementById('totalMembers').innerHTML = 'Error';
+            document.getElementById('totalAmount').innerHTML = 'Error';
+            document.getElementById('totalLoan').innerHTML = 'Error';
+            document.getElementById('totalInterest').innerHTML = 'Error';
         }
 
         // ============================================
@@ -747,21 +651,18 @@
         }
 
         // ============================================
-        // REFRESH DASHBOARD WITH SPINNER
+        // REFRESH DASHBOARD
         // ============================================
         async function refreshDashboard() {
             const refreshBtn = document.getElementById('floatingRefresh');
             
             if (window.dutaLoader && refreshBtn) {
                 const spinner = window.dutaLoader.showButtonSpinner(refreshBtn, '');
-                await fetchAllData();
+                await fetchDashboardStats();
                 spinner.stop();
-            } else {
-                await fetchAllData();
-            }
-            
-            if (window.dutaLoader) {
                 window.dutaLoader.showSuccessToast('Dashboard refreshed!');
+            } else {
+                await fetchDashboardStats();
             }
         }
 
@@ -803,17 +704,17 @@
             if (autoRefreshInterval) clearInterval(autoRefreshInterval);
             autoRefreshInterval = setInterval(() => {
                 console.log('🔄 Auto-refreshing dashboard...');
-                fetchAllData();
-            }, 30000); // Refresh every 30 seconds
+                fetchDashboardStats();
+            }, 30000);
         }
 
         // ============================================
         // INITIALIZE DASHBOARD
         // ============================================
         async function initDashboard() {
-            await fetchAllData();
+            await fetchDashboardStats();
             startAutoRefresh();
-            console.log('✅ Dashboard initialized with real-time statistics');
+            console.log('✅ Dashboard initialized');
             console.log('📊 Auto-refresh every 30 seconds');
         }
 
@@ -821,4 +722,3 @@
     </script>
 </body>
 </html>
-
