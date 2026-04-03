@@ -2,10 +2,21 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
+import cors from "cors";
+import bcrypt from "bcrypt";
+import rateLimit from "express-rate-limit";
 import { pool, initDB } from "./database.js";
 
 dotenv.config();
 const app = express();
+
+/* =======================
+   ENV CHECK
+======================= */
+if (!process.env.DATABASE_URL) {
+  console.error("❌ DATABASE_URL missing");
+  process.exit(1);
+}
 
 /* =======================
    INITIALIZE DATABASE
@@ -21,7 +32,14 @@ try {
 /* =======================
    MIDDLEWARE
 ======================= */
+app.use(cors());
 app.use(express.json());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100
+});
+app.use(limiter);
 
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, "../frontend")));
@@ -34,18 +52,26 @@ app.get("/", (req, res) => {
 });
 
 /* =======================
-   LOGIN
+   LOGIN (SECURE)
 ======================= */
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
     const result = await pool.query(
-      "SELECT id FROM users WHERE username=$1 AND password=$2",
-      [username, password]
+      "SELECT id, password FROM users WHERE username=$1",
+      [username]
     );
 
-    res.json({ success: result.rowCount > 0 });
+    if (result.rowCount === 0) {
+      return res.json({ success: false });
+    }
+
+    const user = result.rows[0];
+    const match = await bcrypt.compare(password, user.password);
+
+    res.json({ success: match });
+
   } catch (err) {
     console.error("LOGIN ERROR:", err);
     res.status(500).json({ error: "Login failed" });
@@ -77,12 +103,16 @@ app.post("/api/members", async (req, res) => {
 
     const files = await client.query("SELECT id FROM files");
 
-    for (const file of files.rows) {
-      await client.query(
-        `INSERT INTO file_rows (file_id, member_id, amount, loan, interest)
-         VALUES ($1,$2,NULL,NULL,NULL)`,
-        [file.id, memberId]
-      );
+    // BULK INSERT (optimized)
+    if (files.rows.length > 0) {
+      const values = files.rows
+        .map(f => `(${f.id}, ${memberId}, NULL, NULL, NULL)`)
+        .join(",");
+
+      await client.query(`
+        INSERT INTO file_rows (file_id, member_id, amount, loan, interest)
+        VALUES ${values}
+      `);
     }
 
     await client.query("COMMIT");
@@ -132,12 +162,7 @@ app.get("/api/files", async (req, res) => {
       "SELECT id, name FROM files ORDER BY id"
     );
 
-    res.json(
-      result.rows.map(f => ({
-        id: f.id,
-        name: f.name
-      }))
-    );
+    res.json(result.rows);
   } catch (err) {
     console.error("FETCH FILES ERROR:", err);
     res.status(500).json({ error: "Fetch failed" });
@@ -165,12 +190,16 @@ app.post("/api/files", async (req, res) => {
 
     const members = await client.query("SELECT id FROM members");
 
-    for (const m of members.rows) {
-      await client.query(
-        `INSERT INTO file_rows (file_id, member_id, amount, loan, interest)
-         VALUES ($1,$2,NULL,NULL,NULL)`,
-        [fileId, m.id]
-      );
+    // BULK INSERT
+    if (members.rows.length > 0) {
+      const values = members.rows
+        .map(m => `(${fileId}, ${m.id}, NULL, NULL, NULL)`)
+        .join(",");
+
+      await client.query(`
+        INSERT INTO file_rows (file_id, member_id, amount, loan, interest)
+        VALUES ${values}
+      `);
     }
 
     await client.query("COMMIT");
@@ -263,6 +292,46 @@ app.delete("/api/files/:id", async (req, res) => {
     console.error("DELETE FILE ERROR:", err);
     res.status(500).json({ error: "Delete failed" });
   }
+});
+
+/* =======================
+   DASHBOARD STATISTICS
+======================= */
+app.get("/api/dashboard/stats", async (req, res) => {
+  try {
+    const [membersResult, fileRowsResult] = await Promise.all([
+      pool.query("SELECT COUNT(*) as total FROM members"),
+      pool.query(`
+        SELECT 
+          COALESCE(SUM(amount::NUMERIC), 0) as total_amount,
+          COALESCE(SUM(loan::NUMERIC), 0) as total_loan,
+          COALESCE(SUM(interest::NUMERIC), 0) as total_interest
+        FROM file_rows
+      `)
+    ]);
+
+    const stats = {
+      totalMembers: parseInt(membersResult.rows[0].total) || 0,
+      totalAmount: parseFloat(fileRowsResult.rows[0].total_amount) || 0,
+      totalLoan: parseFloat(fileRowsResult.rows[0].total_loan) || 0,
+      totalInterest: parseFloat(fileRowsResult.rows[0].total_interest) || 0
+    };
+
+    console.log("📊 Dashboard stats sent:", stats);
+    res.json(stats);
+
+  } catch (err) {
+    console.error("DASHBOARD STATS ERROR:", err);
+    res.status(500).json({ error: "Failed to fetch statistics" });
+  }
+});
+
+/* =======================
+   GLOBAL ERROR HANDLER
+======================= */
+app.use((err, req, res, next) => {
+  console.error("GLOBAL ERROR:", err);
+  res.status(500).json({ error: "Something went wrong" });
 });
 
 /* =======================
