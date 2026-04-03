@@ -1,16 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Dashboard | Dutabarane</title>
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-    <!-- Professional Loading System CSS -->
-    <link rel="stylesheet" href="loaders.css">
     <style>
         * {
             margin: 0;
@@ -23,37 +18,6 @@
             background: #0b0f17;
             color: white;
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 50%, rgba(0, 102, 255, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(74, 158, 255, 0.1) 0%, transparent 50%);
-            animation: backgroundPulse 8s ease-in-out infinite;
-            z-index: -2;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(2px 2px at 5% 10%, #3b82f6, transparent),
-                radial-gradient(2px 2px at 15% 70%, #4a9eff, transparent),
-                radial-gradient(3px 3px at 25% 40%, #2a7fff, transparent),
-                radial-gradient(2px 2px at 45% 80%, #0066ff, transparent),
-                radial-gradient(3px 3px at 65% 20%, #7fabff, transparent);
-            background-size: 200% 200%;
-            opacity: 0.2;
-            animation: floatParticles 25s linear infinite;
-            pointer-events: none;
-            z-index: -1;
         }
 
         /* Navigation Bar */
@@ -126,11 +90,8 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 100px 20px 40px;
-            position: relative;
-            z-index: 1;
         }
 
-        /* Welcome Section */
         .welcome-section {
             text-align: center;
             margin-bottom: 40px;
@@ -145,12 +106,6 @@
             margin-bottom: 10px;
         }
 
-        .welcome-section p {
-            color: #99bbee;
-            font-size: 1.1rem;
-        }
-
-        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -164,8 +119,8 @@
             border: 1px solid rgba(30, 100, 200, 0.3);
             border-radius: 24px;
             padding: 25px;
-            transition: all 0.3s ease;
             text-align: center;
+            transition: all 0.3s ease;
         }
 
         .stat-card:hover {
@@ -194,17 +149,6 @@
             letter-spacing: 1px;
         }
 
-        .stat-loading {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid rgba(59, 130, 246, 0.2);
-            border-top: 3px solid #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        /* Quick Actions */
         .quick-actions {
             background: rgba(5, 12, 24, 0.85);
             backdrop-filter: blur(16px);
@@ -218,7 +162,6 @@
             text-align: center;
             margin-bottom: 20px;
             color: white;
-            font-family: 'Space Grotesk', sans-serif;
         }
 
         .action-buttons {
@@ -247,7 +190,6 @@
             transform: translateY(-2px);
         }
 
-        /* Refresh Button */
         .refresh-btn {
             position: fixed;
             bottom: 30px;
@@ -262,16 +204,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
             z-index: 100;
         }
 
         .refresh-btn:hover {
             transform: rotate(180deg);
-            background: #003366;
         }
 
-        /* Last Updated */
         .last-updated {
             text-align: center;
             margin-top: 20px;
@@ -282,16 +221,6 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-
-        @keyframes backgroundPulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.7; }
-        }
-
-        @keyframes floatParticles {
-            0% { background-position: 0 0; }
-            100% { background-position: 100% 100%; }
         }
 
         @media (max-width: 768px) {
@@ -312,69 +241,9 @@
                 font-size: 2rem;
             }
         }
-
-        /* Page Loader */
-        .page-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(5, 12, 24, 0.95);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .page-loader.hidden {
-            display: none;
-        }
-
-        .page-loader-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(59, 130, 246, 0.2);
-            border-top: 4px solid #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        /* Progress Bar */
-        .progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: transparent;
-            z-index: 10000;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #3b82f6, #7fabff);
-            transition: width 0.3s ease;
-        }
     </style>
 </head>
 <body>
-    <!-- Progress Bar -->
-    <div class="progress-bar">
-        <div class="progress-bar-fill"></div>
-    </div>
-
-    <!-- Page Loader -->
-    <div class="page-loader" id="pageLoader">
-        <div style="text-align: center;">
-            <div class="page-loader-spinner"></div>
-            <div style="color: white;">Loading Dashboard...</div>
-        </div>
-    </div>
-
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="logo">
@@ -390,175 +259,101 @@
     </nav>
 
     <div class="dashboard-container">
-        <!-- Welcome Section -->
         <div class="welcome-section">
             <h1>Welcome, <span id="usernameDisplay">Admin</span>!</h1>
             <p>Here's an overview of your cooperative's performance</p>
         </div>
 
-        <!-- Statistics Cards -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-value" id="totalMembers">
-                    <span class="stat-loading"></span>
-                </div>
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-value" id="totalMembers">--</div>
                 <div class="stat-label">Total Members</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <div class="stat-value" id="totalAmount">
-                    <span class="stat-loading"></span>
-                </div>
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-value" id="totalAmount">--</div>
                 <div class="stat-label">Total Amount (RWF)</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-hand-holding-usd"></i>
-                </div>
-                <div class="stat-value" id="totalLoan">
-                    <span class="stat-loading"></span>
-                </div>
+                <div class="stat-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                <div class="stat-value" id="totalLoan">--</div>
                 <div class="stat-label">Total Loan (RWF)</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-percent"></i>
-                </div>
-                <div class="stat-value" id="totalInterest">
-                    <span class="stat-loading"></span>
-                </div>
+                <div class="stat-icon"><i class="fas fa-percent"></i></div>
+                <div class="stat-value" id="totalInterest">--</div>
                 <div class="stat-label">Total Interest (RWF)</div>
             </div>
         </div>
 
-        <!-- Quick Actions -->
         <div class="quick-actions">
             <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
             <div class="action-buttons">
-                <button class="action-btn" id="quickAddMember">
-                    <i class="fas fa-user-plus"></i> Add Member
-                </button>
-                <button class="action-btn" id="quickCreateFile">
-                    <i class="fas fa-folder-plus"></i> Create File
-                </button>
-                <button class="action-btn" id="quickRefresh">
-                    <i class="fas fa-sync-alt"></i> Refresh Data
-                </button>
+                <button class="action-btn" id="quickAddMember"><i class="fas fa-user-plus"></i> Add Member</button>
+                <button class="action-btn" id="quickCreateFile"><i class="fas fa-folder-plus"></i> Create File</button>
+                <button class="action-btn" id="quickRefresh"><i class="fas fa-sync-alt"></i> Refresh Data</button>
             </div>
         </div>
 
-        <div class="last-updated" id="lastUpdated">
-            Last updated: --:--:--
-        </div>
+        <div class="last-updated" id="lastUpdated">Last updated: --:--:--</div>
     </div>
 
-    <!-- Floating Refresh Button -->
     <button class="refresh-btn" id="floatingRefresh" title="Refresh Data">
         <i class="fas fa-sync-alt"></i>
     </button>
 
-    <!-- Loaders -->
-    <script src="loaders.js"></script>
-    
     <script>
         // ============================================
-        // DEFINE BASE API URL
+        // SESSION CHECK
         // ============================================
-        const BASE = "/api/";
-        
-        // ============================================
-        // SESSION PROTECTION
-        // ============================================
-        (function checkSession() {
-            const session = localStorage.getItem('dutabarane_session');
-            
-            if (!session) {
-                console.log('🔐 No session found - Redirecting to login');
-                window.location.href = 'welcome.html';
-                return;
-            }
-            
-            try {
-                const sessionData = JSON.parse(session);
-                
-                if (sessionData.expiresAt && new Date(sessionData.expiresAt) < new Date()) {
-                    console.log('⏰ Session expired - Redirecting to login');
-                    localStorage.removeItem('dutabarane_session');
-                    localStorage.removeItem('dutabarane_user');
-                    window.location.href = 'welcome.html';
-                    return;
-                }
-                
-                console.log('✅ Authenticated as:', sessionData.username);
-                const usernameDisplay = document.getElementById('usernameDisplay');
-                if (usernameDisplay) {
-                    usernameDisplay.textContent = sessionData.username;
-                }
-                
-            } catch (e) {
-                console.error('Session check error:', e);
-                window.location.href = 'welcome.html';
-            }
-        })();
+        const username = localStorage.getItem("username");
+        const isLoggedIn = localStorage.getItem("loggedIn");
 
-        // ============================================
-        // LOGOUT FUNCTION
-        // ============================================
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (confirm('Are you sure you want to logout?')) {
-                    localStorage.removeItem('dutabarane_session');
-                    localStorage.removeItem('dutabarane_user');
-                    if (window.dutaLoader) {
-                        window.dutaLoader.showSuccessToast('Logged out successfully!');
-                    }
-                    setTimeout(() => {
-                        window.location.href = 'welcome.html';
-                    }, 500);
-                }
-            });
+        if (!isLoggedIn) {
+            window.location.href = "index.html";
         }
 
-        // ============================================
-        // HIDE PAGE LOADER
-        // ============================================
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                const loader = document.getElementById('pageLoader');
-                if (loader) loader.classList.add('hidden');
-            }, 500);
+        document.getElementById("usernameDisplay").textContent = username || "Admin";
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem("loggedIn");
+                localStorage.removeItem("username");
+                window.location.href = "index.html";
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
         });
 
         // ============================================
-        // FETCH DASHBOARD STATS - USING EXISTING ENDPOINTS
+        // API CONFIGURATION
         // ============================================
-        async function fetchDashboardStats() {
-            console.log('📊 Fetching dashboard statistics...');
+        const BASE = "/api/";
+
+        // ============================================
+        // FETCH AND UPDATE DASHBOARD
+        // ============================================
+        async function updateDashboard() {
+            console.log('🔄 Updating dashboard...');
             
-            if (window.dutaLoader) {
-                window.dutaLoader.startProgress();
-            }
+            // Show loading
+            document.getElementById('totalMembers').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            document.getElementById('totalAmount').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            document.getElementById('totalLoan').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            document.getElementById('totalInterest').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
             try {
-                // First, try to get members count
+                // Get members count
                 const membersRes = await fetch(BASE + "members");
-                if (!membersRes.ok) throw new Error('Members API failed');
                 const members = await membersRes.json();
                 const totalMembers = members.length;
                 
-                // Get files list
+                // Get files
                 const filesRes = await fetch(BASE + "files");
-                if (!filesRes.ok) throw new Error('Files API failed');
                 const files = await filesRes.json();
                 
                 let totalAmount = 0;
@@ -568,182 +363,71 @@
                 // Calculate totals from all files
                 for (const file of files) {
                     const fileRes = await fetch(BASE + "files/" + file.id);
-                    if (fileRes.ok) {
-                        const fileData = await fileRes.json();
-                        
-                        for (const memberId in fileData) {
-                            const data = fileData[memberId];
-                            totalAmount += parseFloat(data.amount) || 0;
-                            totalLoan += parseFloat(data.loan) || 0;
-                            totalInterest += parseFloat(data.interest) || 0;
-                        }
+                    const fileData = await fileRes.json();
+                    
+                    for (const memberId in fileData) {
+                        const data = fileData[memberId];
+                        totalAmount += parseFloat(data.amount) || 0;
+                        totalLoan += parseFloat(data.loan) || 0;
+                        totalInterest += parseFloat(data.interest) || 0;
                     }
                 }
                 
-                // Update UI with fetched stats
-                updateStats(totalMembers, totalAmount, totalLoan, totalInterest);
-                updateLastUpdated();
+                // Update display
+                document.getElementById('totalMembers').innerHTML = totalMembers.toLocaleString();
+                document.getElementById('totalAmount').innerHTML = totalAmount.toLocaleString();
+                document.getElementById('totalLoan').innerHTML = totalLoan.toLocaleString();
+                document.getElementById('totalInterest').innerHTML = totalInterest.toLocaleString();
                 
-                console.log('✅ Dashboard stats loaded:', { totalMembers, totalAmount, totalLoan, totalInterest });
+                // Update time
+                const now = new Date();
+                document.getElementById('lastUpdated').innerHTML = `Last updated: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
                 
-                if (window.dutaLoader) {
-                    window.dutaLoader.completeProgress();
-                }
-                
-                return { totalMembers, totalAmount, totalLoan, totalInterest };
+                console.log('✅ Dashboard updated:', { totalMembers, totalAmount, totalLoan, totalInterest });
                 
             } catch (error) {
-                console.error("Error fetching dashboard stats:", error);
-                
-                // Show error in UI
-                showErrorStats();
-                
-                if (window.dutaLoader) {
-                    window.dutaLoader.completeProgress();
-                    window.dutaLoader.showErrorToast('Failed to load dashboard data');
-                }
-                
-                return null;
+                console.error('Error updating dashboard:', error);
+                document.getElementById('totalMembers').innerHTML = 'Error';
+                document.getElementById('totalAmount').innerHTML = 'Error';
+                document.getElementById('totalLoan').innerHTML = 'Error';
+                document.getElementById('totalInterest').innerHTML = 'Error';
             }
         }
 
         // ============================================
-        // UPDATE STATISTICS DISPLAY
-        // ============================================
-        function updateStats(memberCount, totalAmount, totalLoan, totalInterest) {
-            const totalMembersEl = document.getElementById('totalMembers');
-            const totalAmountEl = document.getElementById('totalAmount');
-            const totalLoanEl = document.getElementById('totalLoan');
-            const totalInterestEl = document.getElementById('totalInterest');
-            
-            if (totalMembersEl) {
-                totalMembersEl.innerHTML = memberCount.toLocaleString();
-            }
-            
-            if (totalAmountEl) {
-                totalAmountEl.innerHTML = totalAmount.toLocaleString();
-            }
-            
-            if (totalLoanEl) {
-                totalLoanEl.innerHTML = totalLoan.toLocaleString();
-            }
-            
-            if (totalInterestEl) {
-                totalInterestEl.innerHTML = totalInterest.toLocaleString();
-            }
-        }
-
-        // ============================================
-        // SHOW ERROR STATE
-        // ============================================
-        function showErrorStats() {
-            const totalMembersEl = document.getElementById('totalMembers');
-            const totalAmountEl = document.getElementById('totalAmount');
-            const totalLoanEl = document.getElementById('totalLoan');
-            const totalInterestEl = document.getElementById('totalInterest');
-            
-            if (totalMembersEl) totalMembersEl.innerHTML = '⚠️ Error';
-            if (totalAmountEl) totalAmountEl.innerHTML = '⚠️ Error';
-            if (totalLoanEl) totalLoanEl.innerHTML = '⚠️ Error';
-            if (totalInterestEl) totalInterestEl.innerHTML = '⚠️ Error';
-        }
-
-        // ============================================
-        // UPDATE LAST UPDATED TIME
-        // ============================================
-        function updateLastUpdated() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            const dateString = now.toLocaleDateString();
-            const lastUpdatedEl = document.getElementById('lastUpdated');
-            if (lastUpdatedEl) {
-                lastUpdatedEl.innerHTML = `Last updated: ${dateString} ${timeString}`;
-            }
-        }
-
-        // ============================================
-        // REFRESH DASHBOARD
+        // REFRESH FUNCTION
         // ============================================
         async function refreshDashboard() {
-            const refreshBtn = document.getElementById('floatingRefresh');
-            
-            if (window.dutaLoader && refreshBtn) {
-                const spinner = window.dutaLoader.showButtonSpinner(refreshBtn, '');
-                await fetchDashboardStats();
-                spinner.stop();
-                window.dutaLoader.showSuccessToast('Dashboard refreshed!');
-            } else {
-                await fetchDashboardStats();
-            }
+            await updateDashboard();
+            alert('Dashboard refreshed!');
         }
 
         // ============================================
         // QUICK ACTIONS
         // ============================================
-        const quickAddMember = document.getElementById('quickAddMember');
-        if (quickAddMember) {
-            quickAddMember.addEventListener('click', function() {
-                if (window.dutaLoader) {
-                    window.dutaLoader.showSuccessToast('Redirecting to Control Panel...');
-                }
-                setTimeout(() => {
-                    window.location.href = 'home.html';
-                }, 500);
-            });
-        }
-
-        const quickCreateFile = document.getElementById('quickCreateFile');
-        if (quickCreateFile) {
-            quickCreateFile.addEventListener('click', function() {
-                if (window.dutaLoader) {
-                    window.dutaLoader.showSuccessToast('Redirecting to Control Panel...');
-                }
-                setTimeout(() => {
-                    window.location.href = 'home.html';
-                }, 500);
-            });
-        }
-
-        const quickRefresh = document.getElementById('quickRefresh');
-        if (quickRefresh) {
-            quickRefresh.addEventListener('click', function() {
-                refreshDashboard();
-            });
-        }
-
-        const floatingRefresh = document.getElementById('floatingRefresh');
-        if (floatingRefresh) {
-            floatingRefresh.addEventListener('click', function() {
-                refreshDashboard();
-            });
-        }
+        document.getElementById('quickAddMember').addEventListener('click', function() {
+            window.location.href = 'home.html';
+        });
+        
+        document.getElementById('quickCreateFile').addEventListener('click', function() {
+            window.location.href = 'home.html';
+        });
+        
+        document.getElementById('quickRefresh').addEventListener('click', function() {
+            refreshDashboard();
+        });
+        
+        document.getElementById('floatingRefresh').addEventListener('click', function() {
+            refreshDashboard();
+        });
 
         // ============================================
         // AUTO-REFRESH EVERY 30 SECONDS
         // ============================================
-        let autoRefreshInterval;
+        updateDashboard();
+        setInterval(updateDashboard, 30000);
         
-        function startAutoRefresh() {
-            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-            autoRefreshInterval = setInterval(() => {
-                console.log('🔄 Auto-refreshing dashboard...');
-                fetchDashboardStats();
-            }, 30000);
-        }
-
-        // ============================================
-        // INITIALIZE DASHBOARD
-        // ============================================
-        async function initDashboard() {
-            console.log('🚀 Initializing Dashboard...');
-            await fetchDashboardStats();
-            startAutoRefresh();
-            console.log('✅ Dashboard initialized');
-            console.log('📊 Auto-refresh every 30 seconds');
-        }
-
-        // Start the dashboard
-        initDashboard();
+        console.log('✅ Dashboard ready - Auto-refresh every 30 seconds');
     </script>
 </body>
 </html>
