@@ -144,6 +144,107 @@
             0%, 100% { transform: translateY(0px) translateX(0px); }
             50% { transform: translateY(-20px) translateX(10px); }
         }
+        
+        /* Contact Card Styles - Horizontal Layout */
+        .contact-horizontal-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px 25px;
+            background: rgba(10, 25, 45, 0.9);
+            border-radius: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .contact-horizontal-card:hover {
+            transform: translateX(5px);
+            border-color: #3b82f6;
+            background: rgba(15, 35, 60, 0.9);
+        }
+        
+        .contact-icon-large {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            font-size: 2rem;
+        }
+        
+        .contact-info {
+            flex: 1;
+        }
+        
+        .contact-info h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 5px;
+        }
+        
+        .contact-info p {
+            color: #aaccff;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        
+        .contact-action {
+            min-width: 120px;
+        }
+        
+        .contact-action a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(145deg, #002244, #001433);
+            border: 2px solid #2a7fff;
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .contact-action a:hover {
+            background: #003366;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .contact-horizontal-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            
+            .contact-action {
+                width: 100%;
+            }
+            
+            .contact-action a {
+                width: 100%;
+            }
+        }
+        
+        /* Active nav styles */
+        .active-nav {
+            background: rgba(59, 130, 246, 0.15) !important;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        @media (max-width: 768px) {
+            .active-nav {
+                border-left: none;
+                border-bottom: 3px solid #3b82f6;
+            }
+        }
     </style>
 </head>
 <body class="font-sans antialiased">
@@ -159,7 +260,7 @@
     <!-- Main Container - Split Screen Layout -->
     <div class="min-h-screen flex flex-col lg:flex-row">
         
-        <!-- LEFT SIDEBAR - Navigation & Branding (Z-pattern start) -->
+        <!-- LEFT SIDEBAR - Navigation & Branding -->
         <div class="w-full lg:w-80 glass border-r border-primary/20 p-6 lg:p-8">
             <!-- Logo & Brand -->
             <div class="mb-8 text-center lg:text-left">
@@ -206,10 +307,10 @@
             </div>
         </div>
         
-        <!-- RIGHT MAIN CONTENT - Z-pattern visual flow -->
+        <!-- RIGHT MAIN CONTENT -->
         <div class="flex-1 overflow-y-auto p-6 lg:p-10">
             
-            <!-- Hero Section - Top of Z-pattern -->
+            <!-- Hero Section -->
             <div class="glass-card rounded-3xl p-6 lg:p-10 mb-8 scroll-reveal">
                 <div class="inline-flex items-center gap-2 bg-primary/20 px-4 py-2 rounded-full border border-primary/40 mb-5">
                     <i class="fas fa-hand-sparkles text-primary text-sm"></i>
@@ -226,7 +327,7 @@
                 </p>
             </div>
             
-            <!-- Top Banner Advertisement - After hero (Z-pattern middle) -->
+            <!-- Top Banner Advertisement -->
             <div class="mb-8 scroll-reveal">
                 <a href="https://www.example.com/advertise" target="_blank" rel="noopener noreferrer" class="block group">
                     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 transition-all group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20">
@@ -248,7 +349,7 @@
                     </h2>
                     <p class="text-gray-300 mb-6">Experience the power of cooperative management with our 30-day free trial. No credit card required.</p>
                     
-                    <!-- Feature Grid - 4 cards -->
+                    <!-- Feature Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                         <div class="bg-dark/50 rounded-xl p-5 border border-primary/20 hover:border-primary transition-all hover:-translate-y-1">
                             <i class="fas fa-users text-3xl text-primary mb-3"></i>
@@ -278,7 +379,7 @@
                     </div>
                 </div>
                 
-                <!-- Middle Advertisement Grid - 2 cards (Z-pattern continues) -->
+                <!-- Middle Advertisement Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 scroll-reveal">
                     <a href="https://www.example.com/advertise1" target="_blank" rel="noopener noreferrer" class="group">
                         <div class="glass-card rounded-2xl overflow-hidden transition-all group-hover:border-primary">
@@ -317,7 +418,7 @@
                 </div>
             </div>
             
-            <!-- Contact Section (Hidden by default) -->
+            <!-- CONTACT SECTION - Horizontal Layout Cards -->
             <div id="contactContent" class="space-y-8" style="display: none;">
                 <div class="glass-card rounded-2xl p-6 lg:p-8 scroll-reveal">
                     <h2 class="font-space text-2xl lg:text-3xl font-bold mb-6 flex items-center gap-3">
@@ -326,46 +427,60 @@
                     </h2>
                     <p class="text-gray-300 mb-8">Need support? Reach out to us anytime. We're here to help!</p>
                     
-                    <!-- Contact Cards Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Instagram -->
-                        <div class="glass-card rounded-xl p-6 text-center">
-                            <div class="text-5xl mb-4 text-pink-500">
-                                <i class="fab fa-instagram"></i>
+                    <!-- Horizontal Contact Cards -->
+                    <div class="space-y-4">
+                        <!-- Instagram Card - Horizontal -->
+                        <div class="contact-horizontal-card">
+                            <div class="contact-icon-large">
+                                <i class="fab fa-instagram text-pink-500 text-2xl"></i>
                             </div>
-                            <h3 class="font-bold text-white text-lg mb-2">Instagram</h3>
-                            <p class="text-gray-400 text-sm mb-4">@compiler_jn</p>
-                            <a href="https://instagram.com/compiler_jn" target="_blank" class="btn-primary inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full text-sm w-full">
-                                <i class="fab fa-instagram"></i> Follow Us
-                            </a>
+                            <div class="contact-info">
+                                <h3>Instagram</h3>
+                                <p>@compiler_jn</p>
+                            </div>
+                            <div class="contact-action">
+                                <a href="https://instagram.com/compiler_jn" target="_blank">
+                                    <i class="fab fa-instagram"></i> Follow Us
+                                </a>
+                            </div>
                         </div>
-                        <!-- Email -->
-                        <div class="glass-card rounded-xl p-6 text-center">
-                            <div class="text-5xl mb-4 text-red-500">
-                                <i class="fas fa-envelope"></i>
+                        
+                        <!-- Email Card - Horizontal -->
+                        <div class="contact-horizontal-card">
+                            <div class="contact-icon-large">
+                                <i class="fas fa-envelope text-red-500 text-2xl"></i>
                             </div>
-                            <h3 class="font-bold text-white text-lg mb-2">Email</h3>
-                            <p class="text-gray-400 text-sm mb-4">ntwarijustin2007@gmail.com</p>
-                            <a href="mailto:ntwarijustin2007@gmail.com" class="btn-primary inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full text-sm w-full">
-                                <i class="fas fa-envelope"></i> Send Email
-                            </a>
+                            <div class="contact-info">
+                                <h3>Email</h3>
+                                <p>ntwarijustin2007@gmail.com</p>
+                            </div>
+                            <div class="contact-action">
+                                <a href="mailto:ntwarijustin2007@gmail.com">
+                                    <i class="fas fa-envelope"></i> Send Email
+                                </a>
+                            </div>
                         </div>
-                        <!-- Phone -->
-                        <div class="glass-card rounded-xl p-6 text-center">
-                            <div class="text-5xl mb-4 text-green-500">
-                                <i class="fas fa-phone-alt"></i>
+                        
+                        <!-- Phone Card - Horizontal -->
+                        <div class="contact-horizontal-card">
+                            <div class="contact-icon-large">
+                                <i class="fas fa-phone-alt text-green-500 text-2xl"></i>
                             </div>
-                            <h3 class="font-bold text-white text-lg mb-2">Phone</h3>
-                            <p class="text-gray-400 text-sm mb-4">0723532313</p>
-                            <a href="tel:+250723532313" class="btn-primary inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full text-sm w-full">
-                                <i class="fas fa-phone-alt"></i> Call Now
-                            </a>
+                            <div class="contact-info">
+                                <h3>Phone</h3>
+                                <p>0723532313</p>
+                            </div>
+                            <div class="contact-action">
+                                <a href="tel:+250723532313">
+                                    <i class="fas fa-phone-alt"></i> Call Now
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Bottom Banner Advertisement (Z-pattern end) -->
+            <!-- Bottom Banner Advertisement -->
             <div class="mt-8 scroll-reveal">
                 <a href="https://www.example.com/advertise" target="_blank" rel="noopener noreferrer" class="block group">
                     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 transition-all group-hover:border-primary group-hover:shadow-lg">
@@ -484,28 +599,11 @@
             // Check on scroll
             window.addEventListener('scroll', revealOnScroll);
             
-            // Console logs
             console.log('✅ Dutabarane - Modern Tailwind CSS Version');
+            console.log('📞 Contact cards now use HORIZONTAL layout - Larger and more readable');
             console.log('🎨 Split-screen layout with Z-pattern visual flow');
             console.log('📱 Fully responsive on all devices');
-            console.log('📢 4 Advertisement spaces ready');
-            console.log('✨ Scroll reveal animations active');
         })();
     </script>
-    
-    <style>
-        /* Additional active nav styles */
-        .active-nav {
-            background: rgba(59, 130, 246, 0.15) !important;
-            border-left: 3px solid #3b82f6;
-        }
-        
-        @media (max-width: 768px) {
-            .active-nav {
-                border-left: none;
-                border-bottom: 3px solid #3b82f6;
-            }
-        }
-    </style>
 </body>
 </html>
