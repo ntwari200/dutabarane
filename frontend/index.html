@@ -17,25 +17,18 @@
                         primary: '#3b82f6',
                         secondary: '#0b0f17',
                         dark: '#0a1424',
-                        card: 'rgba(5, 12, 24, 0.85)',
                     },
                     fontFamily: {
                         'sans': ['Inter', 'sans-serif'],
                         'space': ['Space Grotesk', 'sans-serif'],
                     },
                     animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'float': 'float 6s ease-in-out infinite',
-                        'slide-up': 'slideUp 0.5s ease-out',
                     },
                     keyframes: {
                         float: {
                             '0%, 100%': { transform: 'translateY(0px)' },
                             '50%': { transform: 'translateY(-10px)' },
-                        },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
                         },
                     },
                 },
@@ -181,12 +174,12 @@
         .contact-info h3 {
             font-size: 1.2rem;
             font-weight: 700;
-            color: white;
+            color: white !important;
             margin-bottom: 5px;
         }
         
         .contact-info p {
-            color: #aaccff;
+            color: #aaccff !important;
             font-size: 0.9rem;
             word-break: break-all;
         }
@@ -204,7 +197,7 @@
             background: linear-gradient(145deg, #002244, #001433);
             border: 2px solid #2a7fff;
             border-radius: 50px;
-            color: white;
+            color: white !important;
             text-decoration: none;
             font-weight: 600;
             font-size: 0.85rem;
@@ -245,6 +238,15 @@
                 border-bottom: 3px solid #3b82f6;
             }
         }
+        
+        /* Ensure all text is visible */
+        .text-gray-300, .text-gray-400, .text-white {
+            color: white !important;
+        }
+        
+        .text-primary\/80 {
+            color: #aaccff !important;
+        }
     </style>
 </head>
 <body class="font-sans antialiased">
@@ -284,11 +286,11 @@
             <div class="space-y-2 mb-8">
                 <div id="howItWorksNav" class="flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-all hover:bg-primary/10 group active-nav">
                     <i class="fas fa-info-circle w-6 text-primary"></i>
-                    <span class="font-medium text-gray-300 group-hover:text-white">How It Works</span>
+                    <span class="font-medium text-white group-hover:text-white">How It Works</span>
                 </div>
                 <div id="contactNav" class="flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-all hover:bg-primary/10 group">
                     <i class="fas fa-envelope w-6 text-primary"></i>
-                    <span class="font-medium text-gray-300 group-hover:text-white">Contact Us</span>
+                    <span class="font-medium text-white group-hover:text-white">Contact Us</span>
                 </div>
             </div>
             
@@ -301,7 +303,7 @@
             </div>
             
             <!-- Footer Badge -->
-            <div class="pt-6 border-t border-primary/20 flex items-center justify-center lg:justify-start gap-3 text-gray-500 text-sm">
+            <div class="pt-6 border-t border-primary/20 flex items-center justify-center lg:justify-start gap-3 text-gray-300 text-sm">
                 <i class="fas fa-database text-primary"></i>
                 <span>supporting Rwandan cooperatives</span>
             </div>
@@ -316,7 +318,7 @@
                     <i class="fas fa-hand-sparkles text-primary text-sm"></i>
                     <span class="text-primary text-xs font-semibold tracking-wider">MURAKAZA NEZA / WELCOME</span>
                 </div>
-                <h1 class="font-space text-4xl lg:text-5xl font-bold mb-4">
+                <h1 class="font-space text-4xl lg:text-5xl font-bold mb-4 text-white">
                     Dutabarane
                     <span class="block text-2xl lg:text-3xl text-primary/80 mt-2">unified cooperative data</span>
                 </h1>
@@ -334,7 +336,7 @@
                         <img src="https://placehold.co/1200x150/0a1424/3b82f6?text=Advertisement+Banner" 
                              alt="Advertisement"
                              class="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity"
-                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"py-12 text-center\"><i class=\"fas fa-chart-line text-4xl text-primary mb-3\"></i><p class=\"text-gray-400\">Ad Space Available</p><small class=\"text-gray-600\">Contact us to advertise here</small></div>';">
+                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"py-12 text-center\"><i class=\"fas fa-chart-line text-4xl text-primary mb-3\"></i><p class=\"text-gray-300\">Ad Space Available</p><small class=\"text-gray-400\">Contact us to advertise here</small></div>';">
                     </div>
                 </a>
             </div>
@@ -343,7 +345,7 @@
             <div id="howItWorksContent" class="space-y-8">
                 <!-- Trial Section -->
                 <div class="glass-card rounded-2xl p-6 lg:p-8 scroll-reveal">
-                    <h2 class="font-space text-2xl lg:text-3xl font-bold mb-6 flex items-center gap-3">
+                    <h2 class="font-space text-2xl lg:text-3xl font-bold mb-6 flex items-center gap-3 text-white">
                         <i class="fas fa-rocket text-yellow-500 text-3xl"></i>
                         Try Dutabarane Today
                     </h2>
@@ -354,22 +356,22 @@
                         <div class="bg-dark/50 rounded-xl p-5 border border-primary/20 hover:border-primary transition-all hover:-translate-y-1">
                             <i class="fas fa-users text-3xl text-primary mb-3"></i>
                             <h3 class="font-bold text-white mb-2">Member Management</h3>
-                            <p class="text-gray-400 text-sm">Register and track up to 500 members. Store names, districts, and contact info.</p>
+                            <p class="text-gray-300 text-sm">Register and track up to 500 members. Store names, districts, and contact info.</p>
                         </div>
                         <div class="bg-dark/50 rounded-xl p-5 border border-primary/20 hover:border-primary transition-all hover:-translate-y-1">
                             <i class="fas fa-chart-line text-3xl text-primary mb-3"></i>
                             <h3 class="font-bold text-white mb-2">Contribution Tracking</h3>
-                            <p class="text-gray-400 text-sm">Monitor contributions, payment history, and generate growth reports.</p>
+                            <p class="text-gray-300 text-sm">Monitor contributions, payment history, and generate growth reports.</p>
                         </div>
                         <div class="bg-dark/50 rounded-xl p-5 border border-primary/20 hover:border-primary transition-all hover:-translate-y-1">
                             <i class="fas fa-calendar-check text-3xl text-primary mb-3"></i>
                             <h3 class="font-bold text-white mb-2">Activity Records</h3>
-                            <p class="text-gray-400 text-sm">Track meetings, training, and keep digital activity records.</p>
+                            <p class="text-gray-300 text-sm">Track meetings, training, and keep digital activity records.</p>
                         </div>
                         <div class="bg-dark/50 rounded-xl p-5 border border-primary/20 hover:border-primary transition-all hover:-translate-y-1">
                             <i class="fas fa-shield-alt text-3xl text-primary mb-3"></i>
                             <h3 class="font-bold text-white mb-2">Secure & Private</h3>
-                            <p class="text-gray-400 text-sm">All data encrypted. Upgrade to admin for full features.</p>
+                            <p class="text-gray-300 text-sm">All data encrypted. Upgrade to admin for full features.</p>
                         </div>
                     </div>
                     
@@ -389,12 +391,12 @@
                                  onerror="this.onerror=null; this.parentElement.querySelector('.ad-fallback').style.display='flex'; this.style.display='none';">
                             <div class="ad-fallback hidden flex-col items-center justify-center p-8 bg-dark/50 h-48">
                                 <i class="fas fa-chart-line text-3xl text-primary mb-2"></i>
-                                <p class="text-gray-400">Ad Space Available</p>
-                                <small class="text-gray-600">Click to advertise</small>
+                                <p class="text-gray-300">Ad Space Available</p>
+                                <small class="text-gray-400">Click to advertise</small>
                             </div>
                             <div class="p-4 text-center">
                                 <h3 class="font-bold text-white">Special Offer</h3>
-                                <p class="text-gray-400 text-sm">Click to learn more</p>
+                                <p class="text-gray-300 text-sm">Click to learn more</p>
                             </div>
                         </div>
                     </a>
@@ -406,72 +408,72 @@
                                  onerror="this.onerror=null; this.parentElement.querySelector('.ad-fallback2').style.display='flex'; this.style.display='none';">
                             <div class="ad-fallback2 hidden flex-col items-center justify-center p-8 bg-dark/50 h-48">
                                 <i class="fas fa-handshake text-3xl text-primary mb-2"></i>
-                                <p class="text-gray-400">Partner With Us</p>
-                                <small class="text-gray-600">Click to advertise</small>
+                                <p class="text-gray-300">Partner With Us</p>
+                                <small class="text-gray-400">Click to advertise</small>
                             </div>
                             <div class="p-4 text-center">
                                 <h3 class="font-bold text-white">Partner Opportunity</h3>
-                                <p class="text-gray-400 text-sm">Click to learn more</p>
+                                <p class="text-gray-300 text-sm">Click to learn more</p>
                             </div>
                         </div>
                     </a>
                 </div>
             </div>
             
-            <!-- CONTACT SECTION - Horizontal Layout Cards -->
+            <!-- CONTACT SECTION - Horizontal Layout Cards with VISIBLE COLORS -->
             <div id="contactContent" class="space-y-8" style="display: none;">
                 <div class="glass-card rounded-2xl p-6 lg:p-8 scroll-reveal">
-                    <h2 class="font-space text-2xl lg:text-3xl font-bold mb-6 flex items-center gap-3">
+                    <h2 class="font-space text-2xl lg:text-3xl font-bold mb-6 flex items-center gap-3 text-white">
                         <i class="fas fa-headset text-primary text-3xl"></i>
                         Contact Us
                     </h2>
                     <p class="text-gray-300 mb-8">Need support? Reach out to us anytime. We're here to help!</p>
                     
-                    <!-- Horizontal Contact Cards -->
+                    <!-- Horizontal Contact Cards - ALL TEXT NOW VISIBLE -->
                     <div class="space-y-4">
-                        <!-- Instagram Card - Horizontal -->
+                        <!-- Instagram Card -->
                         <div class="contact-horizontal-card">
                             <div class="contact-icon-large">
                                 <i class="fab fa-instagram text-pink-500 text-2xl"></i>
                             </div>
                             <div class="contact-info">
-                                <h3>Instagram</h3>
-                                <p>@compiler_jn</p>
+                                <h3 class="text-white text-lg font-bold">Instagram</h3>
+                                <p class="text-blue-300 text-sm">@compiler_jn</p>
                             </div>
                             <div class="contact-action">
-                                <a href="https://instagram.com/compiler_jn" target="_blank">
+                                <a href="https://instagram.com/compiler_jn" target="_blank" class="text-white">
                                     <i class="fab fa-instagram"></i> Follow Us
                                 </a>
                             </div>
                         </div>
                         
-                        <!-- Email Card - Horizontal -->
+                        <!-- Email Card -->
                         <div class="contact-horizontal-card">
                             <div class="contact-icon-large">
                                 <i class="fas fa-envelope text-red-500 text-2xl"></i>
                             </div>
                             <div class="contact-info">
-                                <h3>Email</h3>
-                                <p>ntwarijustin2007@gmail.com</p>
+                                <h3 class="text-white text-lg font-bold">Email</h3>
+                                <p class="text-blue-300 text-sm">ntwarijustin2007@gmail.com</p>
                             </div>
                             <div class="contact-action">
-                                <a href="mailto:ntwarijustin2007@gmail.com">
+                                <a href="mailto:ntwarijustin2007@gmail.com" class="text-white">
                                     <i class="fas fa-envelope"></i> Send Email
                                 </a>
                             </div>
                         </div>
                         
-                        <!-- Phone Card - Horizontal -->
+                        <!-- Phone Card -->
                         <div class="contact-horizontal-card">
                             <div class="contact-icon-large">
                                 <i class="fas fa-phone-alt text-green-500 text-2xl"></i>
                             </div>
                             <div class="contact-info">
-                                <h3>Phone</h3>
-                                <p>0723532313</p>
+                                <h3 class="text-white text-lg font-bold">Phone</h3>
+                                <p class="text-blue-300 text-sm">0723532313</p>
                             </div>
                             <div class="contact-action">
-                                <a href="tel:+250723532313">
+                                <a href="tel:+250723532313" class="text-white">
                                     <i class="fas fa-phone-alt"></i> Call Now
                                 </a>
                             </div>
@@ -487,13 +489,13 @@
                         <img src="https://placehold.co/1200x120/0a1424/3b82f6?text=Bottom+Advertisement" 
                              alt="Bottom Ad"
                              class="w-full h-auto"
-                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"py-10 text-center\"><i class=\"fas fa-chart-line text-3xl text-primary mb-2\"></i><p class=\"text-gray-400\">Ad Space Available</p><small class=\"text-gray-600\">Contact us</small></div>';">
+                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"py-10 text-center\"><i class=\"fas fa-chart-line text-3xl text-primary mb-2\"></i><p class=\"text-gray-300\">Ad Space Available</p><small class=\"text-gray-400\">Contact us</small></div>';">
                     </div>
                 </a>
             </div>
             
             <!-- Footer -->
-            <div class="mt-10 pt-6 border-t border-primary/20 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
+            <div class="mt-10 pt-6 border-t border-primary/20 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-300 text-sm">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-wind text-primary"></i>
                     <span><strong class="text-primary">Tornado Software Solutions</strong> — <em>“spinning data into progress”</em></span>
@@ -599,9 +601,9 @@
             // Check on scroll
             window.addEventListener('scroll', revealOnScroll);
             
-            console.log('✅ Dutabarane - Modern Tailwind CSS Version');
-            console.log('📞 Contact cards now use HORIZONTAL layout - Larger and more readable');
-            console.log('🎨 Split-screen layout with Z-pattern visual flow');
+            console.log('✅ Dutabarane - Full Working Version');
+            console.log('📞 Contact cards now have VISIBLE white/blue text');
+            console.log('🎨 All text colors fixed for dark background');
             console.log('📱 Fully responsive on all devices');
         })();
     </script>
