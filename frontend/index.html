@@ -4,842 +4,508 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Dutabarane · Cooperative Management System</title>
-    <!-- Font Awesome 6 Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#0b0f17',
+                        dark: '#0a1424',
+                        card: 'rgba(5, 12, 24, 0.85)',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'space': ['Space Grotesk', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <style>
-        /* Reset and base styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Custom styles beyond Tailwind */
         body {
-            font-family: 'Inter', sans-serif;
-            background: #0b0f17;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
-            position: relative;
+            background: linear-gradient(135deg, #0b0f17 0%, #0a0e1a 100%);
         }
-
-        /* Main dashboard container */
-        .dashboard {
-            width: 1400px;
-            max-width: 95vw;
-            height: auto;
-            min-height: 95vh;
-            background: rgba(10, 20, 35, 0.85);
-            backdrop-filter: blur(16px);
-            border-radius: 48px;
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 150, 255, 0.2) inset;
-            display: flex;
-            overflow: hidden;
-            border: 1px solid rgba(30, 100, 200, 0.3);
-        }
-
-        /* ========== SIDEBAR ========== */
-        .sidebar {
-            width: 280px;
-            background: rgba(5, 12, 24, 0.9);
+        
+        /* Glass morphism effect */
+        .glass {
+            background: rgba(5, 12, 24, 0.75);
             backdrop-filter: blur(12px);
-            border-right: 1px solid #1e3b5a;
-            padding: 32px 20px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 8px 0 25px rgba(0, 20, 40, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
         }
-
-        /* Branding */
-        .brand {
-            margin-bottom: 35px;
-            padding-left: 8px;
+        
+        .glass-card {
+            background: rgba(5, 12, 24, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
         }
-
-        .brand-name {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 2rem;
+        
+        .glass-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+        }
+        
+        /* Gradient text */
+        .gradient-text {
             background: linear-gradient(135deg, #4a9eff, #0066ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
-
-        .brand-name i {
-            color: #3b82f6;
-            font-size: 2rem;
-        }
-
-        .slogan {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #aaccff;
-            background: rgba(0, 102, 255, 0.15);
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 40px;
-            margin-top: 10px;
-            border: 1px solid #0066ff55;
-        }
-
-        /* Admin Button */
-        .admin-btn-container {
-            margin: 15px 0 35px 0;
-        }
-
-        .admin-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            width: 100%;
-            padding: 16px 12px;
+        
+        /* Button styles */
+        .btn-primary {
             background: linear-gradient(145deg, #002244, #001433);
             border: 2px solid #2a7fff;
-            border-radius: 60px;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
-            font-family: 'Space Grotesk', sans-serif;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            text-transform: uppercase;
+            transition: all 0.3s ease;
         }
-
-        .admin-btn i {
-            font-size: 1.3rem;
-            color: #7fabff;
-        }
-
-        .admin-btn:hover {
+        
+        .btn-primary:hover {
             background: linear-gradient(145deg, #003366, #001f4d);
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
         }
-
-        /* Navigation Links */
-        .nav-links {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
-            flex: 1;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px 18px;
-            border-radius: 18px;
-            color: #b8d1ff;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .nav-item i {
-            width: 28px;
-            color: #3b82f6;
-            font-size: 1.2rem;
-        }
-
-        .nav-item.active {
-            background: linear-gradient(90deg, #001a33, #001a33cc);
-            color: white;
-            border-left: 4px solid #3b82f6;
-            border-radius: 18px 0 0 18px;
-        }
-
-        .nav-item:hover:not(.active) {
-            background: rgba(20, 60, 120, 0.3);
-            transform: translateX(5px);
-        }
-
-        .non-admin-message {
-            background: rgba(255, 193, 7, 0.1);
-            border: 1px solid #ffc107;
-            border-radius: 12px;
-            padding: 12px;
-            margin: 20px 0;
-            color: #ffc107;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.8rem;
-        }
-
-        .coop-badge {
-            margin-top: auto;
-            padding-top: 25px;
-            border-top: 1px solid #1e3b5a;
-            color: #6688aa;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* ========== MAIN CONTENT ========== */
-        .main {
-            flex: 1;
-            padding: 40px 35px;
-            overflow-y: auto;
-            background: rgba(0, 8, 20, 0.6);
-            backdrop-filter: blur(6px);
-        }
-
-        /* Welcome Header */
-        .welcome-header {
-            margin-bottom: 40px;
-            background: linear-gradient(rgba(0, 20, 40, 0.7), rgba(0, 10, 30, 0.8));
-            padding: 30px;
-            border-radius: 32px;
-            border: 1px solid #2a7fff66;
-        }
-
-        .greeting {
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: #7fabff;
-            background: rgba(0, 102, 255, 0.25);
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 30px;
-            margin-bottom: 15px;
-            border: 1px solid #2a7fff;
-        }
-
-        .title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            line-height: 1.2;
-            color: white;
-            text-shadow: 0 0 20px #0066ff99;
-            margin-bottom: 20px;
-        }
-
-        .title span {
-            border-left: 6px solid #3b82f6;
-            padding-left: 20px;
-            font-size: 1.6rem;
-            display: block;
-            margin-top: 8px;
-            color: #e0f0ff;
-        }
-
-        .sub-message {
-            font-size: 1rem;
-            color: #ffffff;
-            line-height: 1.6;
-            background: rgba(0, 30, 60, 0.5);
-            padding: 18px 22px;
-            border-radius: 28px;
-            border: 1px solid #2a7fff99;
-        }
-
-        /* ==================== ADVERTISEMENT SECTIONS ==================== */
         
-        /* Top Advertisement Banner */
-        .ad-top {
+        /* Scroll reveal animation */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a1424;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        
+        /* Particle background effect */
+        .particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            margin: 20px 0;
-            border-radius: 24px;
-            overflow: hidden;
-            transition: all 0.3s ease;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
         }
-
-        .ad-top a {
-            display: block;
-            width: 100%;
+        
+        .particle {
+            position: absolute;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            animation: float 8s infinite;
         }
-
-        .ad-top img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .ad-top:hover img {
-            transform: scale(1.02);
-        }
-
-        /* Advertisement Grid - 2 Columns */
-        .ad-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .ad-card {
-            background: rgba(0, 20, 40, 0.6);
-            border-radius: 24px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-
-        .ad-card:hover {
-            transform: translateY(-5px);
-            border-color: #3b82f6;
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
-        }
-
-        .ad-card a {
-            display: block;
-            text-decoration: none;
-        }
-
-        .ad-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .ad-card:hover img {
-            transform: scale(1.05);
-        }
-
-        .ad-card-content {
-            padding: 15px;
-            text-align: center;
-        }
-
-        .ad-card-title {
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
-
-        .ad-card-subtitle {
-            color: #99bbee;
-            font-size: 0.8rem;
-        }
-
-        /* Bottom Banner */
-        .ad-bottom {
-            width: 100%;
-            margin: 20px 0 30px;
-            border-radius: 24px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .ad-bottom a {
-            display: block;
-            width: 100%;
-        }
-
-        .ad-bottom img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .ad-bottom:hover img {
-            transform: scale(1.02);
-        }
-
-        /* Placeholder Ad Style (if no image) */
-        .ad-placeholder {
-            background: linear-gradient(135deg, #001a33, #002244);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px;
-            min-height: 150px;
-        }
-
-        .ad-placeholder i {
-            font-size: 2.5rem;
-            color: #3b82f6;
-            margin-bottom: 10px;
-        }
-
-        .ad-placeholder p {
-            color: #aaccff;
-            font-size: 0.9rem;
-        }
-
-        .ad-placeholder small {
-            color: #6688aa;
-            font-size: 0.7rem;
-            margin-top: 8px;
-        }
-
-        /* Trial Section */
-        .trial-section {
-            background: rgba(0, 15, 30, 0.7);
-            border-radius: 28px;
-            padding: 25px;
-            margin: 30px 0;
-            border: 1px solid #2a7fff55;
-        }
-
-        .trial-section h2 {
-            color: white;
-            font-size: 1.6rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .trial-section h2 i {
-            color: #FFD700;
-        }
-
-        .trial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .trial-card {
-            background: rgba(10, 25, 45, 0.9);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid #3b82f666;
-            transition: all 0.3s ease;
-        }
-
-        .trial-card:hover {
-            transform: translateY(-5px);
-            border-color: #4a9eff;
-        }
-
-        .trial-icon {
-            font-size: 2rem;
-            color: #3b82f6;
-            margin-bottom: 15px;
-        }
-
-        .trial-card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: white;
-        }
-
-        .trial-card p {
-            color: #99bbee;
-            font-size: 0.85rem;
-            line-height: 1.5;
-        }
-
-        .trial-badge {
-            display: inline-block;
-            background: linear-gradient(145deg, #002244, #001433);
-            border: 1px solid #FFD700;
-            color: #FFD700;
-            padding: 8px 18px;
-            border-radius: 40px;
-            margin-top: 20px;
-            font-size: 0.85rem;
-        }
-
-        /* Contact Section */
-        .contact-section {
-            background: rgba(0, 15, 30, 0.7);
-            border-radius: 28px;
-            padding: 25px;
-            margin: 30px 0;
-            border: 1px solid #2a7fff55;
-        }
-
-        .contact-section h2 {
-            color: white;
-            font-size: 1.6rem;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .contact-card {
-            background: rgba(10, 25, 45, 0.9);
-            border-radius: 20px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid #3b82f666;
-            transition: all 0.3s ease;
-        }
-
-        .contact-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .contact-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-        }
-
-        .instagram-icon { color: #E4405F; }
-        .email-icon { color: #EA4335; }
-        .phone-icon { color: #34A853; }
-
-        .contact-card h3 {
-            color: white;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-        }
-
-        .contact-detail {
-            color: #aaccff;
-            font-size: 0.85rem;
-            margin: 10px 0;
-            word-break: break-all;
-        }
-
-        .contact-link {
-            display: inline-block;
-            padding: 8px 20px;
-            background: linear-gradient(145deg, #002244, #001433);
-            border: 2px solid #2a7fff;
-            border-radius: 50px;
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .contact-link:hover {
-            background: #003366;
-        }
-
-        /* Footer */
-        .tornado-footer {
-            margin-top: 30px;
-            font-size: 0.85rem;
-            color: #aaccff;
-            border-top: 2px solid #1e3b5a;
-            padding-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        /* Animations */
-        @keyframes glowFade {
-            0% { opacity: 0; filter: blur(5px); }
-            100% { opacity: 1; filter: blur(0); }
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 1024px) {
-            .dashboard { border-radius: 32px; }
-            .sidebar { width: 260px; }
-            .main { padding: 30px 25px; }
-            .title { font-size: 2rem; }
-            .title span { font-size: 1.3rem; }
-        }
-
-        @media (max-width: 768px) {
-            .dashboard {
-                flex-direction: column;
-                border-radius: 0;
-                max-width: 100%;
-            }
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid #1e3b5a;
-                padding: 20px 15px;
-                flex-direction: row;
-                flex-wrap: wrap;
-                align-items: center;
-            }
-            .brand { margin-bottom: 0; flex: 1; }
-            .brand-name { font-size: 1.3rem; }
-            .admin-btn-container { margin: 0; min-width: 180px; }
-            .admin-btn { padding: 10px; font-size: 0.8rem; }
-            .nav-links { flex-direction: row; width: 100%; margin-top: 15px; order: 3; }
-            .nav-item { flex: 1; justify-content: center; padding: 8px 12px; font-size: 0.8rem; }
-            .nav-item.active { border-left: none; border-bottom: 3px solid #3b82f6; border-radius: 12px; }
-            .non-admin-message { order: 4; width: 100%; }
-            .coop-badge { order: 5; width: 100%; justify-content: center; }
-            .main { padding: 25px 20px; }
-            .title { font-size: 1.6rem; }
-            .title span { font-size: 1.1rem; }
-            .ad-grid { grid-template-columns: 1fr; gap: 15px; }
-            .trial-grid { grid-template-columns: 1fr; }
-            .contact-grid { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 480px) {
-            .sidebar { padding: 15px 12px; }
-            .brand-name { font-size: 1.1rem; }
-            .admin-btn { padding: 8px; font-size: 0.7rem; }
-            .admin-btn i { font-size: 1rem; }
-            .nav-item { padding: 6px 10px; font-size: 0.7rem; gap: 8px; }
-            .nav-item i { width: 22px; font-size: 0.9rem; }
-            .main { padding: 20px 15px; }
-            .welcome-header { padding: 15px; }
-            .title { font-size: 1.3rem; }
-            .sub-message { font-size: 0.8rem; padding: 12px; }
-            .ad-card img { height: 140px; }
-            .ad-card-content { padding: 10px; }
-            .ad-card-title { font-size: 0.85rem; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-20px) translateX(10px); }
         }
     </style>
 </head>
-<body>
-    <div class="dashboard">
-        <!-- SIDEBAR -->
-        <div class="sidebar">
-            <div class="brand">
-                <div class="brand-name">
-                    <i class="fas fa-bolt"></i> Tornado
+<body class="font-sans antialiased">
+
+    <!-- Particle Background -->
+    <div class="particle-bg">
+        <div class="particle w-64 h-64 top-10 left-10" style="animation-delay: 0s;"></div>
+        <div class="particle w-96 h-96 bottom-20 right-10" style="animation-delay: 2s;"></div>
+        <div class="particle w-48 h-48 top-1/2 left-1/3" style="animation-delay: 4s;"></div>
+        <div class="particle w-80 h-80 bottom-40 left-20" style="animation-delay: 1s;"></div>
+    </div>
+
+    <!-- Main Container - Split Screen Layout -->
+    <div class="min-h-screen flex flex-col lg:flex-row">
+        
+        <!-- LEFT SIDEBAR - Navigation & Branding (Z-pattern start) -->
+        <div class="w-full lg:w-80 glass border-r border-primary/20 p-6 lg:p-8">
+            <!-- Logo & Brand -->
+            <div class="mb-8 text-center lg:text-left">
+                <div class="flex items-center justify-center lg:justify-start gap-3 mb-3">
+                    <i class="fas fa-bolt text-3xl text-primary"></i>
+                    <span class="font-space text-3xl font-bold gradient-text">Tornado</span>
                 </div>
-                <div class="slogan">
-                    <i class="fas fa-crown"></i> spinning data into progress
+                <div class="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full border border-primary/30">
+                    <i class="fas fa-crown text-xs text-primary"></i>
+                    <span class="text-xs text-primary/80">spinning data into progress</span>
                 </div>
             </div>
-
-            <div class="admin-btn-container">
-                <button class="admin-btn" id="adminContinueBtn">
-                    <i class="fas fa-user-shield"></i> continue as administrator
-                </button>
+            
+            <!-- Main CTA Button -->
+            <button id="adminContinueBtn" class="btn-primary w-full py-4 rounded-full font-space font-bold text-white uppercase tracking-wide flex items-center justify-center gap-3 mb-8 transition-all">
+                <i class="fas fa-user-shield text-xl"></i>
+                <span>Continue as Administrator</span>
+            </button>
+            
+            <!-- Navigation Links -->
+            <div class="space-y-2 mb-8">
+                <div id="howItWorksNav" class="flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-all hover:bg-primary/10 group active-nav">
+                    <i class="fas fa-info-circle w-6 text-primary"></i>
+                    <span class="font-medium text-gray-300 group-hover:text-white">How It Works</span>
+                </div>
+                <div id="contactNav" class="flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-all hover:bg-primary/10 group">
+                    <i class="fas fa-envelope w-6 text-primary"></i>
+                    <span class="font-medium text-gray-300 group-hover:text-white">Contact Us</span>
+                </div>
             </div>
-
-            <div class="nav-links">
-                <a href="#" class="nav-item active" id="howItWorksNav">
-                    <i class="fas fa-info-circle"></i> How It Works
-                </a>
-                <a href="#" class="nav-item" id="contactNav">
-                    <i class="fas fa-envelope"></i> Contact Us
-                </a>
+            
+            <!-- Info Message -->
+            <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
+                <div class="flex items-center gap-3 text-yellow-500 text-sm">
+                    <i class="fas fa-eye"></i>
+                    <span>Non-administrators can view How It Works and Contact Us pages</span>
+                </div>
             </div>
-
-            <div class="non-admin-message">
-                <i class="fas fa-eye"></i>
-                <span>Non-administrators can view How It Works and Contact Us pages</span>
-            </div>
-
-            <div class="coop-badge">
-                <i class="fas fa-database"></i>
+            
+            <!-- Footer Badge -->
+            <div class="pt-6 border-t border-primary/20 flex items-center justify-center lg:justify-start gap-3 text-gray-500 text-sm">
+                <i class="fas fa-database text-primary"></i>
                 <span>supporting Rwandan cooperatives</span>
             </div>
         </div>
-
-        <!-- MAIN CONTENT -->
-        <div class="main" id="mainContent">
-            <!-- WELCOME SECTION -->
-            <div class="welcome-header">
-                <div class="greeting">
-                    <i class="fas fa-hand-sparkles"></i> Murakaza Neza / Welcome
+        
+        <!-- RIGHT MAIN CONTENT - Z-pattern visual flow -->
+        <div class="flex-1 overflow-y-auto p-6 lg:p-10">
+            
+            <!-- Hero Section - Top of Z-pattern -->
+            <div class="glass-card rounded-3xl p-6 lg:p-10 mb-8 scroll-reveal">
+                <div class="inline-flex items-center gap-2 bg-primary/20 px-4 py-2 rounded-full border border-primary/40 mb-5">
+                    <i class="fas fa-hand-sparkles text-primary text-sm"></i>
+                    <span class="text-primary text-xs font-semibold tracking-wider">MURAKAZA NEZA / WELCOME</span>
                 </div>
-                <h1 class="title">
-                    Dutabarane<br>
-                    <span>unified cooperative data</span>
+                <h1 class="font-space text-4xl lg:text-5xl font-bold mb-4">
+                    Dutabarane
+                    <span class="block text-2xl lg:text-3xl text-primary/80 mt-2">unified cooperative data</span>
                 </h1>
-                <div class="sub-message">
-                    <i class="fas fa-quote-left"></i> 
+                <p class="text-gray-300 text-lg leading-relaxed max-w-2xl">
+                    <i class="fas fa-quote-left text-primary mr-2"></i>
                     Track members, manage contributions, and grow together. 
                     Built for Rwandan cooperatives, powered by Tornado Software.
-                </div>
-            </div>
-
-            <!-- ==================== TOP BANNER ADVERTISEMENT ==================== -->
-            <div class="ad-top">
-                <a href="https://www.example.com/advertise" target="_blank" rel="noopener noreferrer">
-                    <img src="https://via.placeholder.com/1200x200/0a1424/3b82f6?text=Advertisement+Banner+-+Click+Here" 
-                         alt="Advertisement Banner"
-                         onerror="this.onerror=null; this.parentElement.innerHTML=this.parentElement.innerHTML.replace('img', 'div').replace('src', 'class=\"ad-placeholder\"').replace('alt', 'style=\"display:flex;\"');">
-                </a>
-            </div>
-
-            <!-- HOW IT WORKS SECTION -->
-            <div class="trial-section" id="howItWorksSection">
-                <h2>
-                    <i class="fas fa-rocket"></i> 
-                    Try Dutabarane Today
-                </h2>
-                <p style="color: #aaccff; margin-bottom: 15px;">
-                    Experience the power of cooperative management with our 30-day free trial. No credit card required.
                 </p>
-                
-                <div class="trial-grid">
-                    <div class="trial-card">
-                        <div class="trial-icon"><i class="fas fa-users"></i></div>
-                        <h3>Member Management</h3>
-                        <p>Register and track up to 500 members during trial. Store names, districts, contact info, and join dates.</p>
-                    </div>
-                    <div class="trial-card">
-                        <div class="trial-icon"><i class="fas fa-chart-line"></i></div>
-                        <h3>Contribution Tracking</h3>
-                        <p>Monitor member contributions, payment history, and generate basic reports to see your cooperative's growth.</p>
-                    </div>
-                    <div class="trial-card">
-                        <div class="trial-icon"><i class="fas fa-calendar-check"></i></div>
-                        <h3>Activity Records</h3>
-                        <p>Track meeting attendance, training participation, and keep digital records of all cooperative activities.</p>
-                    </div>
-                    <div class="trial-card">
-                        <div class="trial-icon"><i class="fas fa-shield-alt"></i></div>
-                        <h3>Secure & Private</h3>
-                        <p>All trial data is encrypted and private. Upgrade to administrator to unlock full features and data export.</p>
-                    </div>
-                </div>
-
-                <div class="trial-badge">
-                    <i class="fas fa-gem"></i> 30-Day Free Trial • No Credit Card Required
-                </div>
             </div>
-
-            <!-- ==================== MIDDLE ADVERTISEMENT GRID (2 COLUMNS) ==================== -->
-            <div class="ad-grid">
-                <!-- Ad Card 1 -->
-                <div class="ad-card">
-                    <a href="https://www.example.com/advertise1" target="_blank" rel="noopener noreferrer">
-                        <img src="https://via.placeholder.com/600x400/0a1424/3b82f6?text=Advertisement+1+-+Click+Here" 
-                             alt="Advertisement 1"
-                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"ad-placeholder\"><i class=\"fas fa-chart-line\"></i><p>Your Advertisement Here</p><small>Click to advertise</small></div>';">
-                        <div class="ad-card-content">
-                            <div class="ad-card-title">Special Offer</div>
-                            <div class="ad-card-subtitle">Click to learn more</div>
-                        </div>
-                    </a>
-                </div>
-                
-                <!-- Ad Card 2 -->
-                <div class="ad-card">
-                    <a href="https://www.example.com/advertise2" target="_blank" rel="noopener noreferrer">
-                        <img src="https://via.placeholder.com/600x400/0a1424/3b82f6?text=Advertisement+2+-+Click+Here" 
-                             alt="Advertisement 2"
-                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"ad-placeholder\"><i class=\"fas fa-handshake\"></i><p>Partner With Us</p><small>Click to advertise</small></div>';">
-                        <div class="ad-card-content">
-                            <div class="ad-card-title">Partner Opportunity</div>
-                            <div class="ad-card-subtitle">Click to learn more</div>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- CONTACT SECTION -->
-            <div class="contact-section" id="contactSection" style="display: none;">
-                <h2><i class="fas fa-headset"></i> Contact Us</h2>
-                <p style="color: #aaccff; margin-bottom: 20px;">Need support? Reach out to us anytime. We're here to help!</p>
-                
-                <div class="contact-grid">
-                    <div class="contact-card">
-                        <div class="contact-icon instagram-icon"><i class="fab fa-instagram"></i></div>
-                        <h3>Instagram</h3>
-                        <div class="contact-detail">@compiler_jn</div>
-                        <a href="https://instagram.com/compiler_jn" target="_blank" class="contact-link">
-                            <i class="fab fa-instagram"></i> Follow Us
-                        </a>
+            
+            <!-- Top Banner Advertisement - After hero (Z-pattern middle) -->
+            <div class="mb-8 scroll-reveal">
+                <a href="https://www.example.com/advertise" target="_blank" rel="noopener noreferrer" class="block group">
+                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 transition-all group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20">
+                        <img src="https://placehold.co/1200x150/0a1424/3b82f6?text=Advertisement+Banner" 
+                             alt="Advertisement"
+                             class="w-full h-auto opacity-90 group-hover:opacity-100 transition-opacity"
+                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"py-12 text-center\"><i class=\"fas fa-chart-line text-4xl text-primary mb-3\"></i><p class=\"text-gray-400\">Ad Space Available</p><small class=\"text-gray-600\">Contact us to advertise here</small></div>';">
                     </div>
-                    <div class="contact-card">
-                        <div class="contact-icon email-icon"><i class="fas fa-envelope"></i></div>
-                        <h3>Email</h3>
-                        <div class="contact-detail">ntwarijustin2007@gmail.com</div>
-                        <a href="mailto:ntwarijustin2007@gmail.com" class="contact-link">
-                            <i class="fas fa-envelope"></i> Send Email
-                        </a>
-                    </div>
-                    <div class="contact-card">
-                        <div class="contact-icon phone-icon"><i class="fas fa-phone-alt"></i></div>
-                        <h3>Phone</h3>
-                        <div class="contact-detail">0723532313</div>
-                        <a href="tel:+250723532313" class="contact-link">
-                            <i class="fas fa-phone-alt"></i> Call Now
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ==================== BOTTOM BANNER ADVERTISEMENT ==================== -->
-            <div class="ad-bottom">
-                <a href="https://www.example.com/advertise" target="_blank" rel="noopener noreferrer">
-                    <img src="https://via.placeholder.com/1200x150/0a1424/3b82f6?text=Bottom+Advertisement+Banner+-+Click+Here" 
-                         alt="Bottom Advertisement Banner"
-                         onerror="this.onerror=null; this.parentElement.innerHTML=this.parentElement.innerHTML.replace('img', 'div').replace('src', 'class=\"ad-placeholder\"').replace('alt', 'style=\"display:flex;\"');">
                 </a>
             </div>
-
-            <!-- FOOTER -->
-            <div class="tornado-footer">
-                <i class="fas fa-wind"></i>
-                <span><strong>Tornado Software Solutions</strong> — <em>“spinning data into progress”</em></span>
-                <span class="rwanda-flag">🇷🇼 iyubakire Rwanda</span>
+            
+            <!-- How It Works Section -->
+            <div id="howItWorksContent" class="space-y-8">
+                <!-- Trial Section -->
+                <div class="glass-card rounded-2xl p-6 lg:p-8 scroll-reveal">
+                    <h2 class="font-space text-2xl lg:text-3xl font-bold mb-6 flex items-center gap-3">
+                        <i class="fas fa-rocket text-yellow-500 text-3xl"></i>
+                        Try Dutabarane Today
+                    </h2>
+                    <p class="text-gray-300 mb-6">Experience the power of cooperative management with our 30-day free trial. No credit card required.</p>
+                    
+                    <!-- Feature Grid - 4 cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <div class="bg-dark/50 rounded-xl p-5 border border-primary/20 hover:border-primary transition-all hover:-translate-y-1">
+                            <i class="fas fa-users text-3xl text-primary mb-3"></i>
+                            <h3 class="font-bold text-white mb-2">Member Management</h3>
+                            <p class="text-gray-400 text-sm">Register and track up to 500 members. Store names, districts, and contact info.</p>
+                        </div>
+                        <div class="bg-dark/50 rounded-xl p-5 border border-primary/20 hover:border-primary transition-all hover:-translate-y-1">
+                            <i class="fas fa-chart-line text-3xl text-primary mb-3"></i>
+                            <h3 class="font-bold text-white mb-2">Contribution Tracking</h3>
+                            <p class="text-gray-400 text-sm">Monitor contributions, payment history, and generate growth reports.</p>
+                        </div>
+                        <div class="bg-dark/50 rounded-xl p-5 border border-primary/20 hover:border-primary transition-all hover:-translate-y-1">
+                            <i class="fas fa-calendar-check text-3xl text-primary mb-3"></i>
+                            <h3 class="font-bold text-white mb-2">Activity Records</h3>
+                            <p class="text-gray-400 text-sm">Track meetings, training, and keep digital activity records.</p>
+                        </div>
+                        <div class="bg-dark/50 rounded-xl p-5 border border-primary/20 hover:border-primary transition-all hover:-translate-y-1">
+                            <i class="fas fa-shield-alt text-3xl text-primary mb-3"></i>
+                            <h3 class="font-bold text-white mb-2">Secure & Private</h3>
+                            <p class="text-gray-400 text-sm">All data encrypted. Upgrade to admin for full features.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="inline-flex items-center gap-2 bg-primary/10 px-5 py-2 rounded-full border border-yellow-500/50 mt-6">
+                        <i class="fas fa-gem text-yellow-500"></i>
+                        <span class="text-yellow-500 text-sm font-semibold">30-Day Free Trial • No Credit Card Required</span>
+                    </div>
+                </div>
+                
+                <!-- Middle Advertisement Grid - 2 cards (Z-pattern continues) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 scroll-reveal">
+                    <a href="https://www.example.com/advertise1" target="_blank" rel="noopener noreferrer" class="group">
+                        <div class="glass-card rounded-2xl overflow-hidden transition-all group-hover:border-primary">
+                            <img src="https://placehold.co/600x300/0a1424/3b82f6?text=Advertisement+1" 
+                                 alt="Ad 1"
+                                 class="w-full h-48 object-cover"
+                                 onerror="this.onerror=null; this.parentElement.querySelector('.ad-fallback').style.display='flex'; this.style.display='none';">
+                            <div class="ad-fallback hidden flex-col items-center justify-center p-8 bg-dark/50 h-48">
+                                <i class="fas fa-chart-line text-3xl text-primary mb-2"></i>
+                                <p class="text-gray-400">Ad Space Available</p>
+                                <small class="text-gray-600">Click to advertise</small>
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="font-bold text-white">Special Offer</h3>
+                                <p class="text-gray-400 text-sm">Click to learn more</p>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="https://www.example.com/advertise2" target="_blank" rel="noopener noreferrer" class="group">
+                        <div class="glass-card rounded-2xl overflow-hidden transition-all group-hover:border-primary">
+                            <img src="https://placehold.co/600x300/0a1424/3b82f6?text=Advertisement+2" 
+                                 alt="Ad 2"
+                                 class="w-full h-48 object-cover"
+                                 onerror="this.onerror=null; this.parentElement.querySelector('.ad-fallback2').style.display='flex'; this.style.display='none';">
+                            <div class="ad-fallback2 hidden flex-col items-center justify-center p-8 bg-dark/50 h-48">
+                                <i class="fas fa-handshake text-3xl text-primary mb-2"></i>
+                                <p class="text-gray-400">Partner With Us</p>
+                                <small class="text-gray-600">Click to advertise</small>
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="font-bold text-white">Partner Opportunity</h3>
+                                <p class="text-gray-400 text-sm">Click to learn more</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Contact Section (Hidden by default) -->
+            <div id="contactContent" class="space-y-8" style="display: none;">
+                <div class="glass-card rounded-2xl p-6 lg:p-8 scroll-reveal">
+                    <h2 class="font-space text-2xl lg:text-3xl font-bold mb-6 flex items-center gap-3">
+                        <i class="fas fa-headset text-primary text-3xl"></i>
+                        Contact Us
+                    </h2>
+                    <p class="text-gray-300 mb-8">Need support? Reach out to us anytime. We're here to help!</p>
+                    
+                    <!-- Contact Cards Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Instagram -->
+                        <div class="glass-card rounded-xl p-6 text-center">
+                            <div class="text-5xl mb-4 text-pink-500">
+                                <i class="fab fa-instagram"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-lg mb-2">Instagram</h3>
+                            <p class="text-gray-400 text-sm mb-4">@compiler_jn</p>
+                            <a href="https://instagram.com/compiler_jn" target="_blank" class="btn-primary inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full text-sm w-full">
+                                <i class="fab fa-instagram"></i> Follow Us
+                            </a>
+                        </div>
+                        <!-- Email -->
+                        <div class="glass-card rounded-xl p-6 text-center">
+                            <div class="text-5xl mb-4 text-red-500">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-lg mb-2">Email</h3>
+                            <p class="text-gray-400 text-sm mb-4">ntwarijustin2007@gmail.com</p>
+                            <a href="mailto:ntwarijustin2007@gmail.com" class="btn-primary inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full text-sm w-full">
+                                <i class="fas fa-envelope"></i> Send Email
+                            </a>
+                        </div>
+                        <!-- Phone -->
+                        <div class="glass-card rounded-xl p-6 text-center">
+                            <div class="text-5xl mb-4 text-green-500">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-lg mb-2">Phone</h3>
+                            <p class="text-gray-400 text-sm mb-4">0723532313</p>
+                            <a href="tel:+250723532313" class="btn-primary inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full text-sm w-full">
+                                <i class="fas fa-phone-alt"></i> Call Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Banner Advertisement (Z-pattern end) -->
+            <div class="mt-8 scroll-reveal">
+                <a href="https://www.example.com/advertise" target="_blank" rel="noopener noreferrer" class="block group">
+                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/30 transition-all group-hover:border-primary group-hover:shadow-lg">
+                        <img src="https://placehold.co/1200x120/0a1424/3b82f6?text=Bottom+Advertisement" 
+                             alt="Bottom Ad"
+                             class="w-full h-auto"
+                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\"py-10 text-center\"><i class=\"fas fa-chart-line text-3xl text-primary mb-2\"></i><p class=\"text-gray-400\">Ad Space Available</p><small class=\"text-gray-600\">Contact us</small></div>';">
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Footer -->
+            <div class="mt-10 pt-6 border-t border-primary/20 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-wind text-primary"></i>
+                    <span><strong class="text-primary">Tornado Software Solutions</strong> — <em>“spinning data into progress”</em></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span>🇷🇼 iyubakire Rwanda</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT -->
+    <!-- JavaScript -->
     <script>
         (function() {
-            // Get elements
+            // DOM Elements
             const adminBtn = document.getElementById('adminContinueBtn');
             const howItWorksNav = document.getElementById('howItWorksNav');
             const contactNav = document.getElementById('contactNav');
-            const howItWorksSection = document.getElementById('howItWorksSection');
-            const contactSection = document.getElementById('contactSection');
-
-            // Admin button - redirect to login
+            const howItWorksContent = document.getElementById('howItWorksContent');
+            const contactContent = document.getElementById('contactContent');
+            
+            // Navigation state
+            let activeNav = 'howItWorks';
+            
+            // Admin Button - Redirect to Login
             adminBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 window.location.href = 'welcome.html';
             });
-
-            // How It Works navigation
-            howItWorksNav.addEventListener('click', function(e) {
-                e.preventDefault();
-                howItWorksNav.classList.add('active');
-                contactNav.classList.remove('active');
-                howItWorksSection.style.display = 'block';
-                contactSection.style.display = 'none';
+            
+            // How It Works Navigation
+            howItWorksNav.addEventListener('click', function() {
+                if (activeNav === 'howItWorks') return;
+                
+                // Update active state
+                howItWorksNav.classList.add('active-nav');
+                contactNav.classList.remove('active-nav');
+                
+                // Update styles
+                howItWorksNav.style.background = 'rgba(59, 130, 246, 0.15)';
+                contactNav.style.background = 'transparent';
+                
+                // Show/hide content
+                howItWorksContent.style.display = 'block';
+                contactContent.style.display = 'none';
+                
+                activeNav = 'howItWorks';
+                
+                // Smooth scroll on mobile
                 if (window.innerWidth <= 768) {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });
-
-            // Contact Us navigation
-            contactNav.addEventListener('click', function(e) {
-                e.preventDefault();
-                contactNav.classList.add('active');
-                howItWorksNav.classList.remove('active');
-                contactSection.style.display = 'block';
-                howItWorksSection.style.display = 'none';
+            
+            // Contact Us Navigation
+            contactNav.addEventListener('click', function() {
+                if (activeNav === 'contact') return;
+                
+                // Update active state
+                contactNav.classList.add('active-nav');
+                howItWorksNav.classList.remove('active-nav');
+                
+                // Update styles
+                contactNav.style.background = 'rgba(59, 130, 246, 0.15)';
+                howItWorksNav.style.background = 'transparent';
+                
+                // Show/hide content
+                contactContent.style.display = 'block';
+                howItWorksContent.style.display = 'none';
+                
+                activeNav = 'contact';
+                
+                // Smooth scroll on mobile
                 if (window.innerWidth <= 768) {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });
-
-            console.log('✅ Welcome to Dutabarane! (With Advertisement Spaces)');
-            console.log('📌 Admin button → welcome.html');
-            console.log('📢 Advertisement sections added - Replace images with your own');
+            
+            // Set initial active state
+            howItWorksNav.style.background = 'rgba(59, 130, 246, 0.15)';
+            
+            // Scroll Reveal Animation
+            const revealElements = document.querySelectorAll('.scroll-reveal');
+            
+            const revealOnScroll = () => {
+                const windowHeight = window.innerHeight;
+                const revealThreshold = 150;
+                
+                revealElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    
+                    if (elementTop < windowHeight - revealThreshold) {
+                        element.classList.add('revealed');
+                    }
+                });
+            };
+            
+            // Initial check on load
+            window.addEventListener('load', () => {
+                setTimeout(revealOnScroll, 100);
+            });
+            
+            // Check on scroll
+            window.addEventListener('scroll', revealOnScroll);
+            
+            // Console logs
+            console.log('✅ Dutabarane - Modern Tailwind CSS Version');
+            console.log('🎨 Split-screen layout with Z-pattern visual flow');
+            console.log('📱 Fully responsive on all devices');
+            console.log('📢 4 Advertisement spaces ready');
+            console.log('✨ Scroll reveal animations active');
         })();
     </script>
+    
+    <style>
+        /* Additional active nav styles */
+        .active-nav {
+            background: rgba(59, 130, 246, 0.15) !important;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        @media (max-width: 768px) {
+            .active-nav {
+                border-left: none;
+                border-bottom: 3px solid #3b82f6;
+            }
+        }
+    </style>
 </body>
 </html>
